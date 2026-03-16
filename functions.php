@@ -50,14 +50,19 @@ add_action( 'after_setup_theme', 'amazonia_theme_setup' );
  * Enqueue scripts and styles.
  */
 function amazonia_theme_scripts() {
+	// Tailwind JS via CDN and config
+	wp_enqueue_script( 'tailwind-cdn', 'https://cdn.tailwindcss.com?plugins=forms,container-queries', array(), null, false );
+	wp_enqueue_script( 'tailwind-config', get_template_directory_uri() . '/assets/js/tailwind-config.js', array('tailwind-cdn'), '1.0.0', false );
+
+	// Google Fonts & Material Symbols
+	wp_enqueue_style( 'google-font-work-sans', 'https://fonts.googleapis.com/css2?family=Work+Sans:wght@300;400;500;600;700;900&display=swap', array(), null );
+	wp_enqueue_style( 'material-symbols', 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined', array(), null );
+
 	// Enqueue main stylesheet (style.css fallback)
 	wp_enqueue_style( 'amazonia-theme-style', get_stylesheet_uri(), array(), '1.0.0' );
 
 	// Enqueue compiled main.css
 	wp_enqueue_style( 'amazonia-main-style', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0.0' );
-
-	// Enqueue header css
-	wp_enqueue_style( 'amazonia-header-style', get_template_directory_uri() . '/assets/css/header.css', array(), '1.0.0' );
 
 	// Enqueue main.js
 	wp_enqueue_script( 'amazonia-main-js', get_template_directory_uri() . '/assets/js/main.js', array('jquery'), '1.0.0', true );
