@@ -33,7 +33,9 @@
                             )
                         );
                     } else {
-                        echo '<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="#">Categorías</a>
+                        $shop_url = class_exists( 'WooCommerce' ) ? esc_url( wc_get_page_permalink( 'shop' ) ) : '#';
+                        echo '<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="' . $shop_url . '">Tienda</a>
+                              <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="#">Categorías</a>
                               <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="#">Comunidades</a>
                               <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="#">Impacto</a>';
                     }
