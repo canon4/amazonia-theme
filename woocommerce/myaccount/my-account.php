@@ -16,21 +16,32 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+?>
 
-/**
- * My Account navigation.
- *
- * @since 2.6.0
- */
-do_action( 'woocommerce_account_navigation' ); ?>
+<div class="max-w-[1440px] mx-auto w-full px-4 md:px-10 lg:px-20 py-10">
+	<div class="flex flex-col lg:flex-row gap-8">
+		<aside class="w-full lg:w-80 xl:w-[340px] flex-shrink-0 space-y-8">
+			<?php
+			/**
+			 * My Account navigation.
+			 *
+			 * @since 2.6.0
+			 */
+			do_action( 'woocommerce_account_navigation' );
+			?>
+		</aside>
 
-<div class="woocommerce-MyAccount-content">
-	<?php
-		/**
-		 * My Account content.
-		 *
-		 * @since 2.6.0
-		 */
-		do_action( 'woocommerce_account_content' );
-	?>
+		<section class="flex-1 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-primary/5 p-6 md:p-10">
+			<div class="woocommerce-MyAccount-content !w-full !float-none">
+				<?php
+					/**
+					 * My Account content.
+					 *
+					 * @since 2.6.0
+					 */
+					do_action( 'woocommerce_account_content' );
+				?>
+			</div>
+		</section>
+	</div>
 </div>
