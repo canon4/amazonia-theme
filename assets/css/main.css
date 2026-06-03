@@ -6,19 +6,58 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;500;700&display=swap');
 
 :root {
-  --primary: #4ade80;
-  --primary-hover: #22c55e;
-  --dark-bg: #0f172a;
-  --dark-surface: #1e293b;
-  --light-bg: #f8fafc;
-  --light-surface: #ffffff;
-  --text-main: #334155;
-  --text-muted: #64748b;
-  --text-light: #f8fafc;
-  --border: #e2e8f0;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+  /* ── Brand / Primary ───────────────────────────────── */
+  --primary:            #16a34a;   /* verde principal (botones, CTA) */
+  --primary-bright:     #4ade80;   /* verde brillante (acentos, hovers) */
+  --primary-mid:        #22c55e;   /* verde medio (gradientes) */
+  --primary-dark:       #15803d;   /* verde oscuro (hover de botón) */
+
+  /* ── Forest palette (fondos amazónicos) ────────────── */
+  --forest-deepest:     #0a2e0a;   /* fondo footer inicio */
+  --forest-deep:        #0f3d1a;   /* fondo footer centro */
+  --forest-dark:        #0a2a12;   /* fondo footer fin */
+  --forest-green:       #1a5c2a;   /* verde selva medio */
+  --forest-surface:     #0f2d10;   /* superficies oscuras sobre fondo forestal */
+
+  /* ── Green text scale ──────────────────────────────── */
+  --green-50:           #f0fdf4;   /* casi blanco verdoso — títulos principales */
+  --green-100:          #dcfce7;   /* texto muy claro */
+  --green-200:          #bbf7d0;   /* párrafos sobre fondo oscuro */
+  --green-300:          #86efac;   /* texto suave / labels / badges */
+  --green-400:          #4ade80;   /* acento brillante */
+  --green-600:          #16a34a;   /* texto activo / primario */
+  --green-700:          #15803d;   /* texto interactivo hover */
+  --green-800:          #166534;   /* texto oscuro sobre fondo claro */
+  --green-900:          #14532d;   /* fondo sección oscura garantizado */
+
+  /* ── Neutral / UI ──────────────────────────────────── */
+  --dark-bg:            #0f172a;
+  --dark-surface:       #1e293b;
+  --light-bg:           #f8fafc;
+  --light-surface:      #ffffff;
+  --text-main:          #334155;
+  --text-muted:         #64748b;
+  --text-light:         #f8fafc;
+  --border:             #e2e8f0;
+
+  /* ── Glow / blur helpers ───────────────────────────── */
+  --glow-primary:       rgba(74, 222, 128, 0.35);  /* sombra luminosa verde */
+  --glow-primary-lg:    rgba(74, 222, 128, 0.50);  /* sombra hover */
+  --blur-overlay:       rgba(255, 255, 255, 0.05); /* glassmorphism sobre oscuro */
+  --border-glass:       rgba(74, 222, 128, 0.25);  /* borde translúcido verde */
+
+  /* ── Shadows ───────────────────────────────────────── */
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md:    0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
   --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+  --shadow-green: 0 4px 15px var(--glow-primary);
+
+  /* ── Gradients ─────────────────────────────────────── */
+  --gradient-forest:  linear-gradient(170deg, var(--forest-deepest) 0%, var(--forest-deep) 40%, var(--forest-dark) 100%);
+  --gradient-primary: linear-gradient(135deg, var(--primary), var(--primary-mid));
+  --gradient-divider: linear-gradient(90deg, transparent 0%, rgba(74,222,128,0.4) 30%, rgba(22,163,74,0.6) 50%, rgba(74,222,128,0.4) 70%, transparent 100%);
+
+  /* ── Misc ──────────────────────────────────────────── */
   --radius: 12px;
 }
 
