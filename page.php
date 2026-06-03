@@ -13,7 +13,7 @@ get_header();
         the_post();
         ?>
         <article id="post-<?php the_ID(); ?>" <?php post_class( 'pb-12' ); ?>>
-            <header class="entry-header bg-slate-50 dark:bg-background-dark py-12 lg:py-16 mb-10 border-b border-primary/10">
+            <header class="entry-header bg-slate-50 dark:bg-background-dark py-5 lg:py-6 mb-6 border-b border-primary/10">
                 <div class="max-w-7xl mx-auto px-6 lg:px-20">
                     <?php 
                         if ( function_exists( 'woocommerce_breadcrumb' ) ) {

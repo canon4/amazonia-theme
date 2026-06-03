@@ -27,3 +27,34 @@ input[type="search"]::-webkit-search-results-button,
 input[type="search"]::-webkit-search-results-decoration {
   -webkit-appearance:none;
 }
+
+/* ── Product Card Image Fix ── */
+/* Override WooCommerce inline width/height on product card images */
+.woocommerce ul.products li.product .aspect-square img,
+.woocommerce-page ul.products li.product .aspect-square img,
+.aspect-square img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block;
+  max-width: none !important;
+}
+
+/* Ensure the image container fills its parent */
+.aspect-square {
+  position: relative;
+  overflow: hidden;
+}
+
+.aspect-square a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Fix WooCommerce default image wrapper styles */
+ul.products li.product a img {
+  margin: 0 !important;
+  padding: 0 !important;
+}

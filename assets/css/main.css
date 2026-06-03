@@ -76,6 +76,16 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--dark-bg);
 }
 
+/* ===== Product Cards: Force images to fill container ===== */
+.wc-block-grid__product-image img,
+ul.products li.product .aspect-square img,
+li.product .aspect-square img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  max-width: none !important;
+}
+
 /* Forms styling replaced by Tailwind plugins */
 
 /* Footer */
@@ -89,4 +99,251 @@ h1, h2, h3, h4, h5, h6 {
 .site-footer p {
   color: #94a3b8;
   margin: 0;
+}
+
+/* ===== WooCommerce Product Reviews ===== */
+.woocommerce-Reviews .commentlist {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.woocommerce-Reviews .commentlist li.comment {
+  background: var(--light-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s ease;
+}
+
+.woocommerce-Reviews .commentlist li.comment:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.woocommerce-Reviews .commentlist .comment_container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .woocommerce-Reviews .commentlist .comment_container {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+.woocommerce-Reviews .commentlist img.avatar {
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+  padding: 2px;
+  background: white;
+  transition: border-color 0.3s ease;
+}
+
+.woocommerce-Reviews .commentlist li.comment:hover img.avatar {
+  border-color: var(--primary);
+}
+
+.woocommerce-Reviews .commentlist .comment-text {
+  flex: 1;
+}
+
+.woocommerce-Reviews .commentlist .meta {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.woocommerce-Reviews .commentlist .meta strong {
+  color: var(--text-main);
+  font-weight: 600;
+  font-size: 1.05rem;
+  font-family: 'Outfit', sans-serif;
+}
+
+.woocommerce-Reviews .commentlist .description {
+  color: var(--text-main);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.woocommerce-Reviews .star-rating {
+  float: right;
+  color: #fbbf24;
+}
+
+/* Star Rating in form */
+.comment-form-rating .stars {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.comment-form-rating .stars a {
+  color: #cbd5e1;
+  transition: color 0.2s ease;
+}
+
+.comment-form-rating .stars a:hover,
+.comment-form-rating .stars a.active {
+  color: #fbbf24;
+}
+
+/* ===== WCFM Ask a Question Button ===== */
+html body a.wcfm_catalog_enquiry,
+html body .wcfm_ele_wrapper a.wcfm_catalog_enquiry,
+html body p.store-enquiry a.wcfm_catalog_enquiry {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--primary) !important;
+  background-color: var(--primary) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  border: none !important;
+  border-bottom-color: var(--primary) !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+html body a.wcfm_catalog_enquiry:hover,
+html body .wcfm_ele_wrapper a.wcfm_catalog_enquiry:hover,
+html body p.store-enquiry a.wcfm_catalog_enquiry:hover {
+  background: var(--primary-hover) !important;
+  background-color: var(--primary-hover) !important;
+  border-bottom-color: var(--primary-hover) !important;
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-2px);
+  color: #ffffff !important;
+}
+
+/* ===== WCFM Enquiry Modal (Colorbox) ===== */
+#colorbox #enquiry_form_wrapper {
+  padding: 0 !important;
+}
+
+#colorbox #enquiry_form {
+  background: var(--light-surface) !important;
+  border-radius: var(--radius) !important;
+  padding: 2rem !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+#colorbox #enquiry_form h2 {
+  font-family: 'Outfit', sans-serif !important;
+  color: var(--dark-bg) !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  margin-bottom: 1.5rem !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding-bottom: 1rem !important;
+}
+
+#colorbox .wcfm_popup_label {
+  display: block !important;
+  font-weight: 500 !important;
+  color: var(--text-main) !important;
+  margin-bottom: 0.5rem !important;
+  font-size: 0.875rem !important;
+  text-align: left !important;
+}
+
+#colorbox .wcfm_popup_label strong {
+  font-weight: 500 !important;
+}
+
+#colorbox .wcfm_popup_label .required {
+  color: #ef4444 !important; /* text-red-500 */
+}
+
+#colorbox .wcfm_popup_input,
+#colorbox .wcfm_popup_textarea {
+  width: 100% !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.5rem !important;
+  padding: 0.75rem !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: var(--text-main) !important;
+  background-color: #ffffff !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.3s ease !important;
+  margin-bottom: 1.5rem !important;
+  box-sizing: border-box !important;
+}
+
+#colorbox .wcfm_popup_input:focus,
+#colorbox .wcfm_popup_textarea:focus {
+  border-color: var(--primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2) !important;
+}
+
+#colorbox #wcfm_enquiry_submit_button.wcfm_popup_button {
+  background-color: var(--primary) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  padding: 0.75rem 2rem !important;
+  border-radius: 0.5rem !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  text-transform: none !important;
+  font-size: 1rem !important;
+  width: auto !important;
+  float: right !important;
+}
+
+#colorbox #wcfm_enquiry_submit_button.wcfm_popup_button:hover {
+  background-color: var(--primary-hover) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+/* Colorbox Close Button */
+#cboxClose {
+  background: none !important;
+  text-indent: 0 !important;
+  font-size: 0 !important; /* Hide default text if any */
+  width: 32px !important;
+  height: 32px !important;
+  top: 10px !important;
+  right: 10px !important;
+  border-radius: 50% !important;
+  background-color: #f1f5f9 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+
+#cboxClose::before {
+  content: "×" !important;
+  font-size: 24px !important;
+  color: var(--text-muted) !important;
+  line-height: 1 !important;
+  text-indent: 0 !important;
+  display: block !important;
+}
+
+#cboxClose:hover {
+  background-color: #e2e8f0 !important;
+}
+
+#cboxClose:hover::before {
+  color: var(--text-main) !important;
 }
