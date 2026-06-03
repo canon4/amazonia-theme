@@ -126,6 +126,22 @@ function amazonia_wcfm_back_to_store_button() {
 add_action( 'wcfm_before_header_panel_item', 'amazonia_wcfm_back_to_store_button' );
 
 /**
+ * Encola el CSS personalizado del formulario de registro de vendedor.
+ * Solo se carga en la página con slug "vendor-register".
+ */
+function amazonia_enqueue_vendor_register_styles() {
+	if ( is_page( 'vendor-register' ) ) {
+		wp_enqueue_style(
+			'amazonia-vendor-register',
+			get_template_directory_uri() . '/assets/css/vendor-register.css',
+			array(),
+			'1.0.0'
+		);
+	}
+}
+add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_vendor_register_styles' );
+
+/**
  * Register widget area.
  */
 function amazonia_widgets_init() {

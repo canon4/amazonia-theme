@@ -1,0 +1,423 @@
+/*
+ * Vendor Registration Form — Amazonia Theme Overrides
+ * Targets WCFM Multivendor Membership plugin classes
+ */
+
+/* ─── Layout Reset ─────────────────────────────────────────── */
+
+#wcfm_membership_container {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+#wcfm_membership_registration_form {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+#wcfm_membership_registration_form_expander {
+  padding: 0 !important;
+}
+
+.wcfm-container {
+  padding: 0 !important;
+}
+
+/* ─── Field Rows ────────────────────────────────────────────── */
+
+#wcfm_membership_container .wcfm_ele_wrap,
+#wcfm_membership_container p {
+  margin-bottom: 0.875rem !important;
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  clear: both !important;
+}
+
+.wcfm_clearfix {
+  display: none !important;
+}
+
+/* ─── Labels ────────────────────────────────────────────────── */
+
+#wcfm_membership_container .wcfm_title,
+#wcfm_membership_container label.wcfm_title {
+  display: block !important;
+  width: 100% !important;
+  float: none !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #1e293b !important;
+  margin-bottom: 0.5rem !important;
+  padding: 0 !important;
+}
+
+#wcfm_membership_container .wcfm_title .required {
+  color: #ef4444 !important;
+  margin-left: 2px;
+}
+
+/* ─── Text / Email / Password / Number Inputs ───────────────── */
+
+#wcfm_membership_container input[type="text"],
+#wcfm_membership_container input[type="email"],
+#wcfm_membership_container input[type="password"],
+#wcfm_membership_container input[type="number"],
+#wcfm_membership_container input[type="tel"],
+#wcfm_membership_container input[type="time"],
+#wcfm_membership_container .wcfm-text {
+  display: block !important;
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  background-color: rgba(74, 222, 128, 0.05) !important;
+  border: 1px solid rgba(74, 222, 128, 0.2) !important;
+  border-radius: 0.75rem !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9375rem !important;
+  color: #1e293b !important;
+  outline: none !important;
+  transition: border-color 0.3s, box-shadow 0.3s !important;
+  box-shadow: none !important;
+  float: none !important;
+  border-left-width: 1px !important; /* reset WCFM validation 6px border-left */
+}
+
+#wcfm_membership_container input[type="text"]:focus,
+#wcfm_membership_container input[type="email"]:focus,
+#wcfm_membership_container input[type="password"]:focus,
+#wcfm_membership_container input[type="number"]:focus,
+#wcfm_membership_container input[type="tel"]:focus,
+#wcfm_membership_container input[type="time"]:focus {
+  border-color: #4ade80 !important;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15) !important;
+  background-color: #ffffff !important;
+}
+
+/* Readonly inputs (username/email when logged in) */
+#wcfm_membership_container input[readonly] {
+  background-color: rgba(74, 222, 128, 0.03) !important;
+  color: #64748b !important;
+  cursor: not-allowed !important;
+}
+
+/* ─── Selects ───────────────────────────────────────────────── */
+
+#wcfm_membership_container select,
+#wcfm_membership_container .wcfm-select {
+  display: block !important;
+  width: 100% !important;
+  padding: 0.75rem 2.5rem 0.75rem 1rem !important;
+  background-color: rgba(74, 222, 128, 0.05) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%234ade80'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 1.25rem !important;
+  border: 1px solid rgba(74, 222, 128, 0.2) !important;
+  border-radius: 0.75rem !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9375rem !important;
+  color: #1e293b !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  outline: none !important;
+  transition: border-color 0.3s, box-shadow 0.3s !important;
+  float: none !important;
+  cursor: pointer !important;
+}
+
+#wcfm_membership_container select:focus {
+  border-color: #4ade80 !important;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15) !important;
+  background-color: #ffffff !important;
+}
+
+/* ─── Textarea ──────────────────────────────────────────────── */
+
+#wcfm_membership_container textarea,
+#wcfm_membership_container .wcfm-textarea {
+  display: block !important;
+  width: 100% !important;
+  padding: 0.75rem 1rem !important;
+  background-color: rgba(74, 222, 128, 0.05) !important;
+  border: 1px solid rgba(74, 222, 128, 0.2) !important;
+  border-radius: 0.75rem !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9375rem !important;
+  color: #1e293b !important;
+  outline: none !important;
+  transition: border-color 0.3s, box-shadow 0.3s !important;
+  resize: vertical !important;
+  min-height: 100px !important;
+  float: none !important;
+}
+
+#wcfm_membership_container textarea:focus {
+  border-color: #4ade80 !important;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15) !important;
+  background-color: #ffffff !important;
+}
+
+/* ─── Checkbox ──────────────────────────────────────────────── */
+
+#wcfm_membership_container input[type="checkbox"].wcfm-checkbox {
+  width: 1rem !important;
+  height: 1rem !important;
+  border-radius: 0.25rem !important;
+  border: 1px solid rgba(74, 222, 128, 0.4) !important;
+  background-color: rgba(74, 222, 128, 0.05) !important;
+  accent-color: #4ade80 !important;
+  cursor: pointer !important;
+  float: none !important;
+  display: inline-block !important;
+  vertical-align: middle !important;
+  margin-right: 0.5rem !important;
+}
+
+/* Terms checkbox label */
+#wcfm_membership_container p.terms_title {
+  display: inline !important;
+  width: auto !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #64748b !important;
+  vertical-align: middle !important;
+}
+
+/* ─── Validation States ─────────────────────────────────────── */
+
+#wcfm_membership_container .wcfm_validation_failed {
+  border: 1px solid #ef4444 !important;
+  border-left-width: 1px !important;
+  background-color: rgba(239, 68, 68, 0.04) !important;
+}
+
+#wcfm_membership_container .wcfm_validation_success {
+  border: 1px solid #4ade80 !important;
+  border-left-width: 1px !important;
+  background-color: rgba(74, 222, 128, 0.04) !important;
+}
+
+/* ─── Verification Inputs ───────────────────────────────────── */
+
+.wcfm_email_verified,
+.wcfm_sms_verified {
+  display: flex !important;
+  gap: 0.75rem !important;
+  align-items: center !important;
+  margin-bottom: 1.25rem !important;
+}
+
+.wcfm_email_verified input[type="text"],
+.wcfm_sms_verified input[type="text"] {
+  flex: 1 !important;
+}
+
+.wcfm_email_verified_button,
+.wcfm_sms_verified_button {
+  flex-shrink: 0 !important;
+  width: auto !important;
+  padding: 0.75rem 1.25rem !important;
+  background-color: transparent !important;
+  border: 1.5px solid #4ade80 !important;
+  border-radius: 0.75rem !important;
+  color: #4ade80 !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.3s !important;
+  white-space: nowrap !important;
+}
+
+.wcfm_email_verified_button:hover,
+.wcfm_sms_verified_button:hover {
+  background-color: #4ade80 !important;
+  color: #ffffff !important;
+}
+
+/* ─── Messages ──────────────────────────────────────────────── */
+
+.wcfm-message,
+.email_verification_message,
+.sms_verification_message {
+  padding: 0.875rem 1rem !important;
+  border-radius: 0.75rem !important;
+  font-size: 0.875rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 1rem !important;
+  display: none;
+}
+
+.wcfm-message.wcfm-success {
+  background-color: rgba(74, 222, 128, 0.1) !important;
+  border: 1px solid rgba(74, 222, 128, 0.3) !important;
+  color: #15803d !important;
+}
+
+.wcfm-message.wcfm-error {
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  color: #dc2626 !important;
+}
+
+/* ─── Store Slug Preview ────────────────────────────────────── */
+
+.wcfm_store_slug_verified,
+p.wcfm_store_slug_verified,
+#wcfm_membership_registration_form_expander > p.wcfm_store_slug_verified {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  /* anular el margin-left implícito del layout label/input de WCFM */
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-top: -0.5rem !important;
+  margin-bottom: 0.875rem !important;
+  padding: 0.5rem 0.875rem !important;
+  font-size: 0.8125rem !important;
+  color: #64748b !important;
+  text-align: left !important;
+  background-color: rgba(74, 222, 128, 0.06) !important;
+  border: 1px dashed rgba(74, 222, 128, 0.3) !important;
+  border-radius: 0.5rem !important;
+  float: none !important;
+  clear: both !important;
+  overflow: hidden !important;
+  word-break: break-all !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+.wcfm_store_slug_verified .wcfm_store_slug,
+p.wcfm_store_slug_verified span.wcfm_store_slug {
+  font-weight: 700 !important;
+  color: #22c55e !important;
+  display: inline !important;
+  word-break: break-all !important;
+  overflow-wrap: break-word !important;
+  white-space: normal !important;
+}
+
+/* ─── Password Strength ─────────────────────────────────────── */
+
+#password-strength-status {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  float: none !important;
+  clear: both !important;
+  height: 4px;
+  border-radius: 9999px;
+  margin-top: 0.5rem;
+  margin-bottom: 0.75rem;
+  background-color: #e2e8f0;
+  overflow: hidden;
+  transition: background-color 0.3s;
+}
+
+#password_strength {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  float: none !important;
+  clear: both !important;
+  font-size: 0.8125rem !important;
+  font-weight: 600 !important;
+  padding: 0.375rem 0.75rem !important;
+  border-radius: 0.5rem !important;
+  margin-top: 0.375rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+/* ─── Submit Button ─────────────────────────────────────────── */
+
+#wcfm_membership_registration_submit,
+.wcfm_form_simple_submit_wrapper {
+  margin-top: 2rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 0.75rem !important;
+  clear: both !important;
+  float: none !important;
+}
+
+#wcfm_membership_register_button,
+input#wcfm_membership_register_button {
+  display: block !important;
+  width: 100% !important;
+  padding: 0.9375rem 2rem !important;
+  background-color: #4ade80 !important;
+  color: #ffffff !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  border: none !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s !important;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3) !important;
+  letter-spacing: 0.01em !important;
+  float: none !important;
+  text-align: center !important;
+}
+
+#wcfm_membership_register_button:hover {
+  background-color: #22c55e !important;
+  transform: scale(1.02) !important;
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4) !important;
+}
+
+/* Plans link button (secondary) */
+.wcfm_form_simple_submit_wrapper a.wcfm_submit_button {
+  display: block !important;
+  width: 100% !important;
+  padding: 0.875rem 2rem !important;
+  background-color: transparent !important;
+  color: #4ade80 !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.9375rem !important;
+  font-weight: 600 !important;
+  border: 2px solid #4ade80 !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  transition: all 0.3s !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  float: none !important;
+}
+
+.wcfm_form_simple_submit_wrapper a.wcfm_submit_button:hover {
+  background-color: #4ade80 !important;
+  color: #ffffff !important;
+}
+
+/* ─── reCaptcha wrapper ─────────────────────────────────────── */
+
+.wcfm_gglcptch_wrapper {
+  float: none !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* ─── Verified badges ───────────────────────────────────────── */
+
+.wcfm_email_verified_text,
+.wcfm_sms_verified_text {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.375rem !important;
+  padding: 0.5rem 0.875rem !important;
+  background-color: rgba(74, 222, 128, 0.1) !important;
+  border: 1px solid rgba(74, 222, 128, 0.3) !important;
+  border-radius: 9999px !important;
+  color: #15803d !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+}
