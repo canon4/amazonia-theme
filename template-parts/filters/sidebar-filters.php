@@ -137,3 +137,70 @@
         </div>
     </div>
 </aside>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const sidebar = document.querySelector('aside.lg\\:w-64');
+    const wcfmMap = document.getElementById('wcfmmp-store-list-map');
+    const searchForm = document.querySelector('form.wcfmmp-store-search-form');
+    
+    if (sidebar && wcfmMap) {
+        // Hide the original search form since we want a clean card look
+        if(searchForm) {
+            searchForm.style.display = 'none';
+        }
+
+        // Create the Community Location Card wrapper
+        const mapCard = document.createElement('div');
+        mapCard.className = "mt-8";
+        
+        mapCard.innerHTML = `
+            <div class="border-b border-primary/10 pb-4 mb-4">
+                <h4 class="font-bold text-sm mb-3 text-slate-900 dark:text-white flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">location_on</span> Community Location
+                </h4>
+            </div>
+            <div class="relative rounded-2xl overflow-hidden shadow-sm h-[200px] w-full group">
+                <!-- We will inject the actual WCFM map inside here -->
+                <div id="sidebar-map-container" class="absolute inset-0 w-full h-full bg-slate-200"></div>
+                
+                <!-- Styling overlay to match the mock-up (greyed out feel) -->
+                <div class="absolute inset-0 pointer-events-none" style="box-shadow: inset 0 0 20px rgba(0,0,0,0.05);"></div>
+                
+                <!-- We add a specific CSS style block to theme the map -->
+                <style>
+                    #sidebar-map-container .wcfmmp-store-list-map {
+                        height: 100% !important;
+                        filter: grayscale(1) opacity(0.8) contrast(1.2);
+                        transition: filter 0.3s ease;
+                    }
+                    #sidebar-map-container:hover .wcfmmp-store-list-map {
+                        filter: grayscale(0.5) opacity(1) contrast(1);
+                    }
+                    /* Hide default leaflet controls to look like the mock-up */
+                    #sidebar-map-container .leaflet-control-container,
+                    #sidebar-map-container .leaflet-top, 
+                    #sidebar-map-container .leaflet-bottom {
+                        display: none !important;
+                    }
+                </style>
+            </div>
+        `;
+        
+        sidebar.appendChild(mapCard);
+        
+        // Move the WCFM map into our new container
+        document.getElementById('sidebar-map-container').appendChild(wcfmMap);
+        
+        // Trigger resize so Leaflet redraws correctly in the new container
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+            if(window.wcfmmp_store_map) {
+                try {
+                    window.wcfmmp_store_map.invalidateSize();
+                } catch(e) {}
+            }
+        }, 500);
+    }
+});
+</script>

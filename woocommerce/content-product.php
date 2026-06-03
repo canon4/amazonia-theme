@@ -28,7 +28,7 @@ if ( ! is_a( $product, WC_Product::class ) || ! $product->is_visible() ) {
     <div class="aspect-square relative overflow-hidden bg-background-light">
         <a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="block w-full h-full">
             <?php 
-            echo $product->get_image( 'woocommerce_thumbnail', array( 'class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500' ) ); 
+            echo $product->get_image( 'amazonia-product-card', array( 'class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500' ) ); 
             ?>
         </a>
         <?php if ( $product->is_on_sale() ) : ?>
@@ -37,7 +37,7 @@ if ( ! is_a( $product, WC_Product::class ) || ! $product->is_visible() ) {
             </div>
         <?php endif; ?>
         
-        <button class="absolute top-3 right-3 h-8 w-8 bg-white/90 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+        <button class="amazonia-favorite-btn absolute top-3 right-3 h-8 w-8 bg-white/90 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors z-10" data-product-id="<?php echo esc_attr( $product->get_id() ); ?>">
             <span class="material-symbols-outlined text-[18px]">favorite</span>
         </button>
     </div>
