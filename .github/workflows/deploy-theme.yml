@@ -25,6 +25,9 @@ jobs:
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
           echo "  UserKnownHostsFile /dev/null" >> ~/.ssh/config
 
+      - name: Instalar rsync
+        run: sudo apt-get install -y rsync
+
       - name: Copiar tema al servidor
         run: |
           rsync -avz --delete \
