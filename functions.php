@@ -59,8 +59,9 @@ function amazonia_theme_scripts() {
 	// Tailwind CSS compilado localmente (sin JS runtime, sin CDN)
 	wp_enqueue_style( 'amazonia-tailwind', get_template_directory_uri() . '/assets/css/tailwind.css', array(), '1.0.0' );
 
-	// Google Fonts & Material Symbols (self-hosted en assets/fonts/ — ver main.css)
-	// Temporalmente se mantiene el CDN como fallback hasta que los .woff2 estén descargados
+	// Material Symbols — se mantiene en CDN; el icon font pesa 3.8 MB completo y Google lo sirve subsetteado.
+	// Work Sans, Inter y Outfit son self-hosted en assets/fonts/ (ver main.css).
+	wp_enqueue_style( 'material-symbols', 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block', array(), null );
 
 	// Enqueue main stylesheet (style.css fallback)
 	wp_enqueue_style( 'amazonia-theme-style', get_stylesheet_uri(), array(), '1.0.0' );
