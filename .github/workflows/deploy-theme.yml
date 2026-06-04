@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
-
       - name: Configurar SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -25,21 +22,7 @@ jobs:
           echo "  StrictHostKeyChecking no" >> ~/.ssh/config
           echo "  UserKnownHostsFile /dev/null" >> ~/.ssh/config
 
-      - name: Copiar tema al servidor
-        run: |
-          rsync -avz --delete \
-            --exclude='.git' \
-            --exclude='*.rar' \
-            --exclude='*.zip' \
-            . \
-            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/amazonia-theme/
-
-      - name: Inyectar tema en el contenedor WordPress
+      - name: Deploy
         run: |
           ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
-            "docker cp /tmp/amazonia-theme/. wordpress_app:/var/www/html/wp-content/themes/amazonia-theme/ && \
-             docker exec wordpress_app chown -R www-data:www-data /var/www/html/wp-content/themes/amazonia-theme"
-
-      - name: Limpiar tmp del servidor
-        run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "rm -rf /tmp/amazonia-theme"
+            "cd /srv/wordpress/amazonia-theme && git pull origin main"
