@@ -9,25 +9,14 @@
 <head>
     <meta charset="<?php bloginfo('charset'); ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <?php 
-    // Esto es muy importante, carga todos los CSS y scripts de los plugins (incluido WCFM)
-    wp_head(); 
+    <?php
+    // Carga todos los CSS y scripts de WordPress, tema y plugins (incluido WCFM).
+    // Los estilos personalizados del dashboard se cargan desde:
+    // assets/css/wcfm-dashboard.css — encolado en functions.php
+    wp_head();
     ?>
-    <style>
-        /* Reseteamos los márgenes por defecto para que WCFM ocupe la pantalla completa */
-        body, html { 
-            margin: 0; 
-            padding: 0; 
-            min-height: 100vh; 
-            background: #f0f0f1; /* Color de fondo base sutil */
-        }
-        .wcfm_dashboard_wrapper { 
-            padding: 0; 
-            min-height: 100vh; 
-        }
-    </style>
 </head>
-<body <?php body_class(); ?>>
+<body <?php body_class('bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 antialiased selection:bg-primary/30'); ?>>
 
 <div class="wcfm_dashboard_wrapper">
     <?php
@@ -39,9 +28,6 @@
     ?>
 </div>
 
-<?php 
-// Esto carga los scripts del footer (vital para que los botones de WCFM funcionen)
-wp_footer(); 
-?>
+<?php wp_footer(); ?>
 </body>
 </html>

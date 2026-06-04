@@ -1,0 +1,105 @@
+/**
+ * WCFM Dashboard — Estilos personalizados del tema Amazonia
+ *
+ * Este archivo sobreescribe los estilos por defecto del plugin WCFM
+ * (wc-frontend-manager) para adaptarlos al diseño del tema.
+ *
+ * IMPORTANTE: No editar el CSS del plugin directamente — se pierde en cada
+ * actualización. Todos los overrides van aquí.
+ *
+ * Plantilla que lo usa: template-wcfm-dashboard.php
+ * Se encola en: functions.php → amazonia_enqueue_wcfm_dashboard_styles()
+ */
+
+/* ─── Variables de marca ─────────────────────────────────────────── */
+:root {
+    --wcfm_primary_color:       #2F5C3E;
+    --wcfm_primary_color_hover: #1f3d29;
+    --wcfm_text_color:          #1e293b;
+}
+
+/* ─── Reset base ─────────────────────────────────────────────────── */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    min-height: 100dvh;
+}
+
+/* ─── Wrapper principal ──────────────────────────────────────────── */
+.wcfm_dashboard_wrapper {
+    width: 100%;
+    min-height: 100dvh;
+}
+
+/* ─── Botón "Volver a la Tienda" en el header de WCFM ───────────── */
+/*
+ * Inyectado via hook wcfm_before_header_panel_item en functions.php.
+ * El header tiene fondo #1C2B36 y altura 66px.
+ * .wcfm_header_panel a ya aporta: color #fff, margin-top 15px, font-size 13px.
+ * Aquí solo agregamos la forma de pill y el hover.
+ */
+a.wcfm_header_back_to_store {
+    display:         inline-flex !important;
+    align-items:     center;
+    gap:             6px;
+    margin-top:      18px !important;
+    margin-left:     0 !important;
+    margin-right:    12px;
+    padding:         5px 14px !important;
+    border:          1.5px solid rgba(0, 0, 0, 0.25);
+    border-radius:   999px;
+    font-size:       12px !important;
+    font-weight:     600;
+    letter-spacing:  0.02em;
+    color:           #000 !important;
+    text-decoration: none !important;
+    background:      rgba(0, 0, 0, 0.06);
+    transition:      background 0.2s ease, border-color 0.2s ease;
+    line-height:     1;
+}
+
+a.wcfm_header_back_to_store:hover {
+    background:    rgba(0, 0, 0, 0.12);
+    border-color:  rgba(0, 0, 0, 0.5);
+}
+
+a.wcfm_header_back_to_store i.wcfmfa {
+    margin-top: 0 !important;
+    font-size:  12px;
+}
+
+/* ─── Override WCFM: #wcfm-main-content ─────────────────────────── */
+/*
+ * El plugin define max-width: 1600px y margin: 0 auto en su archivo
+ * wc-frontend-manager/templates/classic/template-style.css
+ * Aquí lo anulamos para que ocupe el 100% del ancho disponible.
+ */
+#wcfm-main-content {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+/* ─── Override WCFM: #wcfm-main-contentainer ────────────────────── */
+/*
+ * Efecto glassmorphism para el contenedor principal del dashboard.
+ * El modo oscuro se activa cuando el <body> tiene la clase .dark
+ * (manejado por Tailwind en el tema).
+ */
+#wcfm-main-contentainer {
+    background:     rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(20px);
+    border-radius:  24px !important;
+    box-shadow:     0 10px 40px -10px rgba(0, 0, 0, 0.05),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+    border:         1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark #wcfm-main-contentainer {
+    background:  rgba(15, 23, 42, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    box-shadow:  0 10px 40px -10px rgba(0, 0, 0, 0.5),
+                 inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}

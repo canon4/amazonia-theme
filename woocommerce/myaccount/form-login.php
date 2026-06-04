@@ -43,19 +43,22 @@ main#primary,
 	width: 100% !important;
 }
 
-body {
+body,
+html {
 	margin: 0;
 	padding: 0;
-	background-color: #f6f8f6; 
+	height: 100%;
+	overflow: hidden;
+	background-color: #f6f8f6;
 }
 </style>
 
 <?php do_action( 'woocommerce_before_customer_login_form' ); ?>
 
-<div class="min-h-screen w-full flex flex-col lg:flex-row bg-white dark:bg-slate-900" id="customer_login">
+<div class="w-full flex flex-col lg:flex-row bg-white dark:bg-slate-900" id="customer_login" style="height:100vh;overflow:hidden;">
 
 	<!-- Left Side: Image / Branding (Hidden on small screens) -->
-	<div class="hidden lg:flex lg:w-5/12 xl:w-1/2 relative flex-col justify-between overflow-hidden bg-slate-900">
+	<div class="hidden lg:flex lg:w-5/12 xl:w-1/2 relative flex-col justify-between overflow-hidden bg-slate-900" style="height:100vh;">
 		<div class="absolute inset-0 z-0">
 			<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_j6ErCDkwbEdYp9Q1sGPnpTM3ydBN291StZX9oPUDId6IhpaKQxrBm2MG2ziGJQLy2iwxlJfh8LSgZ-WeJf-h5iA-cd6cphz2ls2ogwXffrZdcggDaQtMwR8QvKYE5ceOs71iYlTuClyoyRgUJqItga_Fc8O0pyzl67oeLFu0LUcWa4Mn2ciQgsWs-nXKDFnpC3os_LNzu6mbhHGTEopssvW6y9T6QhDNtJXdk0gBNWYw1UZt1NXc3Hfh-HupmO4CLnDmhYtKhs" 
 				 alt="Selva Amazónica" class="w-full h-full object-cover opacity-80" />
@@ -84,8 +87,17 @@ body {
 	</div>
 
 	<!-- Right Side: Forms Container -->
-	<div class="w-full lg:w-7/12 xl:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-16 relative overflow-y-auto">
-		
+	<div class="w-full lg:w-7/12 xl:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-16 relative overflow-y-auto" style="height:100vh;">
+
+		<!-- Botón volver a la tienda -->
+		<div class="absolute top-6 right-6 z-20">
+			<a href="<?php echo esc_url( home_url( '/' ) ); ?>"
+			   class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-primary transition-colors duration-200 group">
+				<span class="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform duration-200">storefront</span>
+				Volver a la tienda
+			</a>
+		</div>
+
 		<!-- Mobile Logo (only shows on mobile) -->
 		<div class="absolute top-6 left-6 lg:hidden flex items-center gap-2 text-primary z-20">
 			<span class="material-symbols-outlined text-3xl font-bold">eco</span>
@@ -165,6 +177,19 @@ body {
 				</form>
 			</div>
 
+			<!-- Vendor Registration CTA -->
+			<div class="mt-8 pt-8 border-t border-primary/10 text-center">
+				<p class="text-sm text-slate-500 dark:text-slate-400 mb-3">
+					¿Quieres vender en Amazonia Market?
+				</p>
+				<a href="<?php echo esc_url( home_url( '/vendor-register' ) ); ?>"
+				   class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-300 group">
+					<span class="material-symbols-outlined text-[18px]">storefront</span>
+					Regístrate como Vendedor
+					<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+				</a>
+			</div>
+
 <?php if ( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) : ?>
 
 			<div class="u-column2 col-2 hidden w-full animate-fade-in" id="register-form">
@@ -232,6 +257,19 @@ body {
 
 				</form>
 
+			</div>
+
+			<!-- Vendor Registration CTA -->
+			<div class="mt-8 pt-8 border-t border-primary/10 text-center">
+				<p class="text-sm text-slate-500 dark:text-slate-400 mb-3">
+					¿Quieres vender en Amazonia Market?
+				</p>
+				<a href="<?php echo esc_url( home_url( '/vendor-register' ) ); ?>"
+				   class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-300 group">
+					<span class="material-symbols-outlined text-[18px]">storefront</span>
+					Regístrate como Vendedor
+					<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+				</a>
 			</div>
 
 <?php endif; ?>

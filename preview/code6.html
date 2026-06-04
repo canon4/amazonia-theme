@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fluid Product Storytelling Experience</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'amazon-primary': '#13ec37',
+            'amazon-dark': '#102213',
+            'amazon-bg': '#f6f8f6',
+            'amazon-slate-900': '#0f172a',
+            'amazon-slate-600': '#475569',
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          borderRadius: {
+            'amazon-round': '2rem',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #ffffff;
+      overflow-x: hidden;
+    }
+    
+    /* Custom wavy background shapes */
+    .wave-bg {
+      position: absolute;
+      width: 100%;
+      height: 400px;
+      z-index: -1;
+      opacity: 0.8;
+    }
+
+    .wave-1 {
+      top: 300px;
+      left: -10%;
+      transform: rotate(-5deg);
+    }
+
+    .wave-2 {
+      top: 600px;
+      right: -10%;
+      transform: rotate(3deg);
+    }
+
+    .card-shadow {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .overlap-card {
+      z-index: 20;
+    }
+
+    .green-accent-text {
+      color: #2d5a27; /* Darker green for readability on titles */
+    }
+  </style>
+</head>
+<body class="font-sans text-amazon-slate-900">
+<!-- BEGIN: MainContainer -->
+<main class="max-w-[768px] mx-auto bg-white min-h-screen relative overflow-hidden pb-24">
+<!-- BEGIN: PageHeader -->
+<header class="pt-12 pb-8 px-6 text-center" data-purpose="header">
+<h1 class="text-4xl md:text-5xl font-bold green-accent-text leading-tight">
+        Fluid Product<br/>Storytelling Experience
+      </h1>
+</header>
+<!-- END: PageHeader -->
+<!-- BEGIN: HeroSection -->
+<section class="px-6 mb-16" data-purpose="hero-image-container">
+<div class="rounded-amazon-round overflow-hidden shadow-xl">
+<img alt="Cacao Beans" class="w-full h-80 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsss2-hE7p7IfymwxIkCuiy6H49tluJHKyIlEFmidLX-3qqTTXDfjse7UbRR2dMhWPiFyEgDH0eKXgt7m-lgUhg8MMxEul93sKu0apjx7wMfZW3s5C0Chuf4QeGeOLnYrOGeOF-yBeqzpImCxoOnhvAOntV_YjH3qAKTUYzUU_JSDAlUCwnhBSmoSRNqqCQeZ28k797nqabuN7q8zXaFaBm9G1gmc1e5-vzLEXCZzm0oVqWx9S7O75zD-4cZ1g1JetHwKFz3i_fLBq"/>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: WavyGraphicDecorations -->
+<svg class="wave-bg wave-1" viewbox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+<path d="M0,192L80,176C160,160,320,128,480,144C640,160,800,224,960,229.3C1120,235,1280,181,1360,154.7L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z" fill="#13ec37" fill-opacity="0.2"></path>
+</svg>
+<!-- END: WavyGraphicDecorations -->
+<!-- BEGIN: OriginSection -->
+<section class="relative px-6 mb-32" data-purpose="origin-section">
+<div class="flex items-center justify-between mb-6">
+<h2 class="text-3xl font-semibold green-accent-text ml-12">The Origin</h2>
+</div>
+<div class="relative">
+<!-- Main Image -->
+<div class="ml-auto w-3/4 rounded-amazon-round overflow-hidden shadow-lg">
+<img alt="Amazonian Community" class="w-full h-64 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDe440MFsT8nOopRFOyFtIQZ0z2Nu5XfBvZSOFiX7UDJKdM4y03T7ONRv730DRRjVhdI6q4Vqd2mAMdl4qL9Q-TNpdSAwOZqvIB_Obqdq_-NUYZSkb-jWWfYhpolTmsVKqRRzwF6Q69Wa4LdmYY_FY7mYCLyHWN_53Y16kPjXO2QlxfqFzPTqDy0Qr-fV5afplbaFRMzs1VCAoZdxc6-vXspBcoCf6eJLfGHzz1EqVdI7jUqno9Tk6bNXgDwt1RdQAVyRlkc64-KrCJ"/>
+</div>
+<!-- Overlapping Text Card -->
+<div class="absolute top-1/2 -translate-y-1/2 left-0 w-3/5 bg-white p-6 rounded-2xl card-shadow overlap-card border-l-4 border-amazon-primary">
+<h3 class="font-bold text-lg mb-2">El Origen y Proceso:</h3>
+<p class="text-sm text-amazon-slate-600 leading-relaxed">
+            Esta collar es una expresión cultural de comunidades afrodescendientes del Caquetá. Está elaborado con semillas recolectadas de forma sostenible en la selva amazónica, respetando los ciclos naturales. Cada semilla tiene un significado...
+          </p>
+</div>
+</div>
+</section>
+<!-- END: OriginSection -->
+<!-- BEGIN: MakerSection -->
+<section class="relative px-6 mb-32" data-purpose="maker-section">
+<div class="flex items-center justify-end mb-6">
+<h2 class="text-3xl font-semibold green-accent-text mr-12">The Maker</h2>
+</div>
+<div class="relative">
+<!-- Main Image -->
+<div class="mr-auto w-3/4 rounded-amazon-round overflow-hidden shadow-lg">
+<img alt="Artisan at work" class="w-full h-64 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVlKkEKO5hp2PcntofEYqNKrKosTdw8vEhy2FItjLlLAswXeapCAhKCHfPjzqQ6CQctZ2sIvR_eP1P4RsAnt6Wt4yxLzRBieSaQiViUu4Vuzp__VYTKTTixMHb86bu1AthAnlUnm8n29ITqCNkUSF8xuVpkMLYE-DUgDwmdbAWEVLpCHf0zyI8yD1RPQ6d7iyR0Pg0Mrnu2lKqBVa86_4JgsBzR2xqseqyVS3Hge-omHdtWle3m8h2SvQmldQkT6rDRMsIerh0WHWO"/>
+</div>
+<!-- Overlapping Profile Card -->
+<div class="absolute top-1/2 -translate-y-1/2 right-0 w-[65%] bg-white p-5 rounded-2xl card-shadow overlap-card">
+<div class="flex items-center gap-4 mb-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-gray-100">
+<!-- Placeholder for Artisan Profile -->
+<img alt="Tienda Mana" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-fKWoqhNrHRVXcDKIag5OFpDt5VcacZrO-Mn7fN0qu4vestmVZz9jme42PnPhlI3ZrCKTsGEUe1Q52Xg-966hWFhWxbBX1BalPJmHuTjPde69fcvW9cNwf22DfucOKCJXB6WvpzemDPzTg7R7upz9ERfQ8S_yeqgTmQr-_4rlY-zoajWSExwWp7zGanulBJhfnlPGt909KzulmYIQP4GOFxuDOFCDdMwWx3tSaHTWgWF8N9HHBIsAufxQzk6UKaISUG201MsiEcHy"/>
+</div>
+<div>
+<h4 class="font-bold text-lg">Tienda Mana</h4>
+<p class="text-xs text-amazon-slate-600">Florencia, CO</p>
+</div>
+</div>
+<p class="italic text-amazon-slate-600 mb-3">"Es una tienda de Artesanías"</p>
+<a class="text-amazon-primary font-bold text-sm hover:underline flex items-center" href="#">
+            Ver Comunidad <span class="ml-1 text-lg">+</span>
+</a>
+</div>
+</div>
+</section>
+<!-- END: MakerSection -->
+<!-- BEGIN: LandSection -->
+<section class="relative px-6" data-purpose="land-section">
+<!-- Wavy Background Bottom -->
+<svg class="wave-bg wave-2" viewbox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+<path d="M0,64L48,80C96,96,192,128,288,144C384,160,480,160,576,144C672,128,768,96,864,106.7C960,117,1056,171,1152,181.3C1248,192,1344,160,1392,144L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z" fill="#13ec37" fill-opacity="0.3"></path>
+</svg>
+<div class="flex items-center justify-start mb-6">
+<h2 class="text-3xl font-semibold green-accent-text ml-12">The Land</h2>
+</div>
+<div class="bg-white rounded-3xl overflow-hidden shadow-2xl p-2 max-w-lg mx-auto border border-gray-100">
+<div class="grid grid-cols-2 gap-2 h-64">
+<!-- Left: Map Component -->
+<div class="relative bg-blue-50 rounded-2xl overflow-hidden" data-purpose="map-ui">
+<img alt="Map" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeAxGryTn4QoFQauZqmJMWVGWXqkNqA_Sijho8qyGJfRXis0AE69sWe7yrc6d5wYE9es89BzAhNBKkAp10TUUDyJ4qwIBs96Whm8bkvIrM7ooLXEgPy1LYSrhHFa6q3Pu47eGWEfMXrAfcNPU2IR3ktc9hKMr7N6gzuit-Wo4VuaMkW5NRp-_JHITZb69xjYbZBhlNvkdLu3mcG2GDfopYlFVTGHKtG8yJwDmIcEuTyHi28FReAJUtilo0i69OnaZgeVBcTGKFH8w3"/>
+<div class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold shadow-sm">
+              Florencia, CO
+            </div>
+<!-- Zoom Controls UI -->
+<div class="absolute bottom-4 right-2 flex flex-col gap-1">
+<button class="w-6 h-6 bg-white rounded shadow text-xs">+</button>
+<button class="w-6 h-6 bg-white rounded shadow text-xs">-</button>
+</div>
+</div>
+<!-- Right: Landscape Image -->
+<div class="relative rounded-2xl overflow-hidden">
+<img alt="Amazon Landscape" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHg_g8Ux_hM1uAa0VCCjHkWPRjVTidC2YWZFo5uDNeFNui-AppQJlSut0DkaNW-Tz7BVUhf43aiFOXWPU1Zsicdh4l9ziThr4W6ZGIQ73f6gckMMkjCGkWN_xvaiRHTsIeRbTChS2DnB0dmPLvbQtl1q0SSby7JIvxOrONgokg-cs2p8L6kZyIoKXBG6NuDmw6jtqgNCmFCXJqObkhMxWvezvnFYHueEIqmi1Wz0pGBLPLBeiN_22VzSN83kTI-PlBHQrxGkcTJDgd"/>
+<button class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1 text-[10px] font-bold whitespace-nowrap">
+<svg class="h-3 w-3 text-amazon-primary" fill="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+              Abrir en Maps
+            </button>
+</div>
+</div>
+<div class="p-4">
+<h4 class="font-bold text-lg text-amazon-dark">Su Territorio</h4>
+</div>
+</div>
+</section>
+<!-- END: LandSection -->
+</main>
+<!-- END: MainContainer -->
+</body></html>
