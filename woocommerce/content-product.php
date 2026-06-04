@@ -28,7 +28,7 @@ if ( ! is_a( $product, WC_Product::class ) || ! $product->is_visible() ) {
     <div class="aspect-square relative overflow-hidden bg-background-light">
         <a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="block w-full h-full">
             <?php 
-            echo $product->get_image( 'amazonia-product-card', array( 'class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500' ) ); 
+            echo $product->get_image( 'amazonia-product-card', array( 'class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500', 'loading' => 'lazy' ) );
             ?>
         </a>
         <?php if ( $product->is_on_sale() ) : ?>

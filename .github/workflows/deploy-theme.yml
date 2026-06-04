@@ -8,9 +8,33 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - run: ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd /srv/wordpress/amazonia-theme && git pull origin main"
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copiar tema al servidor
+        run: |
+          rsync -avz --delete \
+            --exclude='.git' \
+            --exclude='*.rar' \
+            --exclude='*.zip' \
+            . \
+            ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/tmp/amazonia-theme/
+
+      - name: Inyectar tema en el contenedor WordPress
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} \
+            "docker cp /tmp/amazonia-theme/. wordpress_app:/var/www/html/wp-content/themes/amazonia-theme/ && \
+             docker exec wordpress_app chown -R www-data:www-data /var/www/html/wp-content/themes/amazonia-theme"
+
+      - name: Limpiar tmp del servidor
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "rm -rf /tmp/amazonia-theme"

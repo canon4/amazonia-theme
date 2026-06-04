@@ -1,0 +1,363 @@
+/*
+ * Community Admin Panel — Amazonia Theme
+ */
+
+/* ─── Layout ─────────────────────────────────────────────────── */
+.ca-wrap {
+  min-height: 100vh;
+  background: #f6f8f6;
+  font-family: 'Inter', sans-serif;
+}
+
+.ca-header {
+  background: #0f172a;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ca-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4ade80;
+  font-weight: 800;
+  font-size: 1.125rem;
+  text-decoration: none;
+}
+
+.ca-header-logo .material-symbols-outlined { font-size: 24px; }
+
+.ca-header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  color: #94a3b8;
+}
+
+.ca-header-user a {
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.ca-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ─── Bienvenida / Hero ───────────────────────────────────────── */
+.ca-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.ca-hero-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(74,222,128,.3);
+  flex-shrink: 0;
+}
+
+.ca-hero-logo-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(74,222,128,.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #4ade80;
+}
+
+.ca-hero-logo-placeholder .material-symbols-outlined { font-size: 36px; }
+
+.ca-hero-info h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-family: 'Outfit', sans-serif;
+  color: #0f172a;
+}
+
+.ca-hero-meta {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin-top: 0.375rem;
+}
+
+.ca-hero-meta span { display: flex; align-items: center; gap: 0.25rem; }
+.ca-hero-meta .material-symbols-outlined { font-size: 15px; color: #4ade80; }
+
+/* ─── Métricas ────────────────────────────────────────────────── */
+.ca-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.ca-metric-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.ca-metric-card .ca-metric-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 0.5rem;
+  background: rgba(74,222,128,.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4ade80;
+  margin-bottom: 0.5rem;
+}
+
+.ca-metric-card .ca-metric-icon .material-symbols-outlined { font-size: 20px; }
+.ca-metric-value { font-size: 1.75rem; font-weight: 800; color: #0f172a; }
+.ca-metric-label { font-size: 0.8125rem; color: #64748b; }
+
+/* ─── Grid de secciones ───────────────────────────────────────── */
+.ca-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .ca-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── Tarjetas de sección ─────────────────────────────────────── */
+.ca-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.ca-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.ca-card-header h2 {
+  margin: 0;
+  font-size: 1rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.ca-card-header .material-symbols-outlined { font-size: 20px; color: #4ade80; }
+
+.ca-card-body { padding: 1.5rem; }
+
+/* ─── Lista de tiendas ────────────────────────────────────────── */
+.ca-store-list { list-style: none; margin: 0; padding: 0; }
+
+.ca-store-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.ca-store-item:last-child { border-bottom: none; }
+
+.ca-store-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  background: rgba(74,222,128,.08);
+  flex-shrink: 0;
+}
+
+.ca-store-avatar-placeholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 0.5rem;
+  background: rgba(74,222,128,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #4ade80;
+}
+
+.ca-store-info { flex: 1; min-width: 0; }
+.ca-store-name { font-weight: 600; font-size: 0.9rem; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ca-store-email { font-size: 0.75rem; color: #94a3b8; }
+
+.ca-store-link {
+  font-size: 0.75rem;
+  color: #4ade80;
+  text-decoration: none;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ca-store-link:hover { text-decoration: underline; }
+
+.ca-empty {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #94a3b8;
+  font-size: 0.875rem;
+}
+
+.ca-empty .material-symbols-outlined { font-size: 40px; display: block; margin-bottom: 0.5rem; opacity: .5; }
+
+/* ─── Formularios ─────────────────────────────────────────────── */
+.ca-form { display: flex; flex-direction: column; gap: 1rem; }
+
+.ca-field label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.375rem;
+}
+
+.ca-field input[type="text"],
+.ca-field input[type="email"] {
+  width: 100%;
+  padding: 0.6875rem 0.875rem;
+  background: rgba(74,222,128,.05);
+  border: 1px solid rgba(74,222,128,.2);
+  border-radius: 0.625rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  color: #1e293b;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.ca-field input:focus {
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74,222,128,.12);
+}
+
+.ca-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.ca-btn {
+  width: 100%;
+  padding: 0.8125rem 1.5rem;
+  background: #4ade80;
+  color: #fff;
+  border: none;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .2s, transform .15s, box-shadow .2s;
+  box-shadow: 0 4px 12px rgba(74,222,128,.25);
+}
+
+.ca-btn:hover { background: #22c55e; transform: scale(1.01); }
+.ca-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+/* ─── Búsqueda de vendedores ──────────────────────────────────── */
+.ca-search-results {
+  margin-top: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  display: none;
+}
+
+.ca-search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.875rem;
+  gap: 0.75rem;
+}
+
+.ca-search-result-item:last-child { border-bottom: none; }
+
+.ca-search-result-info { flex: 1; min-width: 0; }
+.ca-search-result-store { font-weight: 600; color: #1e293b; }
+.ca-search-result-email { font-size: 0.75rem; color: #94a3b8; }
+.ca-search-result-taken { font-size: 0.7rem; color: #ef4444; font-weight: 600; }
+
+.ca-link-btn {
+  padding: 0.375rem 0.875rem;
+  background: transparent;
+  border: 1.5px solid #4ade80;
+  border-radius: 9999px;
+  color: #4ade80;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+  flex-shrink: 0;
+}
+
+.ca-link-btn:hover { background: #4ade80; color: #fff; }
+.ca-link-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ─── Feedback ────────────────────────────────────────────────── */
+.ca-feedback {
+  padding: 0.75rem 1rem;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: none;
+  margin-top: 0.75rem;
+}
+
+.ca-feedback.success {
+  background: rgba(74,222,128,.1);
+  border: 1px solid rgba(74,222,128,.3);
+  color: #15803d;
+}
+
+.ca-feedback.error {
+  background: rgba(239,68,68,.08);
+  border: 1px solid rgba(239,68,68,.2);
+  color: #dc2626;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .ca-hero { flex-direction: column; text-align: center; }
+  .ca-hero-meta { justify-content: center; }
+  .ca-field-row { grid-template-columns: 1fr; }
+  .ca-container { padding: 1.25rem 1rem; }
+}
