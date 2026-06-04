@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="https://gmpg.org/xfn/11">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://lh3.googleusercontent.com">
     <?php wp_head(); ?>
 </head>
 <body <?php body_class('bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100'); ?>>

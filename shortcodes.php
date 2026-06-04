@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Shortcode to display WCFM communities (vendors)
+ * Shortcode para mostrar comunidades desde el CPT 'comunidad'.
  * Usage: [amazonia_communities per_page="12"]
  */
 function amazonia_communities_shortcode( $atts ) {
@@ -18,64 +18,35 @@ function amazonia_communities_shortcode( $atts ) {
 
     ob_start();
 
-    // Ensure WCFM functions exist
-    if ( ! function_exists( 'wcfm_get_vendor_store_name' ) ) {
-        echo '<p class="text-red-500">WCFM is not active or correctly configured.</p>';
-        return ob_get_clean();
-    }
-
-    $vendors = get_users( array(
-        'role'    => 'wcfm_vendor',
-        'orderby' => 'registered',
-        'order'   => 'DESC',
-        'number'  => intval( $atts['per_page'] ),
+    $query = new WP_Query( array(
+        'post_type'      => 'comunidad',
+        'post_status'    => 'publish',
+        'posts_per_page' => intval( $atts['per_page'] ),
+        'orderby'        => 'title',
+        'order'          => 'ASC',
     ) );
 
-    if ( empty( $vendors ) ) {
-        echo '<p class="text-gray-500">No se encontraron comunidades en este momento.</p>';
+    if ( ! $query->have_posts() ) {
+        echo '<p class="text-gray-500 text-center py-10">No se encontraron comunidades en este momento.</p>';
         return ob_get_clean();
     }
 
     echo '<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-8">';
 
-    foreach ( $vendors as $vendor ) {
-        $vendor_id = $vendor->ID;
-        $store_name = wcfm_get_vendor_store_name( $vendor_id );
-        $logo_url   = wcfm_get_vendor_store_logo_by_vendor( $vendor_id );
-        
-        if ( ! $logo_url ) {
-            // Fallback placeholder
-            $logo_url = function_exists('wc_placeholder_img_src') ? wc_placeholder_img_src() : '';
-        }
-        
-        $store_info = get_user_meta( $vendor_id, 'wcfmmp_profile_settings', true );
-        
-        // Location processing
-        $city = isset($store_info['address']['city']) ? $store_info['address']['city'] : '';
-        $country = isset($store_info['address']['country']) ? $store_info['address']['country'] : '';
-        $state = isset($store_info['address']['state']) ? $store_info['address']['state'] : '';
-        
-        $location_parts = array_filter( array( $city, $country ) );
-        $location = ! empty( $location_parts ) ? implode( ', ', $location_parts ) : 'Ubicación no especificada';
-        
-        // Description
-        $description = isset($store_info['shop_description']) ? wp_strip_all_tags($store_info['shop_description']) : '';
-        if ( empty($description) ) {
-            $description = 'Es una tienda de Artesanías de nuestra comunidad.';
-        } else {
-            // Trim description if it's too long
-            $description = wp_trim_words( $description, 18, '...' );
-        }
-        
-        $store_url = function_exists('wcfmmp_get_store_url') ? wcfmmp_get_store_url( $vendor_id ) : get_author_posts_url( $vendor_id );
-        
-        // Get Vendor Category (Badge)
-        $badge_text = 'Productor Local'; // Fallback
-        $vendor_categories = wp_get_object_terms( $vendor_id, 'wcfm_vendor_category' );
-        if ( ! is_wp_error( $vendor_categories ) && ! empty( $vendor_categories ) ) {
-            $badge_text = $vendor_categories[0]->name;
-        }
+    while ( $query->have_posts() ) :
+        $query->the_post();
+        $community_id = get_the_ID();
+        $data         = amazonia_get_community_data( $community_id );
+        $num_stores   = count( amazonia_get_community_vendors( $community_id ) );
 
+        $nombre      = $data['nombre'];
+        $logo_url    = $data['logo'];
+        $descripcion = $data['descripcion']
+            ? wp_trim_words( $data['descripcion'], 18, '...' )
+            : __( 'Comunidad amazónica con productos sostenibles.', 'amazonia-theme' );
+        $categoria   = $data['categoria'] ?: __( 'Comunidad', 'amazonia-theme' );
+        $location    = implode( ', ', array_filter( [ $data['municipio'], $data['departamento'], $data['pais'] ] ) );
+        $url         = get_permalink( $community_id );
         ?>
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between hover:shadow-md transition-shadow duration-300">
             <div>
@@ -83,36 +54,54 @@ function amazonia_communities_shortcode( $atts ) {
                     <!-- Logo -->
                     <div class="w-20 h-20 shrink-0 rounded-full border-2 border-green-200 overflow-hidden flex items-center justify-center bg-gray-50">
                         <?php if ( $logo_url ) : ?>
-                            <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $store_name ); ?>" class="w-full h-full object-cover m-0">
+                            <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $nombre ); ?>" class="w-full h-full object-cover m-0" loading="lazy" width="80" height="80">
+                        <?php else : ?>
+                            <span class="material-symbols-outlined text-green-400 text-4xl">groups</span>
                         <?php endif; ?>
                     </div>
                     <!-- Info -->
                     <div class="flex flex-col">
-                        <span class="text-green-500 font-bold text-[10px] sm:text-xs tracking-widest uppercase mb-1"><?php echo esc_html( $badge_text ); ?></span>
-                        <h3 class="text-xl sm:text-2xl font-bold text-[#0A2640] leading-tight mb-1 m-0"><?php echo esc_html( $store_name ); ?></h3>
+                        <span class="text-green-500 font-bold text-[10px] sm:text-xs tracking-widest uppercase mb-1">
+                            <?php echo esc_html( $categoria ); ?>
+                        </span>
+                        <h3 class="text-xl sm:text-2xl font-bold text-[#0A2640] leading-tight mb-1 m-0">
+                            <?php echo esc_html( $nombre ); ?>
+                        </h3>
+                        <?php if ( $location ) : ?>
                         <div class="flex items-center text-gray-500 text-sm gap-1">
                             <span class="material-symbols-outlined text-[1rem]">location_on</span>
-                            <span class="capitalize"><?php echo esc_html( strtolower($location) ); ?></span>
+                            <span class="capitalize"><?php echo esc_html( strtolower( $location ) ); ?></span>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
-                
+
                 <div class="text-[#333333] italic mt-5 text-sm md:text-base leading-relaxed">
-                    "<?php echo esc_html( $description ); ?>"
+                    "<?php echo esc_html( $descripcion ); ?>"
+                </div>
+
+                <!-- Número de tiendas -->
+                <div class="flex items-center gap-1.5 mt-4 text-xs text-gray-400 font-medium">
+                    <span class="material-symbols-outlined text-[14px] text-green-400">storefront</span>
+                    <?php echo esc_html( sprintf(
+                        _n( '%d tienda', '%d tiendas', $num_stores, 'amazonia-theme' ),
+                        $num_stores
+                    ) ); ?>
                 </div>
             </div>
-            
+
             <div class="mt-6 pt-4 border-t border-gray-50">
-                <a href="<?php echo esc_url( $store_url ); ?>" class="inline-flex items-center font-bold text-green-500 hover:text-green-600 transition-colors group">
-                    Ver Comunidad 
+                <a href="<?php echo esc_url( $url ); ?>" class="inline-flex items-center font-bold text-green-500 hover:text-green-600 transition-colors group">
+                    <?php esc_html_e( 'Ver Comunidad', 'amazonia-theme' ); ?>
                     <span class="material-symbols-outlined text-sm ml-1 transform group-hover:translate-x-1 transition-transform">arrow_forward</span>
                 </a>
             </div>
         </div>
         <?php
-    }
+    endwhile;
+    wp_reset_postdata();
 
-    echo '</div>'; // End grid
+    echo '</div>';
 
     return ob_get_clean();
 }

@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileSearchContainer.classList.add('hidden');
         });
     }
-    }
 
     // Side Cart Toggle
     const sideCartToggle = document.getElementById('side-cart-toggle');

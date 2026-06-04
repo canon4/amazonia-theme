@@ -3,6 +3,43 @@
  * Targets WCFM Multivendor Membership plugin classes
  */
 
+/* ─── Campo: Código de invitación ──────────────────────────────── */
+
+.amazonia-invite-code-wrap {
+  margin-bottom: 1.5rem !important;
+  padding: 1.25rem !important;
+  background: linear-gradient(135deg, rgba(74,222,128,0.06) 0%, rgba(74,222,128,0.02) 100%) !important;
+  border: 1.5px solid rgba(74, 222, 128, 0.25) !important;
+  border-radius: 0.875rem !important;
+}
+
+.amazonia-invite-code-wrap .amazonia_invite_code_label {
+  margin-bottom: 0.5rem !important;
+  font-weight: 700 !important;
+  font-size: 0.875rem !important;
+  color: #1e293b !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.375rem !important;
+}
+
+.amazonia-invite-code-wrap #amazonia_invite_code {
+  font-family: 'Inter', monospace !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+}
+
+.amazonia-invite-hint {
+  margin-top: 0.5rem !important;
+  margin-bottom: 0 !important;
+  font-size: 0.75rem !important;
+  color: #64748b !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.25rem !important;
+}
+
 /* ─── Layout Reset ─────────────────────────────────────────── */
 
 #wcfm_membership_container {
