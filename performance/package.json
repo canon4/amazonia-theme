@@ -1,0 +1,20 @@
+{
+  "name": "amazonia-performance",
+  "version": "1.0.0",
+  "description": "Suite de análisis de rendimiento para Amazonia Theme",
+  "type": "module",
+  "scripts": {
+    "audit:static":     "node scripts/01-static-audit.js",
+    "audit:lighthouse": "node scripts/02-lighthouse.js",
+    "audit:network":    "node scripts/03-network-waterfall.js",
+    "audit:images":     "node scripts/04-image-audit.js",
+    "audit:all":        "node run-all.js"
+  },
+  "dependencies": {
+    "chalk":           "^5.3.0",
+    "chrome-launcher": "^1.1.2",
+    "glob":            "^10.4.1",
+    "lighthouse":      "^12.2.1",
+    "playwright":      "^1.44.0"
+  }
+}
