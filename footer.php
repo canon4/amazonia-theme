@@ -80,13 +80,13 @@
                         </h6>
                         <ul class="list-none p-0 m-0 flex flex-col gap-3.5">
                             <li>
-                                <a href="http://localhost/wordpress/?page_id=11&preview=true" class="text-[#d1fae5] text-sm no-underline transition-colors duration-200 inline-flex items-center gap-1.5 hover:text-[#4ade80]">
+                                <a href="http://localhost/wordpress/reembolso_devoluciones/" class="text-[#d1fae5] text-sm no-underline transition-colors duration-200 inline-flex items-center gap-1.5 hover:text-[#4ade80]">
                                     <span class="w-1 h-1 bg-primary rounded-full shrink-0"></span>
-                                    Política de Envíos
+                                    Política de Devoluciones y Reembolsos
                                 </a>
                             </li>
                             <li>
-                                <a href="http://localhost/wordpress/?page_id=3&preview=true" class="text-[#d1fae5] text-sm no-underline transition-colors duration-200 inline-flex items-center gap-1.5 hover:text-[#4ade80]">
+                                <a href="http://localhost/wordpress/politica-privacidad/" class="text-[#d1fae5] text-sm no-underline transition-colors duration-200 inline-flex items-center gap-1.5 hover:text-[#4ade80]">
                                     <span class="w-1 h-1 bg-primary rounded-full shrink-0"></span>
                                     Privacidad
                                 </a>
