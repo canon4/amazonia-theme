@@ -127,7 +127,12 @@ async function runLighthousePage(page) {
         runs.push(extractMetrics(runResult.lhr));
         process.stdout.write(` score=${runs[runs.length-1].score}\n`);
       } finally {
-        await chrome.kill();
+        // En Windows, Chrome puede retener bloqueos en archivos temp al cerrar.
+        // Se ignora el error EPERM y se da tiempo a que el proceso libere los handles.
+        try { await chrome.kill(); } catch (e) {
+          if (!e.message?.includes('EPERM') && !e.code?.includes('EPERM')) throw e;
+        }
+        await new Promise(r => setTimeout(r, 800));
       }
     }
 

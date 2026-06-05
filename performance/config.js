@@ -1,12 +1,3 @@
-/**
- * Configuración de la suite de rendimiento — Amazonia Theme
- *
- * ANTES DE CORRER LOS SCRIPTS:
- *  1. Confirma que BASE_URL coincide con tu entorno local.
- *  2. Reemplaza los slugs de product, community y store con URLs reales de tu sitio.
- *  3. Asegúrate de que XAMPP esté corriendo para los scripts que usan Playwright/Lighthouse.
- */
-
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -39,34 +30,37 @@ export const PAGES = [
   {
     id: 'shop',
     label: 'Tienda',
-    url: `${BASE_URL}/shop/`,
-    // ↑ Cambia a /tienda/ si WooCommerce está en español
+    url: `${BASE_URL}/tienda/`,
     priority: 'primary',
     requiresAuth: false,
   },
   {
     id: 'product',
-    label: 'Producto individual',
-    url: `${BASE_URL}/?p=REPLACE_WITH_PRODUCT_ID`,
-    // ↑ Reemplaza con la URL de cualquier producto real, ej: /producto/aceite-de-inchi/
+    label: 'Producto',
+    url: `${BASE_URL}/producto/cesteria-indigena-en-fibra-natural-canasto-amazonico/`,
     priority: 'primary',
     requiresAuth: false,
   },
   {
     id: 'checkout',
     label: 'Checkout',
-    url: `${BASE_URL}/checkout/`,
-    // ↑ Cambia a /finalizar-compra/ si aplica
+    url: `${BASE_URL}/finalizar-compra/`,
     priority: 'primary',
-    requiresAuth: true,
+    requiresAuth: true,   // requiere items en carrito
   },
 
   // ── Secundarias ──────────────────────────────────────────────
   {
+    id: 'communities',
+    label: 'Comunidades (lista)',
+    url: `${BASE_URL}/comunidades/`,
+    priority: 'secondary',
+    requiresAuth: false,
+  },
+  {
     id: 'community',
-    label: 'Comunidad',
-    url: `${BASE_URL}/comunidad/REPLACE_WITH_COMMUNITY_SLUG/`,
-    // ↑ Reemplaza con el slug de una comunidad real
+    label: 'Comunidad individual',
+    url: `${BASE_URL}/comunidad/embera-chami-puru/`,
     priority: 'secondary',
     requiresAuth: false,
   },
@@ -74,7 +68,7 @@ export const PAGES = [
     id: 'store',
     label: 'Perfil de tienda',
     url: `${BASE_URL}/store/REPLACE_WITH_VENDOR_SLUG/`,
-    // ↑ Reemplaza con el slug de un vendedor real
+    // ↑ Reemplaza con el slug de un vendedor real cuando lo tengas
     priority: 'secondary',
     requiresAuth: false,
   },
@@ -82,6 +76,13 @@ export const PAGES = [
     id: 'favorites',
     label: 'Favoritos',
     url: `${BASE_URL}/favoritos/`,
+    priority: 'secondary',
+    requiresAuth: false,
+  },
+  {
+    id: 'cart',
+    label: 'Carrito',
+    url: `${BASE_URL}/carrito/`,
     priority: 'secondary',
     requiresAuth: false,
   },
