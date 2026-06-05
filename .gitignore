@@ -1,1 +1,23 @@
 node_modules/
+
+# Build tools (no van al repo)
+package.json
+package-lock.json
+
+# Claude Code / agentes IA
+.agents/
+.claude/
+skills-lock.json
+context.md
+CLAUDE.md
+
+# Archivos de prototipado local
+preview/
+
+# Backups automáticos de editores de traducción
+languages/*.po~
+languages/*.po.bak
+
+# Documentos binarios (usar solo los .md equivalentes)
+docs/*.docx
+docs/*.exe
