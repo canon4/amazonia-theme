@@ -15,11 +15,11 @@
 <div id="page" class="site">
 
     <header id="masthead" class="site-header sticky top-0 z-50 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/10 px-4 md:px-10 lg:px-20 py-3">
-        <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-8">
-            <div class="flex items-center gap-8">
+        <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-4 md:gap-8">
+            <div class="flex items-center gap-4 md:gap-8">
                 <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="flex items-center gap-2 text-primary no-underline">
                     <span class="material-symbols-outlined text-3xl font-bold">eco</span>
-                    <h2 class="text-slate-900 dark:text-slate-100 text-xl font-black leading-tight tracking-tight m-0"><?php bloginfo( 'name' ); ?></h2>
+                    <h2 class="text-slate-900 dark:text-slate-100 text-base sm:text-lg md:text-xl font-black leading-tight tracking-tight m-0 whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px] min-[400px]:max-w-[180px] sm:max-w-none"><?php bloginfo( 'name' ); ?></h2>
                 </a>
                 
                 <nav id="site-navigation" class="hidden lg:flex items-center gap-8 flex-wrap">
@@ -46,7 +46,7 @@
                 </nav>
             </div>
             
-            <div class="flex flex-1 justify-end items-center gap-4">
+            <div class="flex flex-1 justify-end items-center gap-2 sm:gap-4">
                 <label class="hidden md:flex flex-col min-w-40 h-10 max-w-md w-full m-0">
                     <div class="flex w-full flex-1 items-stretch rounded-full h-full bg-primary/5 border border-primary/10 overflow-hidden">
                         <div class="text-primary/60 flex items-center justify-center pl-4">
@@ -63,7 +63,7 @@
                         <span class="material-symbols-outlined text-[20px]">search</span>
                     </button>
 
-                    <a href="<?php echo esc_url( get_permalink( 56 ) ); ?>" class="flex items-center justify-center rounded-full h-10 w-10 bg-primary/10 text-slate-900 dark:text-slate-100 hover:bg-primary hover:text-white transition-all border-none cursor-pointer no-underline">
+                    <a href="<?php echo esc_url( get_permalink( 56 ) ); ?>" class="hidden sm:flex items-center justify-center rounded-full h-10 w-10 bg-primary/10 text-slate-900 dark:text-slate-100 hover:bg-primary hover:text-white transition-all border-none cursor-pointer no-underline">
                         <span class="material-symbols-outlined text-[20px]">favorite</span>
                     </a>
                     
@@ -83,7 +83,7 @@
                         }
                     }
                     ?>
-                    <a href="<?php echo $account_url; ?>" class="flex items-center justify-center rounded-full h-10 w-10 bg-primary/10 text-slate-900 dark:text-slate-100 hover:bg-primary hover:text-white transition-all no-underline">
+                    <a href="<?php echo $account_url; ?>" class="hidden md:flex items-center justify-center rounded-full h-10 w-10 bg-primary/10 text-slate-900 dark:text-slate-100 hover:bg-primary hover:text-white transition-all no-underline">
                         <span class="material-symbols-outlined text-[24px]">account_circle</span>
                     </a>
 
@@ -107,6 +107,9 @@
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[55] opacity-0 pointer-events-none transition-opacity duration-300 lg:hidden"></div>
 
     <!-- Mobile Off-Canvas Menu -->
     <div id="mobile-menu" class="fixed inset-y-0 right-0 w-80 bg-white dark:bg-background-dark shadow-2xl z-[60] transform translate-x-full transition-transform duration-300 ease-in-out lg:hidden flex flex-col">
@@ -141,6 +144,10 @@
         </div>
         <div class="p-4 border-t border-primary/10 bg-slate-50 dark:bg-slate-900/50">
             <div class="flex flex-col gap-4">
+                <a href="<?php echo esc_url( get_permalink( 56 ) ); ?>" class="flex items-center gap-3 text-slate-700 dark:text-slate-300 font-medium no-underline">
+                    <span class="material-symbols-outlined text-primary">favorite</span>
+                    Mis Favoritos
+                </a>
                 <a href="<?php echo class_exists('WooCommerce') ? esc_url( wc_get_page_permalink('myaccount') ) : '#'; ?>" class="flex items-center gap-3 text-slate-700 dark:text-slate-300 font-medium no-underline">
                     <span class="material-symbols-outlined text-primary">account_circle</span>
                     Mi Cuenta
