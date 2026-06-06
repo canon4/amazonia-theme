@@ -36,7 +36,8 @@ $vendors      = amazonia_get_community_vendors( $community_id );
                 <?php if ( $data['logo'] ) : ?>
                     <img src="<?php echo esc_url( $data['logo'] ); ?>"
                          alt="<?php echo esc_attr( $data['nombre'] ); ?>"
-                         class="w-24 h-24 rounded-full border-4 border-primary/40 object-cover flex-shrink-0" />
+                         class="w-24 h-24 rounded-full border-4 border-primary/40 object-cover flex-shrink-0"
+                         loading="lazy" width="96" height="96" />
                 <?php else : ?>
                     <div class="w-24 h-24 rounded-full border-4 border-primary/30 bg-primary/10 flex items-center justify-center flex-shrink-0">
                         <span class="material-symbols-outlined text-primary text-5xl">groups</span>
@@ -122,7 +123,8 @@ $vendors      = amazonia_get_community_vendors( $community_id );
                                 <?php if ( $logo ) : ?>
                                     <img src="<?php echo esc_url( $logo ); ?>"
                                          alt="<?php echo esc_attr( $store_name ); ?>"
-                                         class="w-14 h-14 rounded-xl object-cover border border-slate-100 flex-shrink-0" />
+                                         class="w-14 h-14 rounded-xl object-cover border border-slate-100 flex-shrink-0"
+                                         loading="lazy" width="56" height="56" />
                                 <?php else : ?>
                                     <div class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
                                         <span class="material-symbols-outlined text-primary text-2xl">storefront</span>

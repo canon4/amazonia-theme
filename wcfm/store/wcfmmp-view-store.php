@@ -91,7 +91,7 @@ get_header( 'shop' );
             <div class="lg:w-1/3">
                 <div class="bg-white rounded-2xl shadow-xl shadow-black/5 p-6 lg:p-8 flex flex-col gap-6">
                     <div class="flex items-center gap-4">
-                        <img src="<?php echo esc_url($avatar_url); ?>" alt="Avatar" class="w-16 h-16 rounded-full object-cover shadow-sm">
+                        <img src="<?php echo esc_url($avatar_url); ?>" alt="Avatar" class="w-16 h-16 rounded-full object-cover shadow-sm" loading="lazy" width="64" height="64">
                         <div>
                             <h3 class="text-lg font-bold text-gray-900"><?php echo esc_html($seller_info->display_name); ?></h3>
                             <p class="text-sm text-gray-500">Representante de la Comunidad</p>
@@ -200,13 +200,13 @@ get_header( 'shop' );
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <?php
-                $args = array(
+                $products = new WP_Query( array(
                     'post_type'      => 'product',
                     'post_status'    => 'publish',
                     'author'         => $seller_info->ID,
                     'posts_per_page' => 4,
-                );
-                $products = new WP_Query($args);
+                    'no_found_rows'  => true,
+                ) );
 
                 if ($products->have_posts()) :
                     while ($products->have_posts()) : $products->the_post();

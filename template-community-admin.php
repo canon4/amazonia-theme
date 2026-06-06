@@ -85,7 +85,7 @@ body { margin: 0; padding: 0; }
 		<!-- Hero: info de la comunidad -->
 		<div class="ca-hero">
 			<?php if ( ! empty( $community['logo'] ) ) : ?>
-				<img src="<?php echo esc_url( $community['logo'] ); ?>" alt="<?php echo esc_attr( $community['nombre'] ); ?>" class="ca-hero-logo" />
+				<img src="<?php echo esc_url( $community['logo'] ); ?>" alt="<?php echo esc_attr( $community['nombre'] ); ?>" class="ca-hero-logo" loading="lazy" width="80" height="80" />
 			<?php else : ?>
 				<div class="ca-hero-logo-placeholder">
 					<span class="material-symbols-outlined">groups</span>
@@ -154,7 +154,7 @@ body { margin: 0; padding: 0; }
 							?>
 								<li class="ca-store-item">
 									<?php if ( $logo ) : ?>
-										<img src="<?php echo esc_url( $logo ); ?>" class="ca-store-avatar" alt="<?php echo esc_attr( $store_name ); ?>" />
+										<img src="<?php echo esc_url( $logo ); ?>" class="ca-store-avatar" alt="<?php echo esc_attr( $store_name ); ?>" loading="lazy" width="80" height="80" />
 									<?php else : ?>
 										<div class="ca-store-avatar-placeholder">
 											<span class="material-symbols-outlined">storefront</span>

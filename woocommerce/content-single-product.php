@@ -348,7 +348,7 @@ if ( post_password_required() ) {
 
             <!-- Top Intro Image -->
             <div class="w-full rounded-[2rem] overflow-hidden aspect-[2/1] shadow-2xl relative">
-                <img src="<?php echo esc_url($gallery_img_1); ?>" alt="Origin Image" class="w-full h-full object-cover">
+                <img src="<?php echo esc_url($gallery_img_1); ?>" alt="Origin Image" class="w-full h-full object-cover" loading="lazy" width="1200" height="600">
                 <!-- Fallback gradient to make it look nicer if it's a generic image -->
                 <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
             </div>
@@ -360,7 +360,7 @@ if ( post_password_required() ) {
                 <div class="relative w-full">
                     <!-- Background Image -->
                     <div class="w-[90%] md:w-[75%] h-64 md:h-80 rounded-[2rem] overflow-hidden shadow-xl ml-auto relative">
-                        <img src="<?php echo esc_url($gallery_img_1); ?>" alt="Background" class="w-full h-full object-cover filter brightness-[0.85]">
+                        <img src="<?php echo esc_url($gallery_img_1); ?>" alt="Background" class="w-full h-full object-cover filter brightness-[0.85]" loading="lazy" width="800" height="400">
                         <div class="absolute inset-0 bg-[#11d411]/10 mix-blend-overlay"></div>
                     </div>
                     
@@ -381,14 +381,14 @@ if ( post_password_required() ) {
                 <div class="relative w-full">
                     <!-- Background Image -->
                     <div class="w-[90%] md:w-[75%] h-64 md:h-80 rounded-[2rem] overflow-hidden shadow-xl mr-auto">
-                        <img src="<?php echo esc_url($vendor_banner); ?>" alt="The Maker" class="w-full h-full object-cover filter brightness-[0.7]">
+                        <img src="<?php echo esc_url($vendor_banner); ?>" alt="The Maker" class="w-full h-full object-cover filter brightness-[0.7]" loading="lazy" width="1200" height="300">
                     </div>
                     
                     <!-- Floating Card -->
                     <div class="absolute top-1/2 -translate-y-1/2 right-0 w-[85%] md:w-[45%] bg-white dark:bg-slate-900 rounded-[1.5rem] p-6 md:p-8 shadow-2xl flex flex-col gap-4">
                         <div class="flex items-center gap-4">
                             <div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
-                                <img src="<?php echo esc_url($vendor_logo); ?>" alt="Profile" class="w-full h-full object-cover">
+                                <img src="<?php echo esc_url($vendor_logo); ?>" alt="Profile" class="w-full h-full object-cover" loading="lazy" width="80" height="80">
                             </div>
                             <div>
                                 <h3 class="font-bold text-lg md:text-xl text-slate-900 dark:text-white leading-tight"><?php echo esc_html($vendor_name); ?></h3>
@@ -433,7 +433,7 @@ if ( post_password_required() ) {
                         
                         <!-- Landscape Image -->
                         <div class="aspect-square md:aspect-auto md:h-80 rounded-[1.5rem] overflow-hidden relative shadow-inner">
-                            <img src="<?php echo esc_url($gallery_img_2); ?>" alt="Territory" class="w-full h-full object-cover">
+                            <img src="<?php echo esc_url($gallery_img_2); ?>" alt="Territory" class="w-full h-full object-cover" loading="lazy" width="800" height="800">
                             <a href="https://maps.google.com/maps?q=<?php echo urlencode($map_query); ?>" target="_blank" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm px-5 py-2.5 rounded-full text-xs font-bold text-slate-700 shadow-xl flex items-center gap-1.5 cursor-pointer hover:bg-[#11d411] hover:text-white transition-all duration-300">
                                 <span class="material-symbols-outlined text-[16px] text-[#11d411] hover:text-white transition-colors">location_on</span> Abrir en Maps
                             </a>
@@ -467,7 +467,8 @@ if ( post_password_required() ) {
                 </div>
                 <div class="bg-[#11d411]/5 rounded-[2.5rem] p-4 lg:p-10 border border-[#11d411]/10">
                     <div class="rounded-2xl overflow-hidden aspect-video shadow-lg">
-                        <img class="w-full h-full object-cover" alt="Amazon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_lRzrkQem4oyVmD_G5i2aCsM8WKKTg5ZYJpRD7JTzleb_715ZJSRzTyiMWa4U0baCbMBtBHLCh30rj_wRQEkxqT0O3PDRAsORoMiTj5yjCBDbU9sTwkxPdP3LuZWRnXpe87dco8PchTJqfSAJtr713_HdLRs-aiq_taRwuNVuwGrKmCHT-90oVtu300qq3FhpxPNC75ofELUO2P_lmvWR_hgM6MlMhDZW1PCnjYvjXAB5IXZoWM_nvAN0w8tUQ9WuSiLDYTMDvR4"/>
+                        <img class="w-full h-full object-cover" alt="Amazon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_lRzrkQem4oyVmD_G5i2aCsM8WKKTg5ZYJpRD7JTzleb_715ZJSRzTyiMWa4U0baCbMBtBHLCh30rj_wRQEkxqT0O3PDRAsORoMiTj5yjCBDbU9sTwkxPdP3LuZWRnXpe87dco8PchTJqfSAJtr713_HdLRs-aiq_taRwuNVuwGrKmCHT-90oVtu300qq3FhpxPNC75ofELUO2P_lmvWR_hgM6MlMhDZW1PCnjYvjXAB5IXZoWM_nvAN0w8tUQ9WuSiLDYTMDvR4"
+                             loading="lazy" width="1200" height="675" />
                     </div>
                     <div class="mt-8 grid grid-cols-2 gap-6">
                         <div class="space-y-2">
@@ -571,7 +572,7 @@ if ( post_password_required() ) {
                         ?>
                         <a href="<?php echo esc_url( $related_product->get_permalink() ); ?>" class="group block">
                             <div class="aspect-square rounded-[2rem] overflow-hidden bg-slate-100 dark:bg-slate-800 mb-4 relative shadow-md hover:shadow-xl transition-shadow duration-300">
-                                <?php echo $related_product->get_image( 'woocommerce_thumbnail', array( 'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500' ) ); ?>
+                                <?php echo $related_product->get_image( 'woocommerce_thumbnail', array( 'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500', 'loading' => 'lazy' ) ); ?>
                             </div>
                             <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1 truncate group-hover:text-[#11d411] transition-colors"><?php echo $related_product->get_title(); ?></h3>
                             <div class="related-product-price">

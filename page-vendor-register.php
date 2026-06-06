@@ -62,7 +62,8 @@ html {
 		<div class="absolute inset-0 z-0">
 			<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq_j6ErCDkwbEdYp9Q1sGPnpTM3ydBN291StZX9oPUDId6IhpaKQxrBm2MG2ziGJQLy2iwxlJfh8LSgZ-WeJf-h5iA-cd6cphz2ls2ogwXffrZdcggDaQtMwR8QvKYE5ceOs71iYlTuClyoyRgUJqItga_Fc8O0pyzl67oeLFu0LUcWa4Mn2ciQgsWs-nXKDFnpC3os_LNzu6mbhHGTEopssvW6y9T6QhDNtJXdk0gBNWYw1UZt1NXc3Hfh-HupmO4CLnDmhYtKhs"
 				 alt="Selva Amazónica"
-				 class="w-full h-full object-cover opacity-70" />
+				 class="w-full h-full object-cover opacity-70"
+				 fetchpriority="high" width="1920" height="1080" />
 			<div class="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/50 to-slate-900/20"></div>
 		</div>
 

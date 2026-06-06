@@ -15,6 +15,7 @@ $communities_query = new WP_Query( array(
     'posts_per_page' => 3,
     'orderby'        => 'date',
     'order'          => 'DESC',
+    'no_found_rows'  => true,
 ) );
 
 $products_query = null;
@@ -25,6 +26,7 @@ if ( class_exists( 'WooCommerce' ) ) {
         'posts_per_page' => 4,
         'orderby'        => 'date',
         'order'          => 'DESC',
+        'no_found_rows'  => true,
     ) );
 }
 ?>
@@ -36,10 +38,10 @@ if ( class_exists( 'WooCommerce' ) ) {
         <div class="relative min-h-[550px] lg:min-h-[650px] rounded-[2rem] overflow-hidden bg-[#0a2e0a] flex items-center shadow-2xl">
             <!-- Background Image & Gradient overlay -->
             <div class="absolute inset-0 z-0">
-                <img alt="Selva amazónica mística rodeada de niebla y vegetación densa" 
-                     class="w-full h-full object-cover opacity-60 mix-blend-multiply transition-all duration-700 hover:scale-105" 
-                     src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1600&auto=format&fit=crop" 
-                     fetchpriority="high" />
+                <img alt="Selva amazónica mística rodeada de niebla y vegetación densa"
+                     class="w-full h-full object-cover opacity-60 mix-blend-multiply transition-all duration-700 hover:scale-105"
+                     src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1600&auto=format&fit=crop"
+                     fetchpriority="high" width="1600" height="900" />
                 <div class="absolute inset-0 bg-gradient-to-tr from-[#0a2e0a] via-[#0a2e0a]/80 to-transparent"></div>
                 <!-- Ambient decorative glow -->
                 <div class="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
@@ -165,7 +167,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                                 <div class="flex items-center gap-4 mb-5">
                                     <div class="w-16 h-16 rounded-full border-2 border-primary/20 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
                                         <?php if ( $logo_url ) : ?>
-                                            <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $nombre ); ?>" class="w-full h-full object-cover">
+                                            <img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $nombre ); ?>" class="w-full h-full object-cover" loading="lazy" width="64" height="64">
                                         <?php else : ?>
                                             <span class="material-symbols-outlined text-primary text-3xl">groups</span>
                                         <?php endif; ?>
@@ -234,7 +236,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                             <div>
                                 <div class="flex items-center gap-4 mb-5">
                                     <div class="w-16 h-16 rounded-full border-2 border-primary/20 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
-                                        <img src="<?php echo esc_url( $mock['logo'] ); ?>" alt="<?php echo esc_attr( $mock['nombre'] ); ?>" class="w-full h-full object-cover">
+                                        <img src="<?php echo esc_url( $mock['logo'] ); ?>" alt="<?php echo esc_attr( $mock['nombre'] ); ?>" class="w-full h-full object-cover" loading="lazy" width="64" height="64">
                                     </div>
                                     <div>
                                         <span class="text-primary font-bold text-[10px] uppercase tracking-wider block mb-0.5"><?php echo esc_html( $mock['categoria'] ); ?></span>
@@ -310,9 +312,10 @@ if ( class_exists( 'WooCommerce' ) ) {
             <!-- Left image collage -->
             <div class="relative rounded-[2.5rem] overflow-hidden p-4 bg-primary/5 border border-primary/10">
                 <div class="rounded-2xl overflow-hidden aspect-video shadow-lg relative group">
-                    <img class="w-full h-full object-cover filter brightness-[0.9] group-hover:scale-105 transition-transform duration-700" 
-                         alt="Manos artesanas trenzando fibras vegetales sostenibles" 
-                         src="https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?q=80&w=1200&auto=format&fit=crop"/>
+                    <img class="w-full h-full object-cover filter brightness-[0.9] group-hover:scale-105 transition-transform duration-700"
+                         alt="Manos artesanas trenzando fibras vegetales sostenibles"
+                         src="https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?q=80&w=1200&auto=format&fit=crop"
+                         loading="lazy" width="1200" height="675" />
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
                 </div>
                 

@@ -128,7 +128,7 @@ function amazonia_render_comunidad_details_box( $post ) {
 		<label><?php esc_html_e( 'URL del Logo', 'amazonia-theme' ); ?></label>
 		<input type="url" name="comunidad_logo_url" id="comunidad_logo_url" value="<?php echo esc_attr( $meta['logo_url'] ); ?>" placeholder="https://..." />
 		<?php if ( $meta['logo_url'] ) : ?>
-			<img src="<?php echo esc_url( $meta['logo_url'] ); ?>" class="comunidad-logo-preview" alt="Logo" />
+			<img src="<?php echo esc_url( $meta['logo_url'] ); ?>" class="comunidad-logo-preview" alt="Logo" loading="lazy" width="80" height="80" />
 		<?php endif; ?>
 		<p class="description" style="margin-top:4px;">
 			<?php esc_html_e( 'También puedes usar la imagen destacada del post como logo.', 'amazonia-theme' ); ?>
@@ -209,9 +209,10 @@ function amazonia_user_community_field( $user ) {
 	$communities = get_posts( [
 		'post_type'      => 'comunidad',
 		'post_status'    => 'publish',
-		'posts_per_page' => -1,
+		'posts_per_page' => 200,         // dropdown admin — número alto pero acotado
 		'orderby'        => 'title',
 		'order'          => 'ASC',
+		'no_found_rows'  => true,
 	] );
 	?>
 	<h2><?php esc_html_e( 'Amazonia Market', 'amazonia-theme' ); ?></h2>
@@ -340,7 +341,8 @@ function amazonia_store_community_banner( $vendor_id ) {
 			<?php if ( $logo ) : ?>
 				<img src="<?php echo $logo; ?>"
 				     alt="<?php echo $nombre; ?>"
-				     style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #86efac;flex-shrink:0;" />
+				     style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #86efac;flex-shrink:0;"
+				     loading="lazy" width="44" height="44" />
 			<?php else : ?>
 				<span class="material-symbols-outlined"
 				      style="font-size:36px;color:#4ade80;flex-shrink:0;line-height:1;">groups</span>

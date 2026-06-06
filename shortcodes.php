@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function amazonia_communities_shortcode( $atts ) {
     $atts = shortcode_atts( array(
-        'per_page' => -1,
+        'per_page' => 50,
     ), $atts, 'amazonia_communities' );
 
     ob_start();
@@ -21,9 +21,10 @@ function amazonia_communities_shortcode( $atts ) {
     $query = new WP_Query( array(
         'post_type'      => 'comunidad',
         'post_status'    => 'publish',
-        'posts_per_page' => intval( $atts['per_page'] ),
+        'posts_per_page' => min( intval( $atts['per_page'] ), 50 ),
         'orderby'        => 'title',
         'order'          => 'ASC',
+        'no_found_rows'  => true,
     ) );
 
     if ( ! $query->have_posts() ) {
