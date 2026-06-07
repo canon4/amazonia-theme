@@ -78,14 +78,23 @@ for (const filePath of phpFiles) {
   const relPath = path.relative(THEME_DIR, filePath);
   const content = fs.readFileSync(filePath, 'utf-8');
 
+  // Excluir archivos de email y auth (loading="lazy" no aplica en estos contextos)
+  //   · emails: no funciona en clientes de correo
+  //   · woocommerce/auth: página OAuth de WooCommerce, no es una página pública normal
+  const isEmail = relPath.includes('emails') || relPath.includes('email-')
+               || relPath.includes(`${path.sep}auth${path.sep}`);
+
   // ── 1. <img> tags ────────────────────────────────────────────
-  // Regex con dotAll para capturar tags multi-línea
+  // Para archivos PHP los tags pueden tener PHP inline (<?php ... ?>) dentro
+  // de los atributos. El cierre ?> contiene '>' lo que corta la regex prematuramente.
+  // Solución: sustituir bloques PHP por comillas vacías "" antes de analizar.
+  const stripped = content.replace(/<\?(?:php|=)?[\s\S]*?\?>/gi, '""');
   const imgRegex = /<img\b[^>]*>/gis;
   let m;
-  while ((m = imgRegex.exec(content)) !== null) {
+  while ((m = imgRegex.exec(stripped)) !== null) {
     const tag      = m[0];
-    const line     = lineOf(content, m.index);
-    const snippet  = snip(tag);
+    const line     = lineOf(content, m.index);  // posición en el contenido original
+    const snippet  = snip(content.substring(m.index, m.index + tag.length + 20));
 
     const hasLazy      = /loading\s*=\s*["']lazy["']/i.test(tag);
     const hasFetchHigh = /fetchpriority\s*=\s*["']high["']/i.test(tag);
@@ -93,12 +102,14 @@ for (const filePath of phpFiles) {
     const hasHeight    = /\bheight\s*=/i.test(tag);
     const extMatch     = /\bsrc\s*=\s*["'](https?:\/\/(?!localhost)[^"'\s>]+)/i.exec(tag);
 
-    // Sin lazy (hero con fetchpriority="high" está bien — es intencional)
-    if (!hasLazy && !hasFetchHigh) {
+    // Sin lazy:
+    //   · OK si tiene fetchpriority="high" (es el LCP element, lazy sería error)
+    //   · OK si es un email (loading="lazy" no funciona en clientes de correo)
+    if (!hasLazy && !hasFetchHigh && !isEmail) {
       results.images.missing_lazy.push({ file: relPath, line, snippet });
     }
 
-    // Sin dimensiones
+    // Sin dimensiones (emails también deben tener dimensiones para evitar CLS en clientes)
     if (!hasWidth || !hasHeight) {
       results.images.missing_dimensions.push({
         file: relPath, line, snippet,
@@ -106,31 +117,40 @@ for (const filePath of phpFiles) {
       });
     }
 
-    // Src externo (CDN, Unsplash, Google, etc.)
-    if (extMatch) {
+    // Src externo (CDN, Unsplash, Google, etc.) — buscar en contenido original
+    const origTag = content.substring(m.index, m.index + tag.length + 50);
+    const extOrig = /\bsrc\s*=\s*["'](https?:\/\/(?!localhost)[^"'\s>]+)/i.exec(origTag);
+    if (extOrig) {
       try {
-        const domain = new URL(extMatch[1]).hostname;
-        results.images.external_src.push({ file: relPath, line, domain, url: extMatch[1].substring(0, 80) });
+        const domain = new URL(extOrig[1]).hostname;
+        results.images.external_src.push({ file: relPath, line, domain, url: extOrig[1].substring(0, 80) });
       } catch {}
     }
 
-    // OK: tiene lazy + dimensiones + src local
-    if (hasLazy && hasWidth && hasHeight && !extMatch) {
+    // OK: tiene lazy + dimensiones + sin src externo
+    if ((hasLazy || hasFetchHigh || isEmail) && hasWidth && hasHeight && !extOrig) {
       results.images.ok.push({ file: relPath, line });
     }
   }
 
   // ── 2. $product->get_image() sin 'loading' => 'lazy' ────────
-  const getImgRegex = /->get_image\s*\([^)]*\)/g;
-  while ((m = getImgRegex.exec(content)) !== null) {
-    const call = m[0];
-    const line = lineOf(content, m.index);
-    if (!call.includes("'loading'") && !call.includes('"loading"')) {
-      results.images.missing_lazy.push({
-        file: relPath, line,
-        snippet: snip(call),
-        note: 'WooCommerce get_image() sin atributo loading',
-      });
+  // Excluir: emails (lazy no funciona en correos), y get_image() con fetchpriority (LCP intencional)
+  if (!isEmail) {
+    const getImgRegex = /->get_image\s*\([\s\S]*?\)/g;
+    while ((m = getImgRegex.exec(content)) !== null) {
+      const call = m[0];
+      const line = lineOf(content, m.index);
+      const hasLazyAttr    = call.includes("'loading'") || call.includes('"loading"');
+      const hasFetchHigh   = call.includes("'fetchpriority'") || call.includes('"fetchpriority"');
+      // Si el segundo arg es una variable PHP ($...) no podemos analizarlo estáticamente — skip
+      const hasVarAttrs    = /get_image\s*\(\s*['"][^'"]+['"]\s*,\s*\$/.test(call);
+      if (!hasLazyAttr && !hasFetchHigh && !hasVarAttrs) {
+        results.images.missing_lazy.push({
+          file: relPath, line,
+          snippet: snip(call),
+          note: 'WooCommerce get_image() sin atributo loading',
+        });
+      }
     }
   }
 

@@ -40,8 +40,8 @@ if ( class_exists( 'WooCommerce' ) ) {
             <div class="absolute inset-0 z-0">
                 <img alt="Selva amazónica mística rodeada de niebla y vegetación densa"
                      class="w-full h-full object-cover opacity-60 mix-blend-multiply transition-all duration-700 hover:scale-105"
-                     src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1600&auto=format&fit=crop"
-                     fetchpriority="high" width="1600" height="900" />
+                     src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-hero-selva.jpg' ); ?>"
+                     fetchpriority="high" width="1920" height="1080" />
                 <div class="absolute inset-0 bg-gradient-to-tr from-[#0a2e0a] via-[#0a2e0a]/80 to-transparent"></div>
                 <!-- Ambient decorative glow -->
                 <div class="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
@@ -203,13 +203,16 @@ if ( class_exists( 'WooCommerce' ) ) {
                     wp_reset_postdata();
                 else :
                     // --- MOCK FALLBACK COMMUNITIES ---
+                    // Datos de ejemplo (fallback cuando no hay comunidades en la BD).
+                    // Logos apuntan a assets locales — sin dependencias externas.
+                    $_img = get_template_directory_uri() . '/assets/img/';
                     $mock_communities = array(
                         array(
                             'nombre' => 'Comunidad Tikuna',
                             'categoria' => 'Artesanías & Tejidos',
                             'location' => 'Leticia, Amazonas',
                             'desc' => 'Artesanas expertas en tejer la fibra de la palmera de cumare y teñirla con tintes naturales de semillas y cortezas de la selva profunda.',
-                            'logo' => 'https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?q=80&w=200&auto=format&fit=crop',
+                            'logo' => $_img . 'amazonia-artesanas.jpg',
                             'stores' => 4,
                         ),
                         array(
@@ -217,7 +220,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                             'categoria' => 'Talla en Madera',
                             'location' => 'Valle de Sibundoy, Putumayo',
                             'desc' => 'Talladores tradicionales de máscaras sagradas de madera que narran el origen del viento, el maíz y los cantos de sanación ancestral.',
-                            'logo' => 'https://images.unsplash.com/photo-1596436889106-be35e843f974?q=80&w=200&auto=format&fit=crop',
+                            'logo' => $_img . 'indigenous_crafts_community.png',
                             'stores' => 2,
                         ),
                         array(
@@ -225,7 +228,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                             'categoria' => 'Aceites & Botánica',
                             'location' => 'Puerto Asís, Putumayo',
                             'desc' => 'Productores de aceites esenciales ecológicos, resinas de copal sagrado y plantas medicinales recolectadas bajo criterios de conservación.',
-                            'logo' => 'https://images.unsplash.com/photo-1546842931-886c185b4c8c?q=80&w=200&auto=format&fit=crop',
+                            'logo' => $_img . 'amazonia-hero-selva.jpg',
                             'stores' => 3,
                         ),
                     );
@@ -314,7 +317,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                 <div class="rounded-2xl overflow-hidden aspect-video shadow-lg relative group">
                     <img class="w-full h-full object-cover filter brightness-[0.9] group-hover:scale-105 transition-transform duration-700"
                          alt="Manos artesanas trenzando fibras vegetales sostenibles"
-                         src="https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?q=80&w=1200&auto=format&fit=crop"
+                         src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-artesanas.jpg' ); ?>"
                          loading="lazy" width="1200" height="675" />
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
                 </div>

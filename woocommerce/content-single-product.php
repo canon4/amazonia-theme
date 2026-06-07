@@ -467,7 +467,8 @@ if ( post_password_required() ) {
                 </div>
                 <div class="bg-[#11d411]/5 rounded-[2.5rem] p-4 lg:p-10 border border-[#11d411]/10">
                     <div class="rounded-2xl overflow-hidden aspect-video shadow-lg">
-                        <img class="w-full h-full object-cover" alt="Amazon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_lRzrkQem4oyVmD_G5i2aCsM8WKKTg5ZYJpRD7JTzleb_715ZJSRzTyiMWa4U0baCbMBtBHLCh30rj_wRQEkxqT0O3PDRAsORoMiTj5yjCBDbU9sTwkxPdP3LuZWRnXpe87dco8PchTJqfSAJtr713_HdLRs-aiq_taRwuNVuwGrKmCHT-90oVtu300qq3FhpxPNC75ofELUO2P_lmvWR_hgM6MlMhDZW1PCnjYvjXAB5IXZoWM_nvAN0w8tUQ9WuSiLDYTMDvR4"
+                        <img class="w-full h-full object-cover" alt="Amazon"
+                             src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-selva-section.jpg' ); ?>"
                              loading="lazy" width="1200" height="675" />
                     </div>
                     <div class="mt-8 grid grid-cols-2 gap-6">
