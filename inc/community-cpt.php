@@ -76,13 +76,20 @@ function amazonia_render_comunidad_details_box( $post ) {
 	wp_nonce_field( 'amazonia_comunidad_save', 'amazonia_comunidad_nonce' );
 
 	$meta = [
-		'descripcion'  => get_post_meta( $post->ID, '_comunidad_descripcion', true ),
-		'historia'     => get_post_meta( $post->ID, '_comunidad_historia', true ),
-		'pais'         => get_post_meta( $post->ID, '_comunidad_pais', true ),
-		'departamento' => get_post_meta( $post->ID, '_comunidad_departamento', true ),
-		'municipio'    => get_post_meta( $post->ID, '_comunidad_municipio', true ),
-		'categoria'    => get_post_meta( $post->ID, '_comunidad_categoria', true ),
-		'logo_url'     => get_post_meta( $post->ID, '_comunidad_logo_url', true ),
+		'descripcion'    => get_post_meta( $post->ID, '_comunidad_descripcion', true ),
+		'historia'       => get_post_meta( $post->ID, '_comunidad_historia', true ),
+		'pais'           => get_post_meta( $post->ID, '_comunidad_pais', true ),
+		'departamento'   => get_post_meta( $post->ID, '_comunidad_departamento', true ),
+		'municipio'      => get_post_meta( $post->ID, '_comunidad_municipio', true ),
+		'categoria'      => get_post_meta( $post->ID, '_comunidad_categoria', true ),
+		'logo_url'       => get_post_meta( $post->ID, '_comunidad_logo_url', true ),
+		'banner_url'     => get_post_meta( $post->ID, '_comunidad_banner_url', true ),
+		'video_url'      => get_post_meta( $post->ID, '_comunidad_video_url', true ),
+		'fundacion'      => get_post_meta( $post->ID, '_comunidad_fundacion', true ),
+		'num_familias'   => get_post_meta( $post->ID, '_comunidad_num_familias', true ),
+		'instagram'      => get_post_meta( $post->ID, '_comunidad_instagram', true ),
+		'facebook'       => get_post_meta( $post->ID, '_comunidad_facebook', true ),
+		'certificaciones'=> get_post_meta( $post->ID, '_comunidad_certificaciones', true ),
 	];
 	?>
 	<style>
@@ -128,11 +135,53 @@ function amazonia_render_comunidad_details_box( $post ) {
 		<label><?php esc_html_e( 'URL del Logo', 'amazonia-theme' ); ?></label>
 		<input type="url" name="comunidad_logo_url" id="comunidad_logo_url" value="<?php echo esc_attr( $meta['logo_url'] ); ?>" placeholder="https://..." />
 		<?php if ( $meta['logo_url'] ) : ?>
-			<img src="<?php echo esc_url( $meta['logo_url'] ); ?>" class="comunidad-logo-preview" alt="Logo" />
+			<img src="<?php echo esc_url( $meta['logo_url'] ); ?>" class="comunidad-logo-preview" alt="Logo" loading="lazy" width="80" height="80" />
 		<?php endif; ?>
 		<p class="description" style="margin-top:4px;">
 			<?php esc_html_e( 'También puedes usar la imagen destacada del post como logo.', 'amazonia-theme' ); ?>
 		</p>
+	</div>
+
+	<hr style="margin:20px 0;border-color:#e2e8f0;" />
+	<p style="font-size:12px;color:#64748b;margin-bottom:12px;">
+		<?php esc_html_e( 'Campos de storytelling — la galería y los valores se editan desde el panel de administración de la comunidad.', 'amazonia-theme' ); ?>
+	</p>
+
+	<div class="comunidad-meta-full">
+		<label><?php esc_html_e( 'URL Imagen de portada (banner)', 'amazonia-theme' ); ?></label>
+		<input type="url" name="comunidad_banner_url" value="<?php echo esc_attr( $meta['banner_url'] ); ?>" placeholder="https://..." />
+	</div>
+
+	<div class="comunidad-meta-full">
+		<label><?php esc_html_e( 'URL Video de presentación (YouTube / Vimeo)', 'amazonia-theme' ); ?></label>
+		<input type="url" name="comunidad_video_url" value="<?php echo esc_attr( $meta['video_url'] ); ?>" placeholder="https://www.youtube.com/watch?v=..." />
+	</div>
+
+	<div class="comunidad-meta-grid">
+		<div>
+			<label><?php esc_html_e( 'Año de fundación', 'amazonia-theme' ); ?></label>
+			<input type="text" name="comunidad_fundacion" value="<?php echo esc_attr( $meta['fundacion'] ); ?>" placeholder="1987" />
+		</div>
+		<div>
+			<label><?php esc_html_e( 'Familias / artesanos', 'amazonia-theme' ); ?></label>
+			<input type="text" name="comunidad_num_familias" value="<?php echo esc_attr( $meta['num_familias'] ); ?>" placeholder="42 familias" />
+		</div>
+	</div>
+
+	<div class="comunidad-meta-grid">
+		<div>
+			<label><?php esc_html_e( 'Instagram URL', 'amazonia-theme' ); ?></label>
+			<input type="url" name="comunidad_instagram" value="<?php echo esc_attr( $meta['instagram'] ); ?>" placeholder="https://instagram.com/..." />
+		</div>
+		<div>
+			<label><?php esc_html_e( 'Facebook URL', 'amazonia-theme' ); ?></label>
+			<input type="url" name="comunidad_facebook" value="<?php echo esc_attr( $meta['facebook'] ); ?>" placeholder="https://facebook.com/..." />
+		</div>
+	</div>
+
+	<div class="comunidad-meta-full">
+		<label><?php esc_html_e( 'Certificaciones', 'amazonia-theme' ); ?></label>
+		<input type="text" name="comunidad_certificaciones" value="<?php echo esc_attr( $meta['certificaciones'] ); ?>" placeholder="Comercio Justo · Orgánico" />
 	</div>
 	<?php
 }
@@ -178,22 +227,33 @@ function amazonia_save_comunidad_meta( $post_id ) {
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
 	if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-	$fields = [
+	$text_fields = [
 		'comunidad_descripcion'  => '_comunidad_descripcion',
 		'comunidad_historia'     => '_comunidad_historia',
 		'comunidad_pais'         => '_comunidad_pais',
 		'comunidad_departamento' => '_comunidad_departamento',
 		'comunidad_municipio'    => '_comunidad_municipio',
 		'comunidad_categoria'    => '_comunidad_categoria',
-		'comunidad_logo_url'     => '_comunidad_logo_url',
+		'comunidad_fundacion'    => '_comunidad_fundacion',
+		'comunidad_num_familias' => '_comunidad_num_familias',
+		'comunidad_certificaciones' => '_comunidad_certificaciones',
+	];
+	$url_fields = [
+		'comunidad_logo_url'   => '_comunidad_logo_url',
+		'comunidad_banner_url' => '_comunidad_banner_url',
+		'comunidad_video_url'  => '_comunidad_video_url',
+		'comunidad_instagram'  => '_comunidad_instagram',
+		'comunidad_facebook'   => '_comunidad_facebook',
 	];
 
-	foreach ( $fields as $post_key => $meta_key ) {
+	foreach ( $text_fields as $post_key => $meta_key ) {
 		if ( isset( $_POST[ $post_key ] ) ) {
-			$value = ( $post_key === 'comunidad_logo_url' )
-				? esc_url_raw( $_POST[ $post_key ] )
-				: sanitize_textarea_field( $_POST[ $post_key ] );
-			update_post_meta( $post_id, $meta_key, $value );
+			update_post_meta( $post_id, $meta_key, sanitize_textarea_field( $_POST[ $post_key ] ) );
+		}
+	}
+	foreach ( $url_fields as $post_key => $meta_key ) {
+		if ( isset( $_POST[ $post_key ] ) ) {
+			update_post_meta( $post_id, $meta_key, esc_url_raw( $_POST[ $post_key ] ) );
 		}
 	}
 }
@@ -209,9 +269,10 @@ function amazonia_user_community_field( $user ) {
 	$communities = get_posts( [
 		'post_type'      => 'comunidad',
 		'post_status'    => 'publish',
-		'posts_per_page' => -1,
+		'posts_per_page' => 200,         // dropdown admin — número alto pero acotado
 		'orderby'        => 'title',
 		'order'          => 'ASC',
+		'no_found_rows'  => true,
 	] );
 	?>
 	<h2><?php esc_html_e( 'Amazonia Market', 'amazonia-theme' ); ?></h2>
@@ -293,19 +354,76 @@ function amazonia_get_community_data( $community_id ) {
 		$logo     = $thumb_id ? wp_get_attachment_image_url( $thumb_id, 'thumbnail' ) : '';
 	}
 
+	$galeria_raw = get_post_meta( $community_id, '_comunidad_galeria', true );
+	$galeria_ids = $galeria_raw ? json_decode( $galeria_raw, true ) : [];
+	if ( ! is_array( $galeria_ids ) ) $galeria_ids = [];
+
+	$valores_raw = get_post_meta( $community_id, '_comunidad_valores', true );
+	$valores = $valores_raw ? json_decode( $valores_raw, true ) : [];
+	if ( ! is_array( $valores ) ) $valores = [];
+
 	return [
-		'id'           => $community_id,
-		'nombre'       => get_the_title( $community_id ),
-		'descripcion'  => get_post_meta( $community_id, '_comunidad_descripcion', true ),
-		'historia'     => get_post_meta( $community_id, '_comunidad_historia', true ),
-		'pais'         => get_post_meta( $community_id, '_comunidad_pais', true ),
-		'departamento' => get_post_meta( $community_id, '_comunidad_departamento', true ),
-		'municipio'    => get_post_meta( $community_id, '_comunidad_municipio', true ),
-		'categoria'    => get_post_meta( $community_id, '_comunidad_categoria', true ),
-		'logo'         => $logo,
-		'url'          => get_permalink( $community_id ),
-		'vendors'      => amazonia_get_community_vendors( $community_id ),
+		'id'             => $community_id,
+		'nombre'         => get_the_title( $community_id ),
+		'descripcion'    => get_post_meta( $community_id, '_comunidad_descripcion', true ),
+		'historia'       => get_post_meta( $community_id, '_comunidad_historia', true ),
+		'pais'           => get_post_meta( $community_id, '_comunidad_pais', true ),
+		'departamento'   => get_post_meta( $community_id, '_comunidad_departamento', true ),
+		'municipio'      => get_post_meta( $community_id, '_comunidad_municipio', true ),
+		'categoria'      => get_post_meta( $community_id, '_comunidad_categoria', true ),
+		'logo'           => $logo,
+		'banner'         => get_post_meta( $community_id, '_comunidad_banner_url', true ),
+		'galeria_ids'    => $galeria_ids,
+		'video_url'      => get_post_meta( $community_id, '_comunidad_video_url', true ),
+		'fundacion'      => get_post_meta( $community_id, '_comunidad_fundacion', true ),
+		'num_familias'   => get_post_meta( $community_id, '_comunidad_num_familias', true ),
+		'valores'        => $valores,
+		'instagram'      => get_post_meta( $community_id, '_comunidad_instagram', true ),
+		'facebook'       => get_post_meta( $community_id, '_comunidad_facebook', true ),
+		'certificaciones'=> get_post_meta( $community_id, '_comunidad_certificaciones', true ),
+		'url'            => get_permalink( $community_id ),
+		'vendors'        => amazonia_get_community_vendors( $community_id ),
 	];
+}
+
+/**
+ * Convierte una URL de YouTube o Vimeo en URL de embed.
+ * Retorna cadena vacía si no reconoce el formato.
+ */
+function amazonia_get_video_embed_url( $url ) {
+	if ( ! $url ) return '';
+	if ( preg_match( '/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/', $url, $m ) ) {
+		return 'https://www.youtube.com/embed/' . $m[1] . '?rel=0&modestbranding=1';
+	}
+	if ( preg_match( '/vimeo\.com\/(\d+)/', $url, $m ) ) {
+		return 'https://player.vimeo.com/video/' . $m[1];
+	}
+	return '';
+}
+
+// ─── 10. Capacidad: el admin de comunidad puede editar SU comunidad ──────────
+//
+// Cuando WordPress comprueba edit_post para un post concreto, $args[0] es 'edit_post'
+// y $args[2] es el post_id. Si coincide con managed_community_id del usuario,
+// concedemos los primitive caps que WordPress requiere para esa acción específica.
+add_filter( 'user_has_cap', 'amazonia_community_admin_edit_cap', 999, 4 );
+function amazonia_community_admin_edit_cap( $allcaps, $caps, $args, $user ) {
+	if ( ! in_array( 'amazonia_community_admin', (array) $user->roles, true ) ) return $allcaps;
+
+	$check_cap = $args[0] ?? '';
+	if ( $check_cap !== 'edit_post' ) return $allcaps;
+
+	$post_id = isset( $args[2] ) ? (int) $args[2] : 0;
+	if ( ! $post_id ) return $allcaps;
+
+	$managed = (int) get_user_meta( $user->ID, 'managed_community_id', true );
+	if ( ! $managed || $managed !== $post_id ) return $allcaps;
+
+	// Conceder exactamente los primitive caps que WP pidió para este edit_post
+	foreach ( $caps as $cap ) {
+		$allcaps[ $cap ] = true;
+	}
+	return $allcaps;
 }
 
 // ─── 9. Banner de comunidad debajo del header de la tienda WCFM ─────────────
@@ -340,7 +458,8 @@ function amazonia_store_community_banner( $vendor_id ) {
 			<?php if ( $logo ) : ?>
 				<img src="<?php echo $logo; ?>"
 				     alt="<?php echo $nombre; ?>"
-				     style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #86efac;flex-shrink:0;" />
+				     style="width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid #86efac;flex-shrink:0;"
+				     loading="lazy" width="44" height="44" />
 			<?php else : ?>
 				<span class="material-symbols-outlined"
 				      style="font-size:36px;color:#4ade80;flex-shrink:0;line-height:1;">groups</span>

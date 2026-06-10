@@ -1,175 +1,111 @@
     </div><!-- #content -->
 
-    <footer id="site-footer" style="background: linear-gradient(170deg, #0a2e0a 0%, #0f3d1a 40%, #0a2a12 100%); position: relative; overflow: hidden; margin-top: 5rem;">
+    <footer id="site-footer" class="bg-[linear-gradient(170deg,#0a2e0a_0%,#0f3d1a_40%,#0a2a12_100%)] relative overflow-hidden mt-20">
 
         <!-- Decorative blurs -->
-        <div style="position:absolute; top:-120px; left:-120px; width:400px; height:400px; background:radial-gradient(circle, rgba(22,163,74,0.18) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
-        <div style="position:absolute; bottom:-80px; right:-80px; width:350px; height:350px; background:radial-gradient(circle, rgba(74,222,128,0.12) 0%, transparent 70%); border-radius:50%; pointer-events:none;"></div>
-        <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:300px; background:radial-gradient(ellipse, rgba(16,83,30,0.25) 0%, transparent 70%); pointer-events:none;"></div>
+        <div class="absolute -top-[120px] -left-[120px] w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(22,163,74,0.18)_0%,transparent_70%)] rounded-full pointer-events-none"></div>
+        <div class="absolute -bottom-[80px] -right-[80px] w-[350px] h-[350px] bg-[radial-gradient(circle,rgba(74,222,128,0.12)_0%,transparent_70%)] rounded-full pointer-events-none"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-[radial-gradient(ellipse,rgba(16,83,30,0.25)_0%,transparent_70%)] pointer-events-none"></div>
 
         <!-- Top divider line with gradient -->
-        <div style="width:100%; height:1px; background:linear-gradient(90deg, transparent 0%, rgba(74,222,128,0.4) 30%, rgba(22,163,74,0.6) 50%, rgba(74,222,128,0.4) 70%, transparent 100%);"></div>
+        <div class="w-full h-[1px] bg-[linear-gradient(90deg,transparent_0%,rgba(74,222,128,0.4)_30%,rgba(22,163,74,0.6)_50%,rgba(74,222,128,0.4)_70%,transparent_100%)]"></div>
 
         <!-- Main footer content -->
-        <div style="position:relative; z-index:10; max-width:1200px; margin:0 auto; padding:4rem 2rem 2.5rem;">
+        <div class="relative z-10 max-w-[1200px] mx-auto px-8 pt-16 pb-10">
 
-            <div style="display:grid; grid-template-columns:1fr; gap:3rem;">
+            <div class="grid grid-cols-1 gap-12">
 
                 <!-- Top row -->
-                <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1.5fr; gap:3rem; align-items:start;">
+                <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-12 items-start">
 
                     <!-- Brand column -->
                     <div>
                         <!-- Logo / Brand -->
-                        <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;">
-                            <div style="width:40px; height:40px; background:linear-gradient(135deg, #16a34a, #4ade80); border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(74,222,128,0.35);">
-                                <span class="material-symbols-outlined" style="color:#fff; font-size:1.25rem; font-variation-settings:'FILL' 1;">eco</span>
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-gradient-to-br from-primary to-[#4ade80] rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(74,222,128,0.35)]">
+                                <span class="material-symbols-outlined text-white text-[1.25rem] [font-variation-settings:'FILL'_1]">eco</span>
                             </div>
-                            <span style="font-family:'Work Sans', sans-serif; font-size:1.25rem; font-weight:900; letter-spacing:0.08em; color:#f0fdf4; text-transform:uppercase;">
+                            <span class="font-display text-[1.25rem] font-black tracking-[0.08em] text-[#f0fdf4] uppercase">
                                 <?php bloginfo('name'); ?>
                             </span>
                         </div>
 
                         <!-- Tagline -->
-                        <p style="color:#bbf7d0; font-size:0.875rem; line-height:1.75; max-width:300px; margin:0 0 1.75rem; font-weight:400;">
+                        <p class="text-[#bbf7d0] text-sm leading-relaxed max-w-[300px] mb-7 font-normal">
                             Conectamos la sabiduría ancestral de comunidades afrocolombianas e indígenas de la Amazonía con el mercado digital global.
                         </p>
 
                         <!-- Cultural badge -->
-                        <div style="display:inline-flex; align-items:center; gap:0.5rem; background:rgba(74,222,128,0.1); border:1px solid rgba(74,222,128,0.25); border-radius:9999px; padding:0.4rem 1rem; margin-bottom:1.75rem; backdrop-filter:blur(8px);">
-                            <span class="material-symbols-outlined" style="font-size:0.9rem; color:#4ade80; font-variation-settings:'FILL' 1;">location_on</span>
-                            <span style="font-size:0.7rem; color:#86efac; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;">Caquetá, Colombia</span>
+                        <div class="inline-flex items-center gap-2 bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.25)] rounded-full px-4 py-1.5 mb-7 backdrop-blur-md">
+                            <span class="material-symbols-outlined text-[0.9rem] text-[#4ade80] [font-variation-settings:'FILL'_1]">location_on</span>
+                            <span class="text-[0.7rem] text-[#86efac] font-semibold tracking-widest uppercase">Caquetá, Colombia</span>
                         </div>
 
                         <!-- Social links -->
-                        <div style="display:flex; gap:0.75rem;">
-                            <a href="#" title="Web" style="width:38px; height:38px; background:rgba(22,163,74,0.85); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:all 0.3s ease; box-shadow:0 4px 15px rgba(22,163,74,0.3); text-decoration:none;"
-                               onmouseover="this.style.background='#4ade80'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(74,222,128,0.5)';"
-                               onmouseout="this.style.background='rgba(22,163,74,0.85)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(22,163,74,0.3)';">
-                                <span class="material-symbols-outlined" style="color:#fff; font-size:1rem;">public</span>
+                        <div class="flex gap-3">
+                            <a href="#" title="Web" class="w-[38px] h-[38px] bg-[rgba(22,163,74,0.85)] rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(22,163,74,0.3)] hover:bg-[#4ade80] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(74,222,128,0.5)] no-underline">
+                                <span class="material-symbols-outlined text-white text-base">public</span>
                             </a>
-                            <a href="#" title="Email" style="width:38px; height:38px; background:rgba(22,163,74,0.85); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:all 0.3s ease; box-shadow:0 4px 15px rgba(22,163,74,0.3); text-decoration:none;"
-                               onmouseover="this.style.background='#4ade80'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(74,222,128,0.5)';"
-                               onmouseout="this.style.background='rgba(22,163,74,0.85)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(22,163,74,0.3)';">
-                                <span class="material-symbols-outlined" style="color:#fff; font-size:1rem;">mail</span>
+                            <a href="#" title="Email" class="w-[38px] h-[38px] bg-[rgba(22,163,74,0.85)] rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(22,163,74,0.3)] hover:bg-[#4ade80] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(74,222,128,0.5)] no-underline">
+                                <span class="material-symbols-outlined text-white text-base">mail</span>
                             </a>
-                            <a href="#" title="Instagram" style="width:38px; height:38px; background:rgba(22,163,74,0.85); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:all 0.3s ease; box-shadow:0 4px 15px rgba(22,163,74,0.3); text-decoration:none;"
-                               onmouseover="this.style.background='#4ade80'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(74,222,128,0.5)';"
-                               onmouseout="this.style.background='rgba(22,163,74,0.85)'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(22,163,74,0.3)';">
-                                <span class="material-symbols-outlined" style="color:#fff; font-size:1rem;">photo_camera</span>
+                            <a href="#" title="Instagram" class="w-[38px] h-[38px] bg-[rgba(22,163,74,0.85)] rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(22,163,74,0.3)] hover:bg-[#4ade80] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(74,222,128,0.5)] no-underline">
+                                <span class="material-symbols-outlined text-white text-base">photo_camera</span>
                             </a>
                         </div>
                     </div>
 
                     <!-- Quick Links -->
                     <div>
-                        <h6 style="font-size:0.7rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#4ade80; margin:0 0 1.25rem;">
+                        <h6 class="text-[0.7rem] font-bold tracking-[0.18em] uppercase text-[#4ade80] mb-5">
                             Explorar
                         </h6>
-                        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.85rem;">
+                        <ul class="list-none p-0 m-0 flex flex-col gap-3.5">
                             <li>
-                                <a href="<?php echo esc_url( site_url('/about-us') ); ?>" style="color:#d1fae5; font-size:0.875rem; text-decoration:none; transition:color 0.2s; display:inline-flex; align-items:center; gap:0.4rem;"
-                                   onmouseover="this.style.color='#4ade80';" onmouseout="this.style.color='#d1fae5';">
-                                    <span style="width:4px; height:4px; background:#16a34a; border-radius:50%; flex-shrink:0;"></span>
+                                <a href="<?php echo esc_url( site_url('/about-us') ); ?>" class="text-[#d1fae5] text-sm no-underline transition-colors duration-200 inline-flex items-center gap-1.5 hover:text-[#4ade80]">
+                                    <span class="w-1 h-1 bg-primary rounded-full shrink-0"></span>
                                     Sobre Nosotros
                                 </a>
                             </li>
-                            <li>
-                                <a href="#" style="color:#d1fae5; font-size:0.875rem; text-decoration:none; transition:color 0.2s; display:inline-flex; align-items:center; gap:0.4rem;"
-                                   onmouseover="this.style.color='#4ade80';" onmouseout="this.style.color='#d1fae5';">
-                                    <span style="width:4px; height:4px; background:#16a34a; border-radius:50%; flex-shrink:0;"></span>
-                                    Comunidades
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" style="color:#d1fae5; font-size:0.875rem; text-decoration:none; transition:color 0.2s; display:inline-flex; align-items:center; gap:0.4rem;"
-                                   onmouseover="this.style.color='#4ade80';" onmouseout="this.style.color='#d1fae5';">
-                                    <span style="width:4px; height:4px; background:#16a34a; border-radius:50%; flex-shrink:0;"></span>
-                                    Sostenibilidad
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" style="color:#d1fae5; font-size:0.875rem; text-decoration:none; transition:color 0.2s; display:inline-flex; align-items:center; gap:0.4rem;"
-                                   onmouseover="this.style.color='#4ade80';" onmouseout="this.style.color='#d1fae5';">
-                                    <span style="width:4px; height:4px; background:#16a34a; border-radius:50%; flex-shrink:0;"></span>
-                                    Vender aquí
-                                </a>
-                            </li>
+                            
+                            
+                            
                         </ul>
                     </div>
 
                     <!-- Policies -->
                     <div>
-                        <h6 style="font-size:0.7rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#4ade80; margin:0 0 1.25rem;">
+                        <h6 class="text-[0.7rem] font-bold tracking-[0.18em] uppercase text-[#4ade80] mb-5">
                             Legal
                         </h6>
-                        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.85rem;">
+                        <ul class="list-none p-0 m-0 flex flex-col gap-3.5">
                             <li>
-                                <a href="#" style="color:#d1fae5; font-size:0.875rem; text-decoration:none; transition:color 0.2s; display:inline-flex; align-items:center; gap:0.4rem;"
-                                   onmouseover="this.style.color='#4ade80';" onmouseout="this.style.color='#d1fae5';">
-                                    <span style="width:4px; height:4px; background:#16a34a; border-radius:50%; flex-shrink:0;"></span>
-                                    Política de Envíos
+                                <a href="http://localhost/wordpress/reembolso_devoluciones/" class="text-[#d1fae5] text-sm no-underline transition-colors duration-200 inline-flex items-center gap-1.5 hover:text-[#4ade80]">
+                                    <span class="w-1 h-1 bg-primary rounded-full shrink-0"></span>
+                                    Política de Devoluciones y Reembolsos
                                 </a>
                             </li>
                             <li>
-                                <a href="#" style="color:#d1fae5; font-size:0.875rem; text-decoration:none; transition:color 0.2s; display:inline-flex; align-items:center; gap:0.4rem;"
-                                   onmouseover="this.style.color='#4ade80';" onmouseout="this.style.color='#d1fae5';">
-                                    <span style="width:4px; height:4px; background:#16a34a; border-radius:50%; flex-shrink:0;"></span>
+                                <a href="http://localhost/wordpress/politica-privacidad/" class="text-[#d1fae5] text-sm no-underline transition-colors duration-200 inline-flex items-center gap-1.5 hover:text-[#4ade80]">
+                                    <span class="w-1 h-1 bg-primary rounded-full shrink-0"></span>
                                     Privacidad
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" style="color:#d1fae5; font-size:0.875rem; text-decoration:none; transition:color 0.2s; display:inline-flex; align-items:center; gap:0.4rem;"
-                                   onmouseover="this.style.color='#4ade80';" onmouseout="this.style.color='#d1fae5';">
-                                    <span style="width:4px; height:4px; background:#16a34a; border-radius:50%; flex-shrink:0;"></span>
-                                    Comercio Justo
                                 </a>
                             </li>
                         </ul>
                     </div>
 
-                    <!-- Newsletter -->
-                    <div>
-                        <h6 style="font-size:0.7rem; font-weight:700; letter-spacing:0.18em; text-transform:uppercase; color:#4ade80; margin:0 0 1.25rem;">
-                            Newsletter
-                        </h6>
-                        <p style="color:#bbf7d0; font-size:0.8rem; line-height:1.65; margin:0 0 1.25rem;">
-                            Historias de la selva, productos únicos y novedades directamente en tu correo.
-                        </p>
-                        <!-- Input group -->
-                        <div style="display:flex; border-radius:9999px; overflow:hidden; border:1px solid rgba(74,222,128,0.3); background:rgba(255,255,255,0.05); backdrop-filter:blur(8px);">
-                            <input
-                                type="email"
-                                placeholder="tu@correo.com"
-                                style="flex:1; background:transparent; border:none; outline:none; padding:0.65rem 1rem; font-size:0.8rem; color:#f0fdf4; font-family:'Inter', sans-serif;"
-                            />
-                            <button type="submit"
-                                style="background:linear-gradient(135deg, #16a34a, #22c55e); border:none; padding:0.65rem 1.1rem; cursor:pointer; transition:all 0.25s; display:flex; align-items:center; justify-content:center; border-radius:0 9999px 9999px 0;"
-                                onmouseover="this.style.background='linear-gradient(135deg, #15803d, #16a34a)';"
-                                onmouseout="this.style.background='linear-gradient(135deg, #16a34a, #22c55e)';">
-                                <span class="material-symbols-outlined" style="color:#fff; font-size:1rem; font-variation-settings:'FILL' 1;">send</span>
-                            </button>
-                        </div>
-
-                        <!-- Trust badge -->
-                        <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.85rem;">
-                            <span class="material-symbols-outlined" style="font-size:0.875rem; color:#4ade80; font-variation-settings:'FILL' 1;">verified</span>
-                            <span style="font-size:0.7rem; color:#86efac;">Comercio justo certificado</span>
-                        </div>
-                    </div>
-
                 </div>
 
                 <!-- Bottom bar -->
-                <div style="border-top:1px solid rgba(74,222,128,0.15); padding-top:1.75rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                <div class="border-t border-[rgba(74,222,128,0.15)] pt-7 flex items-center justify-between flex-wrap gap-4">
 
-                    <p style="margin:0; font-size:0.75rem; color:#6ee7b7;">
-                        &copy; <?php echo date('Y'); ?> <strong style="color:#a7f3d0;"><?php bloginfo('name'); ?></strong> &mdash; Preservando el corazón del mundo.
+                    <p class="m-0 text-[0.75rem] text-[#6ee7b7]">
+                        &copy; <?php echo date('Y'); ?> <strong class="text-[#a7f3d0]"><?php bloginfo('name'); ?></strong> &mdash; Preservando el corazón del mundo.
                     </p>
 
-                    <div style="display:flex; align-items:center; gap:0.5rem;">
-                        <div style="width:6px; height:6px; background:#4ade80; border-radius:50%; box-shadow:0 0 6px rgba(74,222,128,0.8); animation: footerPulse 2s infinite;"></div>
-                        <span style="font-size:0.7rem; color:#86efac; letter-spacing:0.05em;">Hecho con ❤️ para la Amazonía</span>
+                    <div class="flex items-center gap-2">
+                        <div class="w-1.5 h-1.5 bg-[#4ade80] rounded-full shadow-[0_0_6px_rgba(74,222,128,0.8)] animate-[footerPulse_2s_infinite]"></div>
+                        <span class="text-[0.7rem] text-[#86efac] tracking-wider">Hecho con ❤️ para la Amazonía</span>
                     </div>
 
                 </div>
@@ -182,14 +118,6 @@
                 0%, 100% { opacity: 1; transform: scale(1); }
                 50%       { opacity: 0.5; transform: scale(1.4); }
             }
-            @media (max-width: 900px) {
-                #site-footer .footer-grid { grid-template-columns: 1fr 1fr !important; }
-            }
-            @media (max-width: 600px) {
-                #site-footer .footer-grid { grid-template-columns: 1fr !important; }
-            }
-            /* Placeholder color */
-            #site-footer input::placeholder { color: rgba(187,247,208,0.45); }
         </style>
 
     </footer>

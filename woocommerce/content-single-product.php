@@ -22,11 +22,11 @@ if ( post_password_required() ) {
 
 <main class="max-w-7xl mx-auto px-6 lg:px-20 py-10 tracking-normal antialiased">
     <div id="product-<?php the_ID(); ?>" <?php wc_product_class( '', $product ); ?>>
-        
+
         <!-- Hero Section -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
             <?php do_action( 'woocommerce_before_single_product_summary' ); ?>
-            
+
             <!-- Product Image -->
             <div class="relative group">
                 <style>
@@ -105,13 +105,13 @@ if ( post_password_required() ) {
                 <div class="product-gallery-wrapper w-full">
                     <?php woocommerce_show_product_images(); ?>
                 </div>
-                
+
                 <?php if ( $product->is_on_sale() ) : ?>
                     <div class="absolute top-4 left-4 bg-[#11d411] text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest z-10">
                         Sale
                     </div>
                 <?php endif; ?>
-                
+
                 <button class="amazonia-favorite-btn absolute top-4 right-4 h-10 w-10 bg-white/90 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors z-10 shadow-lg" data-product-id="<?php echo esc_attr( $product->get_id() ); ?>">
                     <span class="material-symbols-outlined text-xl">favorite</span>
                 </button>
@@ -119,7 +119,7 @@ if ( post_password_required() ) {
 
             <!-- Product Details -->
             <div class="flex flex-col justify-center">
-                
+
                 <?php
                 if ( wc_review_ratings_enabled() ) {
                     $rating_count = $product->get_rating_count();
@@ -129,7 +129,7 @@ if ( post_password_required() ) {
                     if ( $rating_count > 0 ) : ?>
                         <div class="mb-4 flex items-center gap-2">
                             <div class="flex text-[#11d411]">
-                                <?php 
+                                <?php
                                     $rating = round($average);
                                     for ($i=0; $i<5; $i++) {
                                         echo '<span class="material-symbols-outlined text-sm">' . ($i < $rating ? 'star' : 'star_border') . '</span>';
@@ -173,9 +173,9 @@ if ( post_password_required() ) {
                 </div>
 
                 <!-- Tags -->
-                <?php 
+                <?php
                 $terms = get_the_terms( $product->get_id(), 'product_tag' );
-                if ( $terms && ! is_wp_error( $terms ) ) : 
+                if ( $terms && ! is_wp_error( $terms ) ) :
                     $tag_links = array();
                     foreach ( $terms as $term ) {
                         $tag_links[] = '<a href="' . esc_url( get_term_link( $term->term_id, 'product_tag' ) ) . '" class="hover:underline">' . esc_html( $term->name ) . '</a>';
@@ -240,19 +240,19 @@ if ( post_password_required() ) {
                     <?php woocommerce_template_single_add_to_cart(); ?>
                 </div>
 
-                <?php 
+                <?php
                 $attributes = $product->get_attributes();
                 if ( ! empty( $attributes ) ) : ?>
                     <div class="grid grid-cols-2 gap-4 mb-4">
-                        <?php 
+                        <?php
                         $attr_count = 0;
-                        foreach ( $attributes as $attribute ) : 
+                        foreach ( $attributes as $attribute ) :
                             if ( ! $attribute->get_visible() ) continue;
                             if ( $attr_count >= 2 ) break; // Limit
-                            
+
                             $name = wc_attribute_label( $attribute->get_name() );
                             $options = $attribute->get_options();
-                            
+
                             if ( $attribute->is_taxonomy() ) {
                                 $value = wc_get_product_terms( $product->get_id(), $attribute->get_name(), array( 'fields' => 'names' ) );
                                 $value = implode(', ', $value);
@@ -269,7 +269,7 @@ if ( post_password_required() ) {
                                     <span class="text-xs text-slate-500 dark:text-slate-400 capitalize"><?php echo esc_html( $value ); ?></span>
                                 </div>
                             </div>
-                            <?php 
+                            <?php
                             $attr_count++;
                         endforeach; ?>
                     </div>
@@ -279,316 +279,178 @@ if ( post_password_required() ) {
             </div>
         </div>
 
-        <!-- Storytelling Sections (Content) -->
-        <div class="py-16 overflow-hidden flex flex-col items-center max-w-4xl mx-auto space-y-24">
-
-            <?php
-            // Setup Images
-            $attachment_ids = $product->get_gallery_image_ids();
-            $gallery_img_1 = isset($attachment_ids[0]) ? wp_get_attachment_image_src($attachment_ids[0], 'full')[0] : '';
-            $gallery_img_2 = isset($attachment_ids[1]) ? wp_get_attachment_image_src($attachment_ids[1], 'full')[0] : '';
-            
-            // Text Content
-            $content = get_the_content();
-            if (empty($content)) {
-                $content = "Esta es una expresión cultural de las comunidades artesanales. Está elaborado respetando los ciclos naturales y la biodiversidad del territorio. Cada pieza tiene un significado profundo ligado a sus raíces.";
-            }
-
-            // Vendor Info
-            $vendor_id = function_exists( 'wcfm_get_vendor_id_by_post' ) ? wcfm_get_vendor_id_by_post( $product->get_id() ) : 0;
-            $vendor_name = 'Comunidad Local';
-            $vendor_logo = wc_placeholder_img_src();
-            $vendor_banner = '';
-            $shop_desc = 'Artesanos y Productores Locales';
-            $location_str = 'Amazonas, Colombia';
-            $map_query = 'Amazonas, Colombia';
-            $store_url = '#';
-
-            if ( $vendor_id ) {
-                $vendor_name = wcfm_get_vendor_store_name( $vendor_id );
-                $vendor_logo = wcfm_get_vendor_store_logo_by_vendor( $vendor_id );
-                if ( ! $vendor_logo ) $vendor_logo = wc_placeholder_img_src();
-                
-                $vendor_banner_id = get_user_meta( $vendor_id, 'wcfmmp_banner', true );
-                if ( $vendor_banner_id ) {
-                    $vendor_banner_src = wp_get_attachment_image_src( $vendor_banner_id, 'full' );
-                    $vendor_banner = $vendor_banner_src ? $vendor_banner_src[0] : '';
-                }
-
-                $store_info = get_user_meta( $vendor_id, 'wcfmmp_profile_settings', true );
-                $vendor_address = isset( $store_info['address'] ) ? $store_info['address'] : array();
-                
-                $location = array_filter(array(
-                    isset($vendor_address['city']) ? $vendor_address['city'] : '',
-                    isset($vendor_address['country']) ? $vendor_address['country'] : ''
-                ));
-                $location_str = !empty($location) ? implode(', ', $location) : 'Amazonas';
-                
-                $full_address_parts = array_filter(array(
-                    isset($vendor_address['street_1']) ? $vendor_address['street_1'] : '',
-                    isset($vendor_address['city']) ? $vendor_address['city'] : '',
-                    isset($vendor_address['state']) ? $vendor_address['state'] : '',
-                    isset($vendor_address['country']) ? $vendor_address['country'] : ''
-                ));
-                if ( !empty($full_address_parts) ) {
-                    $map_query = implode(', ', $full_address_parts);
-                } elseif ( !empty($location_str) ) {
-                    $map_query = $location_str;
-                }
-
-                $shop_desc = isset($store_info['shop_description']) ? wp_strip_all_tags( $store_info['shop_description'] ) : '';
-                $store_url = function_exists('wcfmmp_get_store_url') ? wcfmmp_get_store_url($vendor_id) : get_author_posts_url($vendor_id);
-            }
-            
-            // Fallbacks for missing images so the design doesn't break
-            if ( ! $gallery_img_1 ) $gallery_img_1 = 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1200&auto=format&fit=crop'; // Cacao/Nature placeholder
-            if ( ! $vendor_banner ) $vendor_banner = 'https://images.unsplash.com/photo-1511556820780-d912e42b4980?q=80&w=1200&auto=format&fit=crop'; // Maker placeholder
-            if ( ! $gallery_img_2 ) $gallery_img_2 = 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=800&auto=format&fit=crop'; // Land placeholder
-            ?>
-
-            <!-- Top Intro Image -->
-            <div class="w-full rounded-[2rem] overflow-hidden aspect-[2/1] shadow-2xl relative">
-                <img src="<?php echo esc_url($gallery_img_1); ?>" alt="Origin Image" class="w-full h-full object-cover">
-                <!-- Fallback gradient to make it look nicer if it's a generic image -->
-                <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-            </div>
-
-            <!-- The Origin -->
-            <div class="w-full flex flex-col items-center">
-                <h2 class="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white mb-8 self-start ml-0 md:ml-8" style="color: #1e3a1e;">The Origin</h2>
-                
-                <div class="relative w-full">
-                    <!-- Background Image -->
-                    <div class="w-[90%] md:w-[75%] h-64 md:h-80 rounded-[2rem] overflow-hidden shadow-xl ml-auto relative">
-                        <img src="<?php echo esc_url($gallery_img_1); ?>" alt="Background" class="w-full h-full object-cover filter brightness-[0.85]">
-                        <div class="absolute inset-0 bg-[#11d411]/10 mix-blend-overlay"></div>
-                    </div>
-                    
-                    <!-- Floating Card -->
-                    <div class="absolute top-1/2 -translate-y-1/2 left-0 w-[85%] md:w-[55%] bg-white dark:bg-slate-900 rounded-[1.5rem] p-6 md:p-8 shadow-2xl border-l-[6px] border-[#11d411]">
-                        <h3 class="font-bold text-lg md:text-xl text-slate-900 dark:text-white mb-3">El Origen y Proceso:</h3>
-                        <div class="text-sm md:text-base text-slate-600 dark:text-slate-400 line-clamp-4 leading-relaxed">
-                            <?php echo wp_kses_post( $content ); ?>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- The Maker -->
-            <div class="w-full flex flex-col items-center mt-12 md:mt-20">
-                <h2 class="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white mb-8 self-end mr-0 md:mr-8" style="color: #1e3a1e;">The Maker</h2>
-                
-                <div class="relative w-full">
-                    <!-- Background Image -->
-                    <div class="w-[90%] md:w-[75%] h-64 md:h-80 rounded-[2rem] overflow-hidden shadow-xl mr-auto">
-                        <img src="<?php echo esc_url($vendor_banner); ?>" alt="The Maker" class="w-full h-full object-cover filter brightness-[0.7]">
-                    </div>
-                    
-                    <!-- Floating Card -->
-                    <div class="absolute top-1/2 -translate-y-1/2 right-0 w-[85%] md:w-[45%] bg-white dark:bg-slate-900 rounded-[1.5rem] p-6 md:p-8 shadow-2xl flex flex-col gap-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
-                                <img src="<?php echo esc_url($vendor_logo); ?>" alt="Profile" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg md:text-xl text-slate-900 dark:text-white leading-tight"><?php echo esc_html($vendor_name); ?></h3>
-                                <p class="text-xs text-slate-500 flex items-center gap-1 mt-1">
-                                    <span class="material-symbols-outlined text-[14px]">location_on</span>
-                                    <?php echo esc_html($location_str); ?>
-                                </p>
-                            </div>
-                        </div>
-                        <?php if ( $shop_desc ) : ?>
-                            <p class="text-sm md:text-base text-slate-600 dark:text-slate-400 italic">"<?php echo esc_html($shop_desc); ?>"</p>
-                        <?php endif; ?>
-                        <a href="<?php echo esc_url($store_url); ?>" class="text-[#11d411] text-sm font-bold flex items-center gap-1 hover:underline mt-2 w-fit">
-                            Ver Comunidad <span class="material-symbols-outlined text-sm font-bold">add</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- The Land -->
-            <div class="w-full flex flex-col items-center mt-12 md:mt-20">
-                <h2 class="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-white mb-8 self-start ml-0 md:ml-8" style="color: #1e3a1e;">The Land</h2>
-                
-                <div class="w-full bg-white dark:bg-slate-900 rounded-[2rem] p-4 shadow-xl border border-slate-100 dark:border-slate-800">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <!-- Map -->
-                        <div class="aspect-square md:aspect-auto md:h-80 rounded-[1.5rem] overflow-hidden relative group shadow-inner">
-                            <div class="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-[10px] uppercase tracking-wider font-bold text-slate-700 shadow-sm">
-                                <?php echo esc_html($location_str); ?>
-                            </div>
-                            <iframe 
-                                width="100%" 
-                                height="100%" 
-                                frameborder="0" 
-                                scrolling="no" 
-                                marginheight="0" 
-                                marginwidth="0" 
-                                class="grayscale-[20%] contrast-[110%] group-hover:grayscale-0 transition-all duration-700"
-                                src="https://maps.google.com/maps?q=<?php echo urlencode($map_query); ?>&t=&z=10&ie=UTF8&iwloc=&output=embed">
-                            </iframe>
-                        </div>
-                        
-                        <!-- Landscape Image -->
-                        <div class="aspect-square md:aspect-auto md:h-80 rounded-[1.5rem] overflow-hidden relative shadow-inner">
-                            <img src="<?php echo esc_url($gallery_img_2); ?>" alt="Territory" class="w-full h-full object-cover">
-                            <a href="https://maps.google.com/maps?q=<?php echo urlencode($map_query); ?>" target="_blank" class="absolute bottom-6 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-sm px-5 py-2.5 rounded-full text-xs font-bold text-slate-700 shadow-xl flex items-center gap-1.5 cursor-pointer hover:bg-[#11d411] hover:text-white transition-all duration-300">
-                                <span class="material-symbols-outlined text-[16px] text-[#11d411] hover:text-white transition-colors">location_on</span> Abrir en Maps
-                            </a>
-                        </div>
-                    </div>
-                    <div class="pt-5 px-3 pb-2">
-                        <span class="font-bold text-lg text-slate-900 dark:text-white">Su Territorio</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-            
-            <!-- Cultural Importance Section -->
-            <section class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center border-t border-slate-200 dark:border-slate-800 pt-20">
-                <div class="space-y-8">
-                    <div class="inline-flex p-3 rounded-2xl bg-[#11d411]/10 text-[#11d411]">
-                        <span class="material-symbols-outlined text-3xl">temple_hindu</span>
-                    </div>
-                    <h2 class="text-4xl font-black text-slate-900 dark:text-white leading-tight">
-                        Preserving Ancestral <br/><span class="text-[#11d411]">Wisdom</span>
-                    </h2>
-                    <div class="space-y-6 text-slate-600 dark:text-slate-400">
-                        <p>
-                            In Afro-Amazonian and Indigenous cultures, these objects serve as spiritual anchors.
-                        </p>
-                        <p>
-                            By choosing this product, you are actively participating in the preservation of the language and traditional forest management practices that have kept the Amazon diverse for millennia.
-                        </p>
-                    </div>
-                </div>
-                <div class="bg-[#11d411]/5 rounded-[2.5rem] p-4 lg:p-10 border border-[#11d411]/10">
-                    <div class="rounded-2xl overflow-hidden aspect-video shadow-lg">
-                        <img class="w-full h-full object-cover" alt="Amazon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_lRzrkQem4oyVmD_G5i2aCsM8WKKTg5ZYJpRD7JTzleb_715ZJSRzTyiMWa4U0baCbMBtBHLCh30rj_wRQEkxqT0O3PDRAsORoMiTj5yjCBDbU9sTwkxPdP3LuZWRnXpe87dco8PchTJqfSAJtr713_HdLRs-aiq_taRwuNVuwGrKmCHT-90oVtu300qq3FhpxPNC75ofELUO2P_lmvWR_hgM6MlMhDZW1PCnjYvjXAB5IXZoWM_nvAN0w8tUQ9WuSiLDYTMDvR4"/>
-                    </div>
-                    <div class="mt-8 grid grid-cols-2 gap-6">
-                        <div class="space-y-2">
-                            <span class="text-2xl font-bold text-slate-900 dark:text-white">Empower</span>
-                            <p class="text-xs font-bold text-slate-500 uppercase">Local Artisans</p>
-                        </div>
-                        <div class="space-y-2">
-                            <span class="text-2xl font-bold text-slate-900 dark:text-white">Protect</span>
-                            <p class="text-xs font-bold text-slate-500 uppercase">The Rainforest</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="max-w-4xl mx-auto pt-20">
-                <?php
-                if ( comments_open() || get_comments_number() ) :
-                    comments_template();
-                endif;
-                ?>
-            </section>
-        </div>
-
-        <!-- Related / Vendor Products -->
         <?php
-        $related_products = array();
-        $section_title = 'More to Explore';
-        $section_subtitle = 'Discover other treasures';
-        $view_all_link = get_permalink( wc_get_page_id( 'shop' ) );
+        // Gather data for storytelling section
+        $attachment_ids = $product->get_gallery_image_ids();
+        $gallery_img_1  = isset( $attachment_ids[0] ) ? wp_get_attachment_image_src( $attachment_ids[0], 'full' )[0] : '';
+        $gallery_img_2  = isset( $attachment_ids[1] ) ? wp_get_attachment_image_src( $attachment_ids[1], 'full' )[0] : '';
 
-        if ( function_exists( 'wcfm_get_vendor_id_by_post' ) ) {
-            $vendor_id = wcfm_get_vendor_id_by_post( $product->get_id() );
-            if ( $vendor_id ) {
-                $vendor_name = wcfm_get_vendor_store_name( $vendor_id );
-                $section_title = 'More from the ' . $vendor_name;
-                
-                $store_info = get_user_meta( $vendor_id, 'wcfmmp_profile_settings', true );
-                $vendor_address = isset( $store_info['address'] ) ? $store_info['address'] : array();
-                $location = array_filter(array(
-                    isset($vendor_address['city']) ? $vendor_address['city'] : '',
-                    isset($vendor_address['state']) ? $vendor_address['state'] : '',
-                    isset($vendor_address['country']) ? $vendor_address['country'] : ''
-                ));
-                if ( !empty($location) ) {
-                    $section_subtitle = 'Discover other treasures from ' . implode(', ', $location);
-                }
-                
-                if ( function_exists('wcfmmp_get_store_url') ) {
-                    $view_all_link = wcfmmp_get_store_url( $vendor_id );
-                }
+        $vendor_id      = function_exists( 'wcfm_get_vendor_id_by_post' ) ? wcfm_get_vendor_id_by_post( $product->get_id() ) : 0;
+        $community_data = null;
 
-                // Get products from this vendor
-                $args = array(
-                    'post_type' => 'product',
-                    'post_status' => 'publish',
-                    'posts_per_page' => 4,
-                    'post__not_in' => array( $product->get_id() ),
-                    'author' => $vendor_id,
-                );
-                $related_products = wc_get_products( $args );
+        if ( $vendor_id ) {
+            $community_id = get_user_meta( $vendor_id, 'community_id', true );
+            if ( $community_id && function_exists( 'amazonia_get_community_data' ) ) {
+                $community_data = amazonia_get_community_data( (int) $community_id );
             }
         }
-        
-        // Fallback to related products by category if no vendor products exist
-        if ( empty( $related_products ) ) {
-            $related_ids = wc_get_related_products( $product->get_id(), 4 );
-            if ( ! empty( $related_ids ) ) {
-                $args = array(
-                    'post_type' => 'product',
-                    'post_status' => 'publish',
-                    'posts_per_page' => 4,
-                    'include' => $related_ids,
-                );
-                $related_products = wc_get_products( $args );
-            }
-        }
+        ?>
 
-        if ( ! empty( $related_products ) ) : ?>
-            <div class="py-20 border-t border-slate-200 dark:border-slate-800">
-                <style>
-                    /* Make related product prices match layout */
-                    .related-product-price { display: flex; align-items: baseline; gap: 0.5rem; }
-                    .related-product-price del { font-size: 0.75rem; color: #94a3b8; text-decoration: line-through; }
-                    .related-product-price ins { text-decoration: none; }
-                    .related-product-price ins .amount, .related-product-price > .amount { color: #64748b; font-weight: 500; font-size: 0.875rem; }
-                </style>
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 gap-4">
-                    <div>
-                        <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-1"><?php echo esc_html( $section_title ); ?></h2>
-                        <p class="text-slate-500 dark:text-slate-400"><?php echo esc_html( $section_subtitle ); ?></p>
-                    </div>
-                    <a href="<?php echo esc_url( $view_all_link ); ?>" class="text-[#11d411] font-bold hover:opacity-80 transition-opacity flex items-center gap-1 shrink-0 pb-1">
-                        View All <span class="material-symbols-outlined text-sm font-bold">chevron_right</span>
-                    </a>
-                </div>
-                
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                    <?php foreach ( $related_products as $related_product ) : 
-                        $post_object = get_post( $related_product->get_id() );
-                        setup_postdata( $GLOBALS['post'] =& $post_object ); // phpcs:ignore
-                        ?>
-                        <a href="<?php echo esc_url( $related_product->get_permalink() ); ?>" class="group block">
-                            <div class="aspect-square rounded-[2rem] overflow-hidden bg-slate-100 dark:bg-slate-800 mb-4 relative shadow-md hover:shadow-xl transition-shadow duration-300">
-                                <?php echo $related_product->get_image( 'woocommerce_thumbnail', array( 'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-500' ) ); ?>
-                            </div>
-                            <h3 class="font-bold text-slate-900 dark:text-white text-base mb-1 truncate group-hover:text-[#11d411] transition-colors"><?php echo $related_product->get_title(); ?></h3>
-                            <div class="related-product-price">
-                                <?php echo $related_product->get_price_html(); ?>
-                            </div>
-                        </a>
-                    <?php endforeach; 
-                    wp_reset_postdata();
-                    ?>
-                </div>
+        <?php if ( $community_data ) : ?>
+        <!-- Storytelling: Origen & Propósito -->
+        <style>
+            .amz-glass-card {
+                background: rgba(244, 252, 240, 0.6);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+            .amz-gradient-border-left {
+                border-left-width: 3px;
+                border-image: linear-gradient(to bottom, #006b2c, #7ffc97) 1;
+            }
+            .amz-glow-hover:hover {
+                box-shadow: 0 0 30px rgba(0, 107, 44, 0.15);
+            }
+            .amz-fade-up {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+            .amz-fade-up.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        </style>
+
+        <section class="max-w-[1200px] mx-auto py-20 overflow-hidden">
+
+            <!-- Section Header -->
+            <div class="flex flex-col items-start mb-12 amz-fade-up" style="transition-delay: 0s;">
+                <span class="text-xs font-semibold text-[#006b2c] tracking-widest uppercase mb-3" style="font-family: 'Work Sans', sans-serif; letter-spacing: 0.05em;">ORIGEN &amp; PROPÓSITO</span>
+                <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-3 max-w-2xl leading-tight" style="font-family: 'Outfit', sans-serif;">Cada producto tiene una historia</h2>
+                <div class="h-1 w-24 rounded-full" style="background: linear-gradient(to right, #006b2c, #7ffc97);"></div>
             </div>
+
+            <div class="flex flex-col gap-12">
+
+                <!-- Card 1: La Comunidad — texto izquierda, imagen derecha -->
+                <div class="amz-fade-up group flex flex-col md:flex-row items-stretch amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left hover:-translate-y-1 transition-all duration-500 amz-glow-hover" style="transition-delay: 0.15s;">
+                    <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
+                        <?php if ( $community_data['categoria'] ) : ?>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3 uppercase tracking-wider" style="background: rgba(127,252,151,0.3); color: #005320; font-family: 'Work Sans', sans-serif;">
+                            <?php echo esc_html( $community_data['categoria'] ); ?>
+                        </span>
+                        <?php endif; ?>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-3 leading-tight" style="font-family: 'Outfit', sans-serif;"><?php echo esc_html( $community_data['nombre'] ); ?></h3>
+                        <?php if ( $community_data['historia'] ) : ?>
+                        <p class="text-base lg:text-lg text-slate-600 mb-6 leading-relaxed" style="font-family: 'Inter', sans-serif;">
+                            <?php echo esc_html( wp_trim_words( $community_data['historia'], 40, '…' ) ); ?>
+                        </p>
+                        <?php endif; ?>
+                        <a class="text-sm font-semibold text-[#006b2c] flex items-center gap-2 hover:translate-x-2 transition-transform duration-300 w-fit" style="font-family: 'Work Sans', sans-serif;" href="<?php echo esc_url( $community_data['url'] ); ?>">
+                            Conocer la comunidad
+                            <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+                        </a>
+                    </div>
+                    <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden order-1 md:order-2">
+                        <?php if ( $community_data['banner'] ) : ?>
+                        <img alt="<?php echo esc_attr( $community_data['nombre'] ); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $community_data['banner'] ); ?>" loading="lazy" />
+                        <?php else : ?>
+                        <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <?php
+                $valores = $community_data['valores'];
+                $bullets = array_slice( $valores, 0, 3 );
+                ?>
+
+                <!-- Card 2: Tradición & Cultura — imagen izquierda, texto derecha -->
+                <?php if ( ! empty( $bullets ) ) : ?>
+                <div class="amz-fade-up group flex flex-col md:flex-row items-stretch amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left hover:-translate-y-1 transition-all duration-500 amz-glow-hover" style="transition-delay: 0.3s;">
+                    <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden">
+                        <?php if ( $gallery_img_1 ) : ?>
+                        <img alt="Tradición artesanal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_1 ); ?>" loading="lazy" />
+                        <?php else : ?>
+                        <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3 uppercase tracking-wider" style="background: rgba(195,238,184,0.4); color: #2b4f27; font-family: 'Work Sans', sans-serif;">
+                            TRADICIÓN &amp; CULTURA
+                        </span>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-4 leading-tight" style="font-family: 'Outfit', sans-serif;">Saberes que se tejen de generación en generación</h3>
+                        <ul class="space-y-3">
+                            <?php foreach ( $bullets as $valor ) : ?>
+                            <li class="flex items-center gap-3 text-base text-slate-600" style="font-family: 'Inter', sans-serif;">
+                                <?php if ( ! empty( $valor['icono'] ) ) : ?>
+                                <span class="material-symbols-outlined text-[#006d36] shrink-0" style="font-size: 18px;"><?php echo esc_html( $valor['icono'] ); ?></span>
+                                <?php else : ?>
+                                <span class="w-2 h-2 rounded-full bg-[#006d36] shrink-0 inline-block"></span>
+                                <?php endif; ?>
+                                <?php echo esc_html( $valor['texto'] ); ?>
+                            </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+                <!-- Card 3: Valores de la Comunidad — texto izquierda, imagen derecha -->
+                <?php if ( ! empty( $valores ) ) : ?>
+                <div class="amz-fade-up group flex flex-col md:flex-row items-stretch amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left hover:-translate-y-1 transition-all duration-500 amz-glow-hover" style="transition-delay: 0.45s;">
+                    <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3 uppercase tracking-wider" style="background: #00873a; color: #f7fff2; font-family: 'Work Sans', sans-serif;">
+                            VALORES
+                        </span>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 leading-tight" style="font-family: 'Outfit', sans-serif;">Los principios que guían cada pieza</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <?php foreach ( $valores as $valor ) : ?>
+                            <div class="flex items-start gap-3">
+                                <?php if ( ! empty( $valor['icono'] ) ) : ?>
+                                <span class="material-symbols-outlined text-[#006b2c] shrink-0 mt-0.5" style="font-size: 24px;"><?php echo esc_html( $valor['icono'] ); ?></span>
+                                <?php endif; ?>
+                                <span class="text-base text-slate-600" style="font-family: 'Inter', sans-serif;"><?php echo esc_html( $valor['texto'] ); ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden order-1 md:order-2">
+                        <?php if ( $gallery_img_2 ) : ?>
+                        <img alt="Valores artesanales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_2 ); ?>" loading="lazy" />
+                        <?php else : ?>
+                        <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
+
+            </div>
+        </section>
+
+        <script>
+        (function() {
+            document.addEventListener('DOMContentLoaded', function() {
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+                document.querySelectorAll('.amz-fade-up').forEach(function(el) {
+                    observer.observe(el);
+                });
+            });
+        })();
+        </script>
         <?php endif; ?>
 
-        <?php 
+        <?php
         remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
         remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15 );
-        do_action( 'woocommerce_after_single_product_summary' ); 
+        do_action( 'woocommerce_after_single_product_summary' );
         ?>
 
     </div>

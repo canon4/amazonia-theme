@@ -1,1 +1,38 @@
 node_modules/
+
+# Build tools raíz (no van al repo — sí van los de subdirectorios como /performance)
+/package.json
+/package-lock.json
+
+# Suite de rendimiento — reportes generados (no van al repo)
+performance/reports/
+performance/node_modules/
+# El package.json de performance SÍ va al repo (documenta dependencias)
+# Los scripts .js SÍ van al repo
+
+# Claude Code / agentes IA
+.agents/
+.claude/
+skills-lock.json
+context.md
+CLAUDE.md
+
+# Archivos de prototipado local
+preview/
+
+# Backups automáticos de editores de traducción
+languages/*.po~
+languages/*.po.bak
+
+# Documentos binarios (usar solo los .md equivalentes)
+docs/*.docx
+docs/*.exe
+
+.github/workflows/deploy-theme.yml
+.github/workflows/deploy-docs.yml
+.github/workflows/deploy-performance.yml
+.github/workflows/deploy-agents.yml
+.github/workflows/deploy-claude.yml
+preview/DESIGN.md
+preview/screen.png
+preview/code_Producto.html
