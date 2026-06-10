@@ -27,3 +27,12 @@ languages/*.po.bak
 # Documentos binarios (usar solo los .md equivalentes)
 docs/*.docx
 docs/*.exe
+
+.github/workflows/deploy-theme.yml
+.github/workflows/deploy-docs.yml
+.github/workflows/deploy-performance.yml
+.github/workflows/deploy-agents.yml
+.github/workflows/deploy-claude.yml
+preview/DESIGN.md
+preview/screen.png
+preview/code_Producto.html
