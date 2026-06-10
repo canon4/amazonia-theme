@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 	?>
 
 	<a href="<?php echo esc_url( get_comment_link( $comment->comment_ID ) ); ?>">
-		<?php echo $product->get_image(); ?>
+		<?php echo $product->get_image( 'woocommerce_thumbnail', [ 'loading' => 'lazy' ] ); ?>
 		<span class="product-title"><?php echo wp_kses_post( $product->get_name() ); ?></span>
 	</a>
 

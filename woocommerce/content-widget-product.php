@@ -29,7 +29,7 @@ if ( ! is_a( $product, 'WC_Product' ) ) {
 	<?php do_action( 'woocommerce_widget_product_item_start', $args ); ?>
 
 	<a href="<?php echo esc_url( $product->get_permalink() ); ?>">
-		<?php echo $product->get_image(); // PHPCS:Ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+		<?php echo $product->get_image( 'woocommerce_thumbnail', [ 'loading' => 'lazy' ] ); // PHPCS:Ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<span class="product-title"><?php echo wp_kses_post( $product->get_name() ); ?></span>
 	</a>
 

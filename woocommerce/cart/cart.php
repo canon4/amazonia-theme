@@ -92,7 +92,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 						 *
 						 * @since 2.1.0
 						 */
-						$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
+						$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image( 'woocommerce_thumbnail', [ 'loading' => 'lazy' ] ), $cart_item, $cart_item_key );
 
 						if ( ! $product_permalink ) {
 							echo $thumbnail; // PHPCS: XSS ok.

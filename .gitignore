@@ -1,8 +1,14 @@
 node_modules/
 
-# Build tools (no van al repo)
-package.json
-package-lock.json
+# Build tools raíz (no van al repo — sí van los de subdirectorios como /performance)
+/package.json
+/package-lock.json
+
+# Suite de rendimiento — reportes generados (no van al repo)
+performance/reports/
+performance/node_modules/
+# El package.json de performance SÍ va al repo (documenta dependencias)
+# Los scripts .js SÍ van al repo
 
 # Claude Code / agentes IA
 .agents/
