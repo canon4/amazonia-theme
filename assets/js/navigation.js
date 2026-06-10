@@ -3,19 +3,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const mobileMenuClose = document.getElementById('mobile-menu-close');
+    const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
 
     if (mobileMenuBtn && mobileMenu) {
         mobileMenuBtn.addEventListener('click', () => {
             mobileMenu.classList.remove('translate-x-full');
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.classList.remove('opacity-0', 'pointer-events-none');
+            }
             document.body.classList.add('overflow-hidden');
         });
     }
 
-    if (mobileMenuClose && mobileMenu) {
-        mobileMenuClose.addEventListener('click', () => {
+    const closeMobileMenu = () => {
+        if (mobileMenu) {
             mobileMenu.classList.add('translate-x-full');
+            if (mobileMenuOverlay) {
+                mobileMenuOverlay.classList.add('opacity-0', 'pointer-events-none');
+            }
             document.body.classList.remove('overflow-hidden');
-        });
+        }
+    };
+
+    if (mobileMenuClose) {
+        mobileMenuClose.addEventListener('click', closeMobileMenu);
+    }
+
+    if (mobileMenuOverlay) {
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
     }
 
     // Mobile Search Toggle
