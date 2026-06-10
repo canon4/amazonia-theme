@@ -84,15 +84,14 @@ function amazonia_get_favorites() {
 	$product_ids = array_map( 'intval', $product_ids );
 
 	// Query products
-	$args = array(
+	$query = new WP_Query( array(
 		'post_type'      => 'product',
 		'post_status'    => 'publish',
 		'post__in'       => $product_ids,
-		'posts_per_page' => -1,
-		'orderby'        => 'post__in', // Keep the order of the ids
-	);
-
-	$query = new WP_Query( $args );
+		'posts_per_page' => 50,          // límite razonable para favoritos
+		'orderby'        => 'post__in',  // Keep the order of the ids
+		'no_found_rows'  => true,        // sin paginación, evita COUNT(*)
+	) );
 
 	ob_start();
 

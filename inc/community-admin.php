@@ -21,9 +21,17 @@ function amazonia_register_community_admin_role() {
 		__( 'Admin de Comunidad', 'amazonia-theme' ),
 		[
 			'read'                       => true,
-			'amazonia_community_admin'   => true,  // capability propia para checks internos
+			'amazonia_community_admin'   => true,
+			'upload_files'               => true,
 		]
 	);
+
+	// add_role() es idempotente: si el rol ya existe no hace nada.
+	// add_cap() garantiza que el rol en DB tenga upload_files aunque ya existiera.
+	$role = get_role( 'amazonia_community_admin' );
+	if ( $role ) {
+		$role->add_cap( 'upload_files' );
+	}
 }
 
 // ─── 2. Asignar el rol correcto al registrarse vía /vendor-register ──────────
@@ -67,13 +75,26 @@ function amazonia_redirect_community_admin_from_wcfm() {
 	}
 }
 
-// ─── 4. Limpiar el rol al desactivar el tema (buena práctica) ────────────────
+// ─── 4. Garantizar upload_files en cada verificación de capabilities ─────────
+//
+// get_role()->add_cap() escribe en BD pero depende del estado inicial del request.
+// Este filtro concede upload_files directamente en tiempo de ejecución, sin BD,
+// cubriendo también wp-admin/async-upload.php donde ocurre el upload real.
+add_filter( 'user_has_cap', 'amazonia_community_admin_upload_cap', 999, 4 );
+function amazonia_community_admin_upload_cap( $allcaps, $caps, $args, $user ) {
+	if ( in_array( 'amazonia_community_admin', (array) $user->roles, true ) ) {
+		$allcaps['upload_files'] = true;
+	}
+	return $allcaps;
+}
+
+// ─── 6. Limpiar el rol al desactivar el tema (buena práctica) ────────────────
 add_action( 'switch_theme', 'amazonia_remove_community_admin_role' );
 function amazonia_remove_community_admin_role() {
 	remove_role( 'amazonia_community_admin' );
 }
 
-// ─── 5. Helpers ─────────────────────────────────────────────────────────────
+// ─── 7. Helpers ─────────────────────────────────────────────────────────────
 
 /**
  * Verifica si el usuario actual es administrador de comunidad.

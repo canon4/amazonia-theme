@@ -53,21 +53,48 @@ function amazonia_theme_setup() {
 add_action( 'after_setup_theme', 'amazonia_theme_setup' );
 
 /**
+ * Preload de fuentes críticas (Work Sans e Inter).
+ * Debe ejecutarse con prioridad 1 para emitirse ANTES de los estilos.
+ * Esto elimina el FOUT (Flash of Unstyled Text) y reduce el LCP percibido.
+ */
+add_action( 'wp_head', function() {
+	$fonts_uri = get_template_directory_uri() . '/assets/fonts';
+	// Work Sans — fuente de títulos y navegación (crítica above-the-fold)
+	echo '<link rel="preload" as="font" type="font/woff2" crossorigin href="' . esc_url( $fonts_uri . '/work-sans-latin.woff2' ) . '">' . "\n";
+	// Inter — fuente de cuerpo (crítica para legibilidad inmediata)
+	echo '<link rel="preload" as="font" type="font/woff2" crossorigin href="' . esc_url( $fonts_uri . '/inter-latin.woff2' ) . '">' . "\n";
+}, 1 );
+
+/**
+ * Carga Material Symbols de forma asíncrona (non-blocking).
+ * El woff2 pesa 3.8 MB — con font-display:block bloquea el render hasta 3 s.
+ * Estrategia: imprimir primero como media=print y en onload cambiar a all,
+ * así el browser puede pintar el HTML sin esperar la fuente de iconos.
+ * Los iconos serán invisibles el primer frame y se muestran en cuanto carga.
+ */
+add_filter( 'style_loader_tag', function( $tag, $handle ) {
+	if ( $handle !== 'material-symbols' ) return $tag;
+	$href = esc_url( get_template_directory_uri() . '/assets/css/material-symbols.css?ver=1.0.0' );
+	return '<link rel="preload" as="style" href="' . $href . '" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n"
+		 . '<noscript><link rel="stylesheet" href="' . $href . '"></noscript>' . "\n";
+}, 10, 2 );
+
+/**
  * Enqueue scripts and styles.
  */
 function amazonia_theme_scripts() {
 	// Tailwind CSS compilado localmente (sin JS runtime, sin CDN)
 	wp_enqueue_style( 'amazonia-tailwind', get_template_directory_uri() . '/assets/css/tailwind.css', array(), '1.0.0' );
 
-	// Material Symbols — self-hosted para evitar dependencia de Google Fonts en el servidor.
-	// El archivo woff2 está en assets/fonts/material-symbols-outlined.woff2
-	// Work Sans, Inter y Outfit también son self-hosted (ver main.css).
+	// Material Symbols — self-hosted (woff2 en assets/fonts/).
+	// Se carga de forma asíncrona vía el filtro style_loader_tag de arriba
+	// para no bloquear el render (font-display:block + 3.8 MB = hasta 3 s de bloqueo).
 	wp_enqueue_style( 'material-symbols', get_template_directory_uri() . '/assets/css/material-symbols.css', array(), '1.0.0' );
 
 	// Enqueue main stylesheet (style.css fallback)
 	wp_enqueue_style( 'amazonia-theme-style', get_stylesheet_uri(), array(), '1.0.0' );
 
-	// Enqueue compiled main.css
+	// Enqueue compiled main.css (incluye @font-face de Work Sans, Inter, Outfit)
 	wp_enqueue_style( 'amazonia-main-style', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0.0' );
 
 	// Enqueue main.js
@@ -93,7 +120,7 @@ function amazonia_theme_scripts() {
 	) );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
-		wp_enqueue_script( 'comment-reply' );
+		wp_enqueue_script( 'comment-reply', false, [], false, true );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_theme_scripts' );

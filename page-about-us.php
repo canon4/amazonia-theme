@@ -13,7 +13,7 @@ get_header();
     <section class="max-w-[1440px] mx-auto w-full px-4 md:px-10 lg:px-20 py-6">
         <div class="mb-16 rounded-2xl overflow-hidden bg-slate-900 relative min-h-[500px] flex items-end shadow-2xl group">
             <div class="absolute inset-0 z-0">
-                <img alt="The lush Amazon rainforest at golden hour" class="w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-opacity duration-700 ease-in-out group-hover:scale-105 transform" src="<?php echo get_template_directory_uri(); ?>/assets/img/amazon_rainforest_hero.png" />
+                <img alt="The lush Amazon rainforest at golden hour" class="w-full h-full object-cover opacity-75 group-hover:opacity-90 transition-opacity duration-700 ease-in-out group-hover:scale-105 transform" src="<?php echo get_template_directory_uri(); ?>/assets/img/amazon_rainforest_hero.png" fetchpriority="high" width="1920" height="1080" />
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent"></div>
             </div>
             <div class="relative z-10 p-8 md:p-16 max-w-4xl">
@@ -28,7 +28,7 @@ get_header();
     <section class="max-w-7xl mx-auto px-6 lg:px-20 py-16 mb-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div class="relative rounded-2xl overflow-hidden shadow-2xl h-full min-h-[400px] lg:min-h-[600px] group">
-                <img src="<?php echo get_template_directory_uri(); ?>/assets/img/indigenous_crafts_community.png" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" alt="Artesana indígena tejiendo canasta">
+                <img src="<?php echo get_template_directory_uri(); ?>/assets/img/indigenous_crafts_community.png" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out" alt="Artesana indígena tejiendo canasta" loading="lazy" width="800" height="600">
                 <div class="absolute inset-0 bg-forest-green/20"></div>
                 <div class="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur-sm p-6 rounded-xl border border-white/20">
                     <p class="text-slate-800 italic font-medium">"Tejemos nuestras historias y el respeto por nuestra madre selva en cada fibra."</p>

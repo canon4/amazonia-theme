@@ -27,8 +27,14 @@ if ( ! is_a( $product, WC_Product::class ) || ! $product->is_visible() ) {
 <li <?php wc_product_class( 'group bg-white dark:bg-slate-800 rounded-xl overflow-hidden border border-primary/5 hover:border-primary/20 transition-all hover:shadow-xl hover:shadow-primary/5 flex flex-col !w-full !float-none !m-0', $product ); ?>>
     <div class="aspect-square relative overflow-hidden bg-background-light">
         <a href="<?php echo esc_url( $product->get_permalink() ); ?>" class="block w-full h-full">
-            <?php 
-            echo $product->get_image( 'amazonia-product-card', array( 'class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500', 'loading' => 'lazy' ) );
+            <?php
+            // El primer producto visible en el grid puede estar above-the-fold.
+            // En ese caso no usamos loading="lazy" sino fetchpriority="high".
+            $loop_pos  = (int) wc_get_loop_prop( 'loop', 0 );
+            $img_attrs = ( $loop_pos <= 1 )
+                ? array( 'class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500', 'fetchpriority' => 'high' )
+                : array( 'class' => 'w-full h-full object-cover group-hover:scale-110 transition-transform duration-500', 'loading' => 'lazy' );
+            echo $product->get_image( 'amazonia-product-card', $img_attrs );
             ?>
         </a>
         <?php if ( $product->is_on_sale() ) : ?>
