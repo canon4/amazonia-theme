@@ -50,7 +50,7 @@
                         <div class="text-primary/60 flex items-center justify-center pl-4">
                             <span class="material-symbols-outlined">search</span>
                         </div>
-                        <form role="search" method="get" class="search-form w-full flex items-center m-0" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+                        <form role="search" method="get" class="search-form w-full flex items-center m-0" action="<?php echo esc_url( class_exists('WooCommerce') ? wc_get_page_permalink('shop') : home_url('/') ); ?>">
                             <input type="search" class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-primary/40 px-3 outline-none" placeholder="Buscar aceites, semillas, artesanías..." value="<?php echo get_search_query(); ?>" name="s" />
                         </form>
                     </div>
@@ -95,7 +95,7 @@
         <!-- Mobile Search Dropdown -->
         <div id="mobile-search-container" class="hidden md:hidden absolute top-full left-0 w-full bg-white dark:bg-background-dark border-b border-primary/10 p-4 shadow-lg z-40">
             <div class="flex items-center gap-2">
-                <form role="search" method="get" class="search-form w-full flex items-center bg-primary/5 rounded-full px-4 h-10" action="<?php echo esc_url( home_url( '/' ) ); ?>">
+                <form role="search" method="get" class="search-form w-full flex items-center bg-primary/5 rounded-full px-4 h-10" action="<?php echo esc_url( class_exists('WooCommerce') ? wc_get_page_permalink('shop') : home_url('/') ); ?>">
                     <span class="material-symbols-outlined text-primary/60 text-[20px] mr-2">search</span>
                     <input type="search" class="w-full bg-transparent border-none focus:ring-0 text-sm placeholder:text-primary/40 outline-none" placeholder="Buscar aceites, semillas, artesanías..." value="<?php echo get_search_query(); ?>" name="s" />
                 </form>

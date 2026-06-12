@@ -125,6 +125,20 @@ function amazonia_theme_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_theme_scripts' );
 
+// Evita que WooCommerce redirija al producto cuando la búsqueda devuelve un único resultado.
+add_filter( 'woocommerce_redirect_single_search_result', '__return_false' );
+
+// Breadcrumb global: barra verde con separador chevron en todas las páginas WooCommerce.
+// La página Comunidades no se ve afectada porque llama woocommerce_breadcrumb() con sus propios args.
+add_filter( 'woocommerce_breadcrumb_defaults', function( $defaults ) {
+	$defaults['delimiter']   = '<span class="material-symbols-outlined text-[16px] text-slate-400 select-none" aria-hidden="true">chevron_right</span>';
+	$defaults['wrap_before'] = '<nav class="woocommerce-breadcrumb w-full border-b border-slate-200 dark:border-slate-700" aria-label="' . esc_attr__( 'Ruta de navegación', 'amazonia-theme' ) . '"><div class="max-w-[1400px] mx-auto px-4 sm:px-8 py-3 flex items-center gap-1.5 flex-wrap">';
+	$defaults['wrap_after']  = '</div></nav>';
+	$defaults['before']      = '';
+	$defaults['after']       = '';
+	return $defaults;
+} );
+
 /**
  * Encola el CSS personalizado del dashboard WCFM.
  * Solo se carga en páginas que usen la plantilla template-wcfm-dashboard.php

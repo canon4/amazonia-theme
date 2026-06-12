@@ -2,45 +2,37 @@
 /**
  * Shop breadcrumb
  *
- * This template can be overridden by copying it to yourtheme/woocommerce/global/breadcrumb.php.
- *
- * HOWEVER, on occasion WooCommerce will need to update template files and you
- * (the theme developer) will need to copy the new files to your theme to
- * maintain compatibility. We try to do this as little as possible, but it does
- * happen. When this occurs the version of the template file will be bumped and
- * the readme will list any important changes.
- *
- * @see         https://woocommerce.com/document/template-structure/
- * @package     WooCommerce\Templates
- * @version     2.3.0
- * @see         woocommerce_breadcrumb()
+ * @see     https://woocommerce.com/document/template-structure/
+ * @package WooCommerce\Templates
+ * @version 2.3.0
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
+defined( 'ABSPATH' ) || exit;
+
+if ( empty( $breadcrumb ) ) {
+	return;
 }
 
-if ( ! empty( $breadcrumb ) ) {
+$total = count( $breadcrumb );
 
-	echo $wrap_before;
+echo wp_kses_post( $wrap_before );
 
-	foreach ( $breadcrumb as $key => $crumb ) {
+foreach ( $breadcrumb as $key => $crumb ) {
+	$is_last = ( $key + 1 === $total );
 
-		echo $before;
+	echo wp_kses_post( $before );
 
-		if ( ! empty( $crumb[1] ) && sizeof( $breadcrumb ) !== $key + 1 ) {
-			echo '<a href="' . esc_url( $crumb[1] ) . '">' . esc_html( $crumb[0] ) . '</a>';
-		} else {
-			echo esc_html( $crumb[0] );
-		}
-
-		echo $after;
-
-		if ( sizeof( $breadcrumb ) !== $key + 1 ) {
-			echo $delimiter;
-		}
+	if ( ! empty( $crumb[1] ) && ! $is_last ) {
+		echo '<a href="' . esc_url( $crumb[1] ) . '" class="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors no-underline text-sm font-medium">' . esc_html( $crumb[0] ) . '</a>';
+	} else {
+		echo '<span class="text-slate-800 dark:text-slate-200 text-sm font-semibold">' . esc_html( $crumb[0] ) . '</span>';
 	}
 
-	echo $wrap_after;
+	echo wp_kses_post( $after );
 
+	if ( ! $is_last ) {
+		echo wp_kses_post( $delimiter );
+	}
 }
+
+echo wp_kses_post( $wrap_after );
