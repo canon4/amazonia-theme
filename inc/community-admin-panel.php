@@ -238,7 +238,10 @@ function amazonia_ajax_save_community_info() {
 	$num_familias    = sanitize_text_field( $_POST['num_familias'] ?? '' );
 	$instagram       = esc_url_raw( $_POST['instagram'] ?? '' );
 	$facebook        = esc_url_raw( $_POST['facebook'] ?? '' );
-	$certificaciones = sanitize_text_field( $_POST['certificaciones'] ?? '' );
+	$certificaciones    = sanitize_text_field( $_POST['certificaciones'] ?? '' );
+	$storytelling_img_1 = esc_url_raw( $_POST['storytelling_img_1'] ?? '' );
+	$storytelling_img_2 = esc_url_raw( $_POST['storytelling_img_2'] ?? '' );
+	$storytelling_img_3 = esc_url_raw( $_POST['storytelling_img_3'] ?? '' );
 
 	// Galería: array de attachment IDs enviado como JSON string
 	$galeria_raw = isset( $_POST['galeria_ids'] ) ? wp_unslash( $_POST['galeria_ids'] ) : '[]';
@@ -283,7 +286,10 @@ function amazonia_ajax_save_community_info() {
 	update_post_meta( $community_id, '_comunidad_valores', wp_json_encode( $valores ) );
 	update_post_meta( $community_id, '_comunidad_instagram', $instagram );
 	update_post_meta( $community_id, '_comunidad_facebook', $facebook );
-	update_post_meta( $community_id, '_comunidad_certificaciones', $certificaciones );
+	update_post_meta( $community_id, '_comunidad_certificaciones',    $certificaciones );
+	update_post_meta( $community_id, '_comunidad_storytelling_img_1', $storytelling_img_1 );
+	update_post_meta( $community_id, '_comunidad_storytelling_img_2', $storytelling_img_2 );
+	update_post_meta( $community_id, '_comunidad_storytelling_img_3', $storytelling_img_3 );
 
 	wp_send_json_success( [
 		'message' => __( 'Información actualizada correctamente.', 'amazonia-theme' ),

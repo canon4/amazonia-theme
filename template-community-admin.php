@@ -244,6 +244,56 @@ body { margin: 0; padding: 0; }
 							</button>
 						</div>
 
+						<!-- Imágenes de Storytelling (cards de producto) -->
+						<div class="ca-field">
+							<label><?php esc_html_e( 'Imágenes de Storytelling', 'amazonia-theme' ); ?></label>
+							<p style="font-size:.8rem;color:#94a3b8;margin:-.25rem 0 .75rem;">
+								<?php esc_html_e( 'Estas imágenes aparecen en las cards de descripción de cada producto de la comunidad.', 'amazonia-theme' ); ?>
+							</p>
+							<div style="display:flex;flex-direction:column;gap:1rem;">
+								<?php
+								$story_fields = [
+									1 => [ 'label' => 'Card 1 — La Comunidad',        'key' => 'storytelling_img_1' ],
+									2 => [ 'label' => 'Card 2 — Tradición & Cultura',  'key' => 'storytelling_img_2' ],
+									3 => [ 'label' => 'Card 3 — Valores',              'key' => 'storytelling_img_3' ],
+								];
+								foreach ( $story_fields as $n => $sf ) :
+									$val = $community[ $sf['key'] ] ?? '';
+								?>
+								<div style="display:flex;gap:12px;align-items:center;">
+									<?php if ( $val ) : ?>
+										<img id="ca-story-<?php echo $n; ?>-preview"
+										     src="<?php echo esc_url( $val ); ?>"
+										     style="width:100px;height:68px;object-fit:cover;border-radius:6px;border:1px solid #334155;flex-shrink:0;" />
+									<?php else : ?>
+										<div id="ca-story-<?php echo $n; ?>-preview"
+										     style="width:100px;height:68px;border-radius:6px;border:2px dashed #334155;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+											<span class="material-symbols-outlined" style="color:#64748b;font-size:28px;">panorama</span>
+										</div>
+									<?php endif; ?>
+									<div>
+										<p style="font-size:.8rem;font-weight:600;color:#94a3b8;margin:0 0 6px;">
+											<?php echo esc_html( $sf['label'] ); ?>
+										</p>
+										<div style="display:flex;gap:8px;flex-wrap:wrap;">
+											<button type="button" class="ca-btn-outline ca-story-upload-btn" data-n="<?php echo $n; ?>" style="font-size:.8rem;padding:6px 12px;">
+												<span class="material-symbols-outlined" style="font-size:16px;">upload</span>
+												<?php echo $val ? esc_html__( 'Cambiar', 'amazonia-theme' ) : esc_html__( 'Subir', 'amazonia-theme' ); ?>
+											</button>
+											<button type="button" class="ca-btn-danger ca-story-remove-btn" data-n="<?php echo $n; ?>" style="font-size:.8rem;padding:6px 12px;<?php echo $val ? '' : 'display:none;'; ?>">
+												<span class="material-symbols-outlined" style="font-size:16px;">delete</span>
+												<?php esc_html_e( 'Eliminar', 'amazonia-theme' ); ?>
+											</button>
+										</div>
+									</div>
+									<input type="hidden" name="<?php echo esc_attr( $sf['key'] ); ?>"
+									       id="ca-story-<?php echo $n; ?>-url"
+									       value="<?php echo esc_attr( $val ); ?>" />
+								</div>
+								<?php endforeach; ?>
+							</div>
+						</div>
+
 						<!-- Video de presentación -->
 						<div class="ca-field">
 							<label for="ca-video-url"><?php esc_html_e( 'Video de presentación', 'amazonia-theme' ); ?></label>
@@ -361,6 +411,9 @@ body { margin: 0; padding: 0; }
 						<input type="file" id="ca-logo-file"    accept="image/*"          style="display:none;" />
 						<input type="file" id="ca-banner-file"  accept="image/*"          style="display:none;" />
 						<input type="file" id="ca-gallery-file" accept="image/*" multiple style="display:none;" />
+						<input type="file" id="ca-story-1-file" accept="image/*"          style="display:none;" />
+						<input type="file" id="ca-story-2-file" accept="image/*"          style="display:none;" />
+						<input type="file" id="ca-story-3-file" accept="image/*"          style="display:none;" />
 
 					</form>
 				</div>

@@ -280,11 +280,7 @@ if ( post_password_required() ) {
         </div>
 
         <?php
-        // Gather data for storytelling section
-        $attachment_ids = $product->get_gallery_image_ids();
-        $gallery_img_1  = isset( $attachment_ids[0] ) ? wp_get_attachment_image_src( $attachment_ids[0], 'full' )[0] : '';
-        $gallery_img_2  = isset( $attachment_ids[1] ) ? wp_get_attachment_image_src( $attachment_ids[1], 'full' )[0] : '';
-
+        // Imágenes de storytelling — se configuran en el panel de la comunidad
         $vendor_id      = function_exists( 'wcfm_get_vendor_id_by_post' ) ? wcfm_get_vendor_id_by_post( $product->get_id() ) : 0;
         $community_data = null;
 
@@ -294,10 +290,19 @@ if ( post_password_required() ) {
                 $community_data = amazonia_get_community_data( (int) $community_id );
             }
         }
+
+        $gallery_img_1 = $community_data['storytelling_img_1'] ?? ( $community_data['banner'] ?? '' );
+        $gallery_img_2 = $community_data['storytelling_img_2'] ?? '';
+        $gallery_img_3 = $community_data['storytelling_img_3'] ?? '';
+
+        // Ocultar la pestaña "Descripción" de WooCommerce para no duplicar
+        add_filter( 'woocommerce_product_tabs', function( $tabs ) {
+            unset( $tabs['description'] );
+            return $tabs;
+        } );
         ?>
 
-        <?php if ( $community_data ) : ?>
-        <!-- Storytelling: Origen & Propósito -->
+        <!-- Estilos compartidos: descripción + storytelling -->
         <style>
             .amz-glass-card {
                 background: rgba(244, 252, 240, 0.6);
@@ -320,8 +325,44 @@ if ( post_password_required() ) {
                 opacity: 1;
                 transform: translateY(0);
             }
+            /* Restaurar estilos de contenido del editor WordPress */
+            .amz-wp-content p { margin-bottom: 1em; }
+            .amz-wp-content img.alignleft,
+            .amz-wp-content .alignleft  { float: left;  margin: 0 1.5em 1em 0; display: inline; }
+            .amz-wp-content img.alignright,
+            .amz-wp-content .alignright { float: right; margin: 0 0 1em 1.5em; display: inline; }
+            .amz-wp-content img.aligncenter,
+            .amz-wp-content .aligncenter { display: block; margin-left: auto; margin-right: auto; margin-bottom: 1em; }
+            .amz-wp-content img.alignnone { margin-bottom: 1em; }
+            .amz-wp-content .wp-caption { max-width: 100%; }
+            .amz-wp-content .wp-caption-text { font-size: 0.875em; text-align: center; color: #64748b; margin-top: 0.25em; }
+            .amz-wp-content::after { content: ''; display: table; clear: both; }
+            .amz-wp-content ul { list-style: disc; padding-left: 1.5em; margin-bottom: 1em; }
+            .amz-wp-content ol { list-style: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+            .amz-wp-content li { margin-bottom: 0.25em; }
+            .amz-wp-content h2,
+            .amz-wp-content h3,
+            .amz-wp-content h4 { font-weight: bold; margin-bottom: 0.5em; margin-top: 1em; }
+            .amz-wp-content blockquote { border-left: 3px solid #006b2c; padding-left: 1em; margin: 1em 0; font-style: italic; }
+            .amz-wp-content a { color: #006b2c; text-decoration: underline; }
         </style>
 
+        <?php $long_description = $product->get_description(); ?>
+        <?php if ( $long_description ) : ?>
+        <section class="max-w-[1200px] mx-auto py-16 px-4 overflow-hidden">
+            <div class="flex flex-col items-start mb-10 amz-fade-up" style="transition-delay: 0s;">
+                <span class="text-xs font-semibold text-[#006b2c] tracking-widest uppercase mb-3" style="font-family:'Work Sans',sans-serif; letter-spacing:0.05em;">DESCRIPCIÓN</span>
+                <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-3 leading-tight" style="font-family:'Outfit',sans-serif;">Sobre Nuestro Producto</h2>
+                <div class="h-1 w-24 rounded-full" style="background:linear-gradient(to right,#006b2c,#7ffc97);"></div>
+            </div>
+            <div class="amz-fade-up amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left amz-glow-hover p-8 md:p-12" style="transition-delay:0.1s;">
+                <div class="amz-wp-content text-base lg:text-lg text-slate-600 leading-relaxed"
+                     style="font-family:'Inter',sans-serif;"><?php echo wp_kses_post( $long_description ); ?></div>
+            </div>
+        </section>
+        <?php endif; ?>
+
+        <?php if ( $community_data ) : ?>
         <section class="max-w-[1200px] mx-auto py-20 overflow-hidden">
 
             <!-- Section Header -->
@@ -353,8 +394,8 @@ if ( post_password_required() ) {
                         </a>
                     </div>
                     <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden order-1 md:order-2">
-                        <?php if ( $community_data['banner'] ) : ?>
-                        <img alt="<?php echo esc_attr( $community_data['nombre'] ); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $community_data['banner'] ); ?>" loading="lazy" />
+                        <?php if ( $gallery_img_1 ) : ?>
+                        <img alt="<?php echo esc_attr( $community_data['nombre'] ); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_1 ); ?>" loading="lazy" />
                         <?php else : ?>
                         <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
                         <?php endif; ?>
@@ -370,8 +411,8 @@ if ( post_password_required() ) {
                 <?php if ( ! empty( $bullets ) ) : ?>
                 <div class="amz-fade-up group flex flex-col md:flex-row items-stretch amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left hover:-translate-y-1 transition-all duration-500 amz-glow-hover" style="transition-delay: 0.3s;">
                     <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden">
-                        <?php if ( $gallery_img_1 ) : ?>
-                        <img alt="Tradición artesanal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_1 ); ?>" loading="lazy" />
+                        <?php if ( $gallery_img_2 ) : ?>
+                        <img alt="Tradición artesanal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_2 ); ?>" loading="lazy" />
                         <?php else : ?>
                         <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
                         <?php endif; ?>
@@ -417,8 +458,8 @@ if ( post_password_required() ) {
                         </div>
                     </div>
                     <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden order-1 md:order-2">
-                        <?php if ( $gallery_img_2 ) : ?>
-                        <img alt="Valores artesanales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_2 ); ?>" loading="lazy" />
+                        <?php if ( $gallery_img_3 ) : ?>
+                        <img alt="Valores artesanales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_3 ); ?>" loading="lazy" />
                         <?php else : ?>
                         <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
                         <?php endif; ?>

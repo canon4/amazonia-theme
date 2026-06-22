@@ -381,8 +381,11 @@ function amazonia_get_community_data( $community_id ) {
 		'instagram'      => get_post_meta( $community_id, '_comunidad_instagram', true ),
 		'facebook'       => get_post_meta( $community_id, '_comunidad_facebook', true ),
 		'certificaciones'=> get_post_meta( $community_id, '_comunidad_certificaciones', true ),
-		'url'            => get_permalink( $community_id ),
-		'vendors'        => amazonia_get_community_vendors( $community_id ),
+		'url'                => get_permalink( $community_id ),
+		'vendors'            => amazonia_get_community_vendors( $community_id ),
+		'storytelling_img_1' => get_post_meta( $community_id, '_comunidad_storytelling_img_1', true ),
+		'storytelling_img_2' => get_post_meta( $community_id, '_comunidad_storytelling_img_2', true ),
+		'storytelling_img_3' => get_post_meta( $community_id, '_comunidad_storytelling_img_3', true ),
 	];
 }
 

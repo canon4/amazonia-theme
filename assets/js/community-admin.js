@@ -290,6 +290,60 @@
     $('#ca-galeria-ids').val(JSON.stringify(galleryIds));
   }
 
+  // ─── Media uploaders: STORYTELLING (3 imágenes) ─────────────
+  function setupStoryUploader(n) {
+    var fileId    = '#ca-story-' + n + '-file';
+    var urlId     = '#ca-story-' + n + '-url';
+    var previewId = '#ca-story-' + n + '-preview';
+
+    $(document).on('click', '.ca-story-upload-btn[data-n="' + n + '"]', function (e) {
+      e.preventDefault();
+      $(fileId).trigger('click');
+    });
+
+    $(fileId).on('change', function () {
+      var file = this.files[0];
+      if (!file) return;
+      var $btn = $('.ca-story-upload-btn[data-n="' + n + '"]');
+      $btn.prop('disabled', true).html('<span class="material-symbols-outlined" style="font-size:16px;">hourglass_empty</span> Subiendo...');
+      uploadFile(file,
+        function (data) {
+          $(urlId).val(data.url);
+          var $p = $(previewId);
+          if ($p.is('img')) {
+            $p.attr('src', data.url);
+          } else {
+            $p.replaceWith('<img id="ca-story-' + n + '-preview" src="' + data.url + '" style="width:100px;height:68px;object-fit:cover;border-radius:6px;border:1px solid #334155;flex-shrink:0;" />');
+          }
+          $btn.prop('disabled', false).html('<span class="material-symbols-outlined" style="font-size:16px;">upload</span> Cambiar');
+          $('.ca-story-remove-btn[data-n="' + n + '"]').show();
+        },
+        function (msg) {
+          alert(msg);
+          $btn.prop('disabled', false).html('<span class="material-symbols-outlined" style="font-size:16px;">upload</span> Subir');
+        }
+      );
+      this.value = '';
+    });
+
+    $(document).on('click', '.ca-story-remove-btn[data-n="' + n + '"]', function (e) {
+      e.preventDefault();
+      $(urlId).val('');
+      var $p = $(previewId);
+      $p.replaceWith(
+        '<div id="ca-story-' + n + '-preview" style="width:100px;height:68px;border-radius:6px;border:2px dashed #334155;display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+          '<span class="material-symbols-outlined" style="color:#64748b;font-size:28px;">panorama</span>' +
+        '</div>'
+      );
+      $('.ca-story-upload-btn[data-n="' + n + '"]').html('<span class="material-symbols-outlined" style="font-size:16px;">upload</span> Subir');
+      $(this).hide();
+    });
+  }
+
+  setupStoryUploader(1);
+  setupStoryUploader(2);
+  setupStoryUploader(3);
+
   // ─── Video: preview embed ─────────────────────────────────────
   function getEmbedUrl(url) {
     var yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
@@ -402,7 +456,10 @@
       valores:         $form.find('[name="valores"]').val(),
       instagram:       $form.find('[name="instagram"]').val(),
       facebook:        $form.find('[name="facebook"]').val(),
-      certificaciones: $form.find('[name="certificaciones"]').val(),
+      certificaciones:    $form.find('[name="certificaciones"]').val(),
+      storytelling_img_1: $form.find('[name="storytelling_img_1"]').val(),
+      storytelling_img_2: $form.find('[name="storytelling_img_2"]').val(),
+      storytelling_img_3: $form.find('[name="storytelling_img_3"]').val(),
     })
     .done(function (res) {
       if (res.success) {
