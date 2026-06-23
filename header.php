@@ -35,8 +35,10 @@
                         );
                     } else {
                         $shop_url = class_exists( 'WooCommerce' ) ? esc_url( wc_get_page_permalink( 'shop' ) ) : '#';
+                        $categorias_page = get_page_by_path( 'categorias' );
+                        $categorias_url  = $categorias_page ? esc_url( get_permalink( $categorias_page ) ) : esc_url( home_url( '/categorias/' ) );
                         echo '<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="' . $shop_url . '">Tienda</a>
-                              <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="#">Categorías</a>
+                              <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="' . $categorias_url . '">Categorías</a>
                               <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="' . esc_url( home_url( '/?page_id=53/' ) ) . '">Comunidades</a>
                               <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="#">Impacto</a>';
                     }
@@ -132,8 +134,10 @@
                     );
                 } else {
                     $shop_url = class_exists( 'WooCommerce' ) ? esc_url( wc_get_page_permalink( 'shop' ) ) : '#';
+                    $categorias_page = get_page_by_path( 'categorias' );
+                    $categorias_url  = $categorias_page ? esc_url( get_permalink( $categorias_page ) ) : esc_url( home_url( '/categorias/' ) );
                     echo '<a class="text-slate-800 dark:text-slate-200 text-lg font-medium hover:text-primary transition-colors no-underline block" href="' . $shop_url . '">Tienda</a>
-                          <a class="text-slate-800 dark:text-slate-200 text-lg font-medium hover:text-primary transition-colors no-underline block" href="#">Categorías</a>
+                          <a class="text-slate-800 dark:text-slate-200 text-lg font-medium hover:text-primary transition-colors no-underline block" href="' . $categorias_url . '">Categorías</a>
                           <a class="text-slate-800 dark:text-slate-200 text-lg font-medium hover:text-primary transition-colors no-underline block" href="' . esc_url( home_url( '/?page_id=53/' ) ) . '">Comunidades</a>
                           <a class="text-slate-800 dark:text-slate-200 text-lg font-medium hover:text-primary transition-colors no-underline block" href="#">Impacto</a>';
                 }
