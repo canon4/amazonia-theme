@@ -1,0 +1,109 @@
+/**
+ * Carrito — ajustes del resumen "Total del carrito".
+ * Se carga solo en la pagina del carrito (ver functions.php: is_cart()).
+ *
+ * La caja del resumen es estrecha. La fila de envio por tienda traia la
+ * etiqueta ("Tienda mana Envio") y la lista de metodos lado a lado, dentro de
+ * una columna angosta, lo que apretujaba los metodos y partia los precios.
+ * Aqui se apila: la etiqueta arriba y los metodos abajo, a todo el ancho.
+ */
+
+.woocommerce-cart .cart_totals {
+	overflow-x: hidden; /* red de seguridad: nada se sale de la caja */
+}
+
+.woocommerce-cart .cart_totals .shop_table {
+	width: 100%;
+	table-layout: fixed; /* la tabla nunca crece mas alla de su contenedor */
+}
+
+/* Fila de envio: etiqueta y contenido apilados (uno encima del otro) */
+.woocommerce-cart .cart_totals .woocommerce-shipping-totals th,
+.woocommerce-cart .cart_totals .woocommerce-shipping-totals td {
+	display: block;
+	width: 100%;
+	text-align: left;
+	padding: 0;
+}
+
+.woocommerce-cart .cart_totals .woocommerce-shipping-totals th {
+	padding-top: 1rem;
+	color: #64748b; /* text-slate-500, igual que Subtotal */
+	font-weight: 500;
+}
+
+.woocommerce-cart .cart_totals .woocommerce-shipping-totals td {
+	padding-top: 0.5rem;
+	padding-bottom: 1rem;
+}
+
+/* Lista de metodos de envio, a todo el ancho, sin vinetas y con sangria
+   al inicio para que no queden pegados al borde izquierdo.
+   Se incluye el ID #shipping_method para ganarle en especificidad a la regla
+   de WooCommerce "ul#shipping_method { padding: 0 }" (un ID > 3 clases). */
+.woocommerce-cart .cart_totals ul#shipping_method.woocommerce-shipping-methods {
+	margin: 0;
+	padding: 0 0 0 0.75rem;
+	list-style: none;
+}
+
+/* Cada metodo: radio + logo + (nombre y precio) en una fila */
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.45rem 0;
+	line-height: 1.35;
+	min-width: 0; /* permite que la fila se encoja dentro de la caja */
+}
+
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li input[type="radio"] {
+	flex: 0 0 auto;
+	margin: 0;
+}
+
+/* Logo del transportista con tamano fijo */
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li .rate-content,
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li img {
+	flex: 0 0 auto;
+}
+
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li .envia-shipping-carrier-img,
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li img {
+	width: 26px;
+	height: 26px;
+	object-fit: contain;
+}
+
+/* Nombre + precio: ocupa el resto y hace wrap normal (sin partir numeros) */
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li label {
+	flex: 1 1 auto;
+	min-width: 0; /* clave: sin esto el texto no deja encoger la fila */
+	margin: 0;
+	overflow-wrap: break-word;
+}
+
+.woocommerce-cart .cart_totals .woocommerce-shipping-methods li .woocommerce-Price-amount {
+	white-space: nowrap; /* el precio nunca se parte */
+	font-weight: 600;
+}
+
+/* Texto "Enviar a ..." (destino) y enlace "Cambiar direccion" */
+.woocommerce-cart .cart_totals .woocommerce-shipping-destination {
+	margin: 0.6rem 0 0;
+	padding-left: 0.75rem;
+	font-size: 0.85rem;
+	line-height: 1.4;
+	color: #475569; /* text-slate-600 */
+	overflow-wrap: break-word;
+}
+
+.woocommerce-cart .cart_totals .woocommerce-shipping-destination strong {
+	font-weight: 600;
+}
+
+.woocommerce-cart .cart_totals .shipping-calculator-button {
+	display: inline-block;
+	margin-top: 0.25rem;
+	margin-left: 0.75rem;
+}

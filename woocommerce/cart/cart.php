@@ -20,8 +20,8 @@ defined( 'ABSPATH' ) || exit;
 do_action( 'woocommerce_before_cart' ); ?>
 
 <div class="max-w-7xl mx-auto px-6 lg:px-20 py-10">
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-		<div class="lg:col-span-2">
+	<div class="grid grid-cols-1 gap-12">
+		<div>
 			<form class="woocommerce-cart-form" action="<?php echo esc_url( wc_get_cart_url() ); ?>" method="post">
 				<?php do_action( 'woocommerce_before_cart_table' ); ?>
 
@@ -202,7 +202,7 @@ do_action( 'woocommerce_before_cart' ); ?>
 			</form>
 		</div>
 
-		<div class="lg:col-span-1">
+		<div>
 			<?php do_action( 'woocommerce_before_cart_collaterals' ); ?>
 
 			<div class="cart-collaterals">
