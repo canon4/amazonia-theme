@@ -125,19 +125,19 @@
 </div><!-- #page -->
 
 <!-- Side Cart UI -->
-<div id="side-cart" class="fixed inset-y-0 right-0 w-full md:w-[450px] bg-white/95 dark:bg-background-dark/95 backdrop-blur-3xl shadow-[0_0_60px_rgba(0,0,0,0.15)] z-[100] transform translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col border-l border-white/20">
-    <div class="flex items-center justify-between p-8 border-b border-primary/10 bg-white/50 dark:bg-black/50">
+<div id="side-cart" class="fixed inset-y-0 right-0 w-[360px] max-w-[calc(100vw-2rem)] bg-white shadow-[0_0_60px_rgba(0,0,0,0.18)] z-[100] transform translate-x-full transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] flex flex-col border-l border-primary/10">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-primary/10 bg-gradient-to-r from-green-50 to-white">
         <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-primary text-[28px]">shopping_cart</span>
-            <h3 class="text-lg font-black text-slate-900 dark:text-slate-100 m-0 uppercase tracking-widest">Tu Selección</h3>
+            <span class="material-symbols-outlined text-primary text-[26px]">shopping_cart</span>
+            <h3 class="text-base font-black text-slate-900 m-0 uppercase tracking-widest">Tu Selección</h3>
         </div>
-        <button id="side-cart-close" class="rounded-full w-10 h-10 flex items-center justify-center bg-primary/5 hover:bg-primary hover:text-white text-slate-500 transition-all group">
-            <span class="material-symbols-outlined text-[20px] group-hover:rotate-90 transition-transform duration-500">close</span>
+        <button id="side-cart-close" class="rounded-full w-9 h-9 flex items-center justify-center bg-primary/8 hover:bg-primary hover:text-white text-slate-500 transition-all group border border-primary/10 cursor-pointer">
+            <span class="material-symbols-outlined text-[18px] group-hover:rotate-90 transition-transform duration-300">close</span>
         </button>
     </div>
-    
-    <div class="side-cart-content flex-1 overflow-y-auto p-8 relative scrollbar-hide">
-        <div class="widget_shopping_cart_content h-full">
+
+    <div class="side-cart-content flex-1 overflow-y-auto px-6 py-6 relative">
+        <div class="widget_shopping_cart_content">
             <?php if ( function_exists('woocommerce_mini_cart') ) woocommerce_mini_cart(); ?>
         </div>
     </div>
