@@ -103,6 +103,9 @@ function amazonia_theme_scripts() {
 	// Enqueue navigation.js
 	wp_enqueue_script( 'amazonia-navigation-js', get_template_directory_uri() . '/assets/js/navigation.js', array(), '1.0.0', true );
 
+	// Enqueue asset constants (ES module — sets window.AMAZONIA_ASSETS)
+	wp_enqueue_script( 'amazonia-assets-constants', get_template_directory_uri() . '/assets/js/constants/assets.js', array(), '1.0.0', true );
+
 	// Enqueue favorites.js
 	wp_enqueue_script( 'amazonia-favorites-js', get_template_directory_uri() . '/assets/js/favorites.js', array('jquery'), '1.0.0', true );
 	$user_favorites = array();
@@ -124,6 +127,14 @@ function amazonia_theme_scripts() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_theme_scripts' );
+
+// Add type="module" to the asset constants script tag
+add_filter( 'script_loader_tag', function ( $tag, $handle, $src ) {
+	if ( 'amazonia-assets-constants' === $handle ) {
+		return '<script type="module" src="' . esc_url( $src ) . '"></script>' . "\n";
+	}
+	return $tag;
+}, 10, 3 );
 
 // Evita que WooCommerce redirija al producto cuando la búsqueda devuelve un único resultado.
 add_filter( 'woocommerce_redirect_single_search_result', '__return_false' );
@@ -187,6 +198,57 @@ function amazonia_enqueue_vendor_register_styles() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_vendor_register_styles' );
+
+/**
+ * Encola el CSS del checkout (layout horizontal de los formularios de
+ * facturación/envío). Solo se carga en la página de finalizar compra.
+ */
+function amazonia_enqueue_checkout_styles() {
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		wp_enqueue_style(
+			'amazonia-checkout',
+			get_template_directory_uri() . '/assets/css/checkout.css',
+			array( 'amazonia-main-style' ),
+			'1.0.2'
+		);
+	}
+}
+add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_checkout_styles' );
+
+/**
+ * Mejora el mapa "Lugar de entrega" del checkout (WCFM/Leaflet): reemplaza las
+ * teselas planas de OpenStreetMap por CARTO Voyager (mas detalle, sin API key).
+ * Se carga en el footer para parchear L.TileLayer antes de que WCFM cree el mapa.
+ */
+function amazonia_enqueue_checkout_map_script() {
+	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
+		wp_enqueue_script(
+			'amazonia-checkout-map',
+			get_template_directory_uri() . '/assets/js/checkout-map.js',
+			array(),
+			'1.0.0',
+			true
+		);
+	}
+}
+add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_checkout_map_script' );
+
+/**
+ * Encola el CSS del carrito (resumen "Total del carrito"). Evita que la
+ * direccion de envio por tienda se desborde de la caja. Solo se carga en el
+ * carrito, no en el checkout.
+ */
+function amazonia_enqueue_cart_styles() {
+	if ( function_exists( 'is_cart' ) && is_cart() ) {
+		wp_enqueue_style(
+			'amazonia-cart',
+			get_template_directory_uri() . '/assets/css/cart.css',
+			array( 'amazonia-main-style' ),
+			'1.0.4'
+		);
+	}
+}
+add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_cart_styles' );
 
 /**
  * Register widget area.
@@ -285,6 +347,28 @@ add_action('init', function() {
         ));
     }
 });
+
+/**
+ * Auto-create página "Categorías" y asignarle la plantilla page-categorias.php.
+ */
+add_action( 'init', function() {
+    $page_slug  = 'categorias';
+    $page_check = get_page_by_path( $page_slug );
+    if ( ! $page_check ) {
+        $page_id = wp_insert_post( array(
+            'post_type'   => 'page',
+            'post_title'  => 'Categorías',
+            'post_name'   => $page_slug,
+            'post_status' => 'publish',
+            'post_author' => 1,
+        ) );
+        if ( $page_id && ! is_wp_error( $page_id ) ) {
+            update_post_meta( $page_id, '_wp_page_template', 'page-categorias.php' );
+        }
+    } elseif ( get_post_meta( $page_check->ID, '_wp_page_template', true ) !== 'page-categorias.php' ) {
+        update_post_meta( $page_check->ID, '_wp_page_template', 'page-categorias.php' );
+    }
+} );
 
 /**
  * Custom Shortcodes

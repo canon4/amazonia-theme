@@ -50,17 +50,21 @@ if ( post_password_required() ) {
                         border-radius: 0.75rem;
                     }
                     .product-gallery-wrapper .flex-control-thumbs {
-                        display: flex;
-                        gap: 0.5rem;
-                        margin-top: 1rem;
-                        padding: 0;
-                        list-style: none;
-                        overflow-x: auto;
+                        display: flex !important;
+                        flex-wrap: nowrap !important;
+                        gap: 10px !important;
+                        margin-top: 10px !important;
+                        padding: 0 !important;
+                        list-style: none !important;
+                        overflow: visible !important;
                     }
                     .product-gallery-wrapper .flex-control-thumbs li {
-                        width: calc(25% - 0.375rem);
-                        flex-shrink: 0;
-                        cursor: pointer;
+                        float: none !important;
+                        clear: none !important;
+                        width: calc(25% - 7.5px) !important;
+                        flex-shrink: 0 !important;
+                        cursor: pointer !important;
+                        margin: 0 !important;
                     }
                     .product-gallery-wrapper .flex-control-thumbs li img {
                         width: 100%;
@@ -491,6 +495,8 @@ if ( post_password_required() ) {
         <?php
         remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_related_products', 20 );
         remove_action( 'woocommerce_after_single_product_summary', 'woocommerce_upsell_display', 15 );
+        // Re-add tabs (description tab already removed above via filter; only Reviews will show).
+        add_action( 'woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs', 10 );
         do_action( 'woocommerce_after_single_product_summary' );
         ?>
 
