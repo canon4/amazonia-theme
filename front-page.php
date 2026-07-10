@@ -29,54 +29,166 @@ if ( class_exists( 'WooCommerce' ) ) {
         'no_found_rows'  => true,
     ) );
 }
+
 ?>
 
 <main id="primary" class="site-main bg-background-light dark:bg-background-dark min-h-screen transition-colors duration-300">
 
     <!-- 1. Immersive Hero Section -->
     <section class="relative max-w-[1440px] mx-auto w-full px-4 md:px-10 lg:px-20 py-8">
-        <div class="relative min-h-[550px] lg:min-h-[650px] rounded-[2rem] overflow-hidden bg-[#0a2e0a] flex items-center shadow-2xl">
-            <!-- Background Image & Gradient overlay -->
-            <div class="absolute inset-0 z-0">
-                <img alt="Selva amazónica mística rodeada de niebla y vegetación densa"
-                     class="w-full h-full object-cover opacity-60 mix-blend-multiply transition-all duration-700 hover:scale-105"
-                     src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-hero-selva.jpg' ); ?>"
-                     fetchpriority="high" width="1920" height="1080" />
-                <div class="absolute inset-0 bg-gradient-to-tr from-[#0a2e0a] via-[#0a2e0a]/80 to-transparent"></div>
-                <!-- Ambient decorative glow -->
-                <div class="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 rounded-full blur-[120px] pointer-events-none"></div>
-            </div>
+        <div id="hero-carousel-wrap" class="relative min-h-[550px] lg:min-h-[650px] rounded-[2rem] overflow-hidden bg-[#0a2e0a] flex flex-col lg:flex-row shadow-2xl">
 
-            <!-- Content Area -->
-            <div class="relative z-10 p-8 md:p-16 lg:p-20 max-w-3xl">
-                <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/20 border border-primary/30 backdrop-blur-md text-[#4ade80] text-xs font-bold rounded-full mb-6 uppercase tracking-widest shadow-sm">
+            <!-- LEFT: Text Content -->
+            <div class="relative z-10 w-full lg:w-1/2 p-8 sm:p-10 lg:p-16 flex flex-col justify-center flex-1">
+                <div class="absolute -top-20 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+                <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/20 border border-primary/30 backdrop-blur-md text-[#4ade80] text-xs font-bold rounded-full mb-6 uppercase tracking-widest shadow-sm self-start">
                     <span class="material-symbols-outlined text-[14px]">eco</span>
                     <?php esc_html_e( 'Saberes Ancestrales & Comercio Justo', 'amazonia-theme' ); ?>
                 </span>
-                
-                <h1 class="text-white text-4xl md:text-6xl font-black leading-tight mb-6 tracking-tight">
+
+                <h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6 tracking-tight">
                     <?php esc_html_e( 'El Latido de la Selva en Cada Creación', 'amazonia-theme' ); ?>
                 </h1>
-                
-                <p class="text-green-100/95 text-lg md:text-xl mb-10 leading-relaxed font-light">
+
+                <p class="text-green-100/95 text-lg mb-10 leading-relaxed font-light max-w-lg">
                     <?php esc_html_e( 'Cada producto cuenta una historia sagrada. Conecta directamente con comunidades indígenas y afro-amazónicas, y apoya la preservación de su territorio y cultura.', 'amazonia-theme' ); ?>
                 </p>
-                
+
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="<?php echo class_exists('WooCommerce') ? esc_url( wc_get_page_permalink( 'shop' ) ) : '#'; ?>" 
+                    <a href="<?php echo class_exists('WooCommerce') ? esc_url( wc_get_page_permalink( 'shop' ) ) : '#'; ?>"
                        class="bg-primary hover:bg-[#15803d] text-white font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-primary/20 text-center no-underline flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined">shopping_bag</span>
                         <?php esc_html_e( 'Explorar Tienda', 'amazonia-theme' ); ?>
                     </a>
-                    
-                    <a href="#comunidades" 
+
+                    <a href="#comunidades"
                        class="bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/30 backdrop-blur-md font-bold py-4 px-10 rounded-full transition-all duration-300 transform hover:-translate-y-1 text-center no-underline flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined">diversity_3</span>
                         <?php esc_html_e( 'Ver Comunidades', 'amazonia-theme' ); ?>
                     </a>
                 </div>
             </div>
+
+            <!-- RIGHT: Image Carousel (slides populated by JS from window.AMAZONIA_ASSETS) -->
+            <div class="relative w-full lg:w-1/2 overflow-hidden order-first lg:order-last h-56 sm:h-72 lg:h-auto">
+                <div id="hero-track" style="position:absolute;inset:0;display:flex;transition:transform 0.7s ease-in-out;"></div>
+
+                <!-- Left blend gradient (desktop only) -->
+                <div class="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-[#0a2e0a] to-transparent z-10 pointer-events-none hidden lg:block"></div>
+
+                <!-- Prev / Next buttons -->
+                <button id="hero-prev" aria-label="<?php esc_attr_e( 'Anterior', 'amazonia-theme' ); ?>"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/30 hover:bg-black/55 backdrop-blur-sm text-white border border-white/20 flex items-center justify-center transition-all duration-200 cursor-pointer">
+                    <span class="material-symbols-outlined text-xl">chevron_left</span>
+                </button>
+                <button id="hero-next" aria-label="<?php esc_attr_e( 'Siguiente', 'amazonia-theme' ); ?>"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-black/30 hover:bg-black/55 backdrop-blur-sm text-white border border-white/20 flex items-center justify-center transition-all duration-200 cursor-pointer">
+                    <span class="material-symbols-outlined text-xl">chevron_right</span>
+                </button>
+
+                <!-- Dot indicators (populated by JS) -->
+                <div id="hero-dots" class="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2"></div>
+            </div>
         </div>
+
+        <script>
+        (function () {
+            function initCarousel() {
+                var track    = document.getElementById('hero-track');
+                var dotsWrap = document.getElementById('hero-dots');
+                if (!track) return;
+
+                var urls = (window.AMAZONIA_ASSETS
+                    && window.AMAZONIA_ASSETS.images
+                    && Array.isArray(window.AMAZONIA_ASSETS.images.carousel))
+                    ? window.AMAZONIA_ASSETS.images.carousel : [];
+
+                if (!urls.length) return;
+
+                urls.forEach(function (url, i) {
+                    var div = document.createElement('div');
+                    div.style.cssText = 'position:relative;min-width:100%;flex-shrink:0;';
+                    var img = document.createElement('img');
+                    img.src = url;
+                    img.alt = 'Galería Amazonia';
+                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                    if (i === 0) img.setAttribute('fetchpriority', 'high');
+                    var overlay = document.createElement('div');
+                    overlay.style.cssText = 'position:absolute;inset:0;background:linear-gradient(to top,rgba(10,46,10,0.8) 0%,transparent 60%);';
+                    div.appendChild(img);
+                    div.appendChild(overlay);
+                    track.appendChild(div);
+
+                    if (dotsWrap) {
+                        var btn = document.createElement('button');
+                        btn.className = 'hero-dot h-2 rounded-full transition-all duration-300 cursor-pointer border-0 p-0 '
+                            + (i === 0 ? 'w-5 bg-white' : 'w-2 bg-white/40');
+                        btn.dataset.index = String(i);
+                        btn.setAttribute('aria-label', 'Imagen ' + (i + 1));
+                        dotsWrap.appendChild(btn);
+                    }
+                });
+
+                var dots  = document.querySelectorAll('.hero-dot');
+                var total = dots.length;
+                var cur   = 0;
+                var timer = null;
+
+                function goTo(n) {
+                    cur = ((n % total) + total) % total;
+                    track.style.transform = 'translateX(-' + (cur * 100) + '%)';
+                    dots.forEach(function (d, i) {
+                        if (i === cur) {
+                            d.classList.add('bg-white', 'w-5');
+                            d.classList.remove('bg-white/40', 'w-2');
+                        } else {
+                            d.classList.remove('bg-white', 'w-5');
+                            d.classList.add('bg-white/40', 'w-2');
+                        }
+                    });
+                }
+
+                function stop()  { clearInterval(timer); timer = null; }
+                function start() { stop(); timer = setInterval(function () { goTo(cur + 1); }, 3500); }
+
+                var btnPrev = document.getElementById('hero-prev');
+                var btnNext = document.getElementById('hero-next');
+                if (btnPrev) btnPrev.addEventListener('click', function () { goTo(cur - 1); stop(); start(); });
+                if (btnNext) btnNext.addEventListener('click', function () { goTo(cur + 1); stop(); start(); });
+
+                dots.forEach(function (d) {
+                    d.addEventListener('click', function () { goTo(parseInt(d.dataset.index, 10)); stop(); start(); });
+                });
+
+                var wrap = document.getElementById('hero-carousel-wrap');
+                if (wrap) {
+                    wrap.addEventListener('mouseenter', stop);
+                    wrap.addEventListener('mouseleave', start);
+                }
+
+                // Touch swipe support for mobile
+                var touchStartX = 0;
+                track.addEventListener('touchstart', function (e) {
+                    touchStartX = e.changedTouches[0].clientX;
+                }, { passive: true });
+                track.addEventListener('touchend', function (e) {
+                    var diff = touchStartX - e.changedTouches[0].clientX;
+                    if (Math.abs(diff) > 40) { goTo(diff > 0 ? cur + 1 : cur - 1); stop(); start(); }
+                }, { passive: true });
+
+                goTo(0);
+                start();
+            }
+
+            // Modules run before DOMContentLoaded, so AMAZONIA_ASSETS is already set by then
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initCarousel);
+            } else {
+                initCarousel();
+            }
+        })();
+        </script>
     </section>
 
 
