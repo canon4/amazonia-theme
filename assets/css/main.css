@@ -223,39 +223,6 @@ li.product .aspect-square img {
   color: #fbbf24;
 }
 
-/* ===== WCFM Ask a Question Button ===== */
-html body a.wcfm_catalog_enquiry,
-html body .wcfm_ele_wrapper a.wcfm_catalog_enquiry,
-html body p.store-enquiry a.wcfm_catalog_enquiry {
-  display: inline-flex !important;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  background: var(--primary) !important;
-  background-color: var(--primary) !important;
-  color: #ffffff !important;
-  font-weight: 600;
-  padding: 0.75rem 1.5rem !important;
-  border-radius: var(--radius) !important;
-  box-shadow: var(--shadow-sm) !important;
-  transition: all 0.3s ease !important;
-  text-decoration: none !important;
-  border: none !important;
-  border-bottom-color: var(--primary) !important;
-  font-family: 'Inter', sans-serif !important;
-}
-
-html body a.wcfm_catalog_enquiry:hover,
-html body .wcfm_ele_wrapper a.wcfm_catalog_enquiry:hover,
-html body p.store-enquiry a.wcfm_catalog_enquiry:hover {
-  background: var(--primary-hover) !important;
-  background-color: var(--primary-hover) !important;
-  border-bottom-color: var(--primary-hover) !important;
-  box-shadow: var(--shadow-md) !important;
-  transform: translateY(-2px);
-  color: #ffffff !important;
-}
-
 /* ===== WCFM Enquiry Modal (Colorbox) ===== */
 #colorbox #enquiry_form_wrapper {
   padding: 0 !important;
@@ -721,3 +688,66 @@ html body p.store-enquiry a.wcfm_catalog_enquiry:hover {
 #cboxClose:hover::before {
   color: var(--text-main) !important;
 }
+
+/* ===== Single Product: contenido dinámico del editor (no convertible a Tailwind) =====
+   Estiliza el HTML generado por el editor de WordPress dentro de la descripción larga.
+   No se pueden aplicar utilidades de Tailwind porque el markup lo genera WP. */
+.amz-wp-content p { margin-bottom: 1em; }
+.amz-wp-content img.alignleft,
+.amz-wp-content .alignleft  { float: left;  margin: 0 1.5em 1em 0; display: inline; }
+.amz-wp-content img.alignright,
+.amz-wp-content .alignright { float: right; margin: 0 0 1em 1.5em; display: inline; }
+.amz-wp-content img.aligncenter,
+.amz-wp-content .aligncenter { display: block; margin-left: auto; margin-right: auto; margin-bottom: 1em; }
+.amz-wp-content img.alignnone { margin-bottom: 1em; }
+.amz-wp-content .wp-caption { max-width: 100%; }
+.amz-wp-content .wp-caption-text { font-size: 0.875em; text-align: center; color: #64748b; margin-top: 0.25em; }
+.amz-wp-content::after { content: ''; display: table; clear: both; }
+.amz-wp-content ul { list-style: disc; padding-left: 1.5em; margin-bottom: 1em; }
+.amz-wp-content ol { list-style: decimal; padding-left: 1.5em; margin-bottom: 1em; }
+.amz-wp-content li { margin-bottom: 0.25em; }
+.amz-wp-content h2,
+.amz-wp-content h3,
+.amz-wp-content h4 { font-weight: bold; margin-bottom: 0.5em; margin-top: 1em; }
+.amz-wp-content blockquote { border-left: 3px solid #006b2c; padding-left: 1em; margin: 1em 0; font-style: italic; }
+.amz-wp-content a { color: #006b2c; text-decoration: underline; }
+
+/* ===== Related Products: scroll horizontal en mobile, grid en desktop ===== */
+.amz-related-list > li {
+  min-width: 68vw;
+  max-width: 280px;
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+@media (min-width: 1024px) {
+  .amz-related-list > li {
+    min-width: 0;
+    max-width: none;
+    scroll-snap-align: none;
+    flex-shrink: 1;
+  }
+}
+
+/* ===== Single Product: Add to Cart button =====
+   WooCommerce y Storefront inyectan background morado en .button.alt con alta especificidad.
+   Se sobrescribe aquí para aplicar el verde primario del tema. */
+html body .single_add_to_cart_button.button.alt,
+html body .single_add_to_cart_button.button.alt:focus {
+  background-color: var(--primary) !important;
+  background-image: none !important;
+  border-color: var(--primary) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+html body .single_add_to_cart_button.button.alt:hover {
+  background-color: var(--primary-dark) !important;
+  border-color: var(--primary-dark) !important;
+  color: #ffffff !important;
+}
+
+/* Ocultar el botón "Formule una pregunta" de WCFM (reemplazado por el botón de WhatsApp).
+   Se usa el prefijo html body para ganar en especificidad a cualquier CSS del plugin. */
+html body p.store-enquiry,
+html body .wcfm_ele_wrapper,
+html body a.wcfm_catalog_enquiry,
+html body .wcfm-enquiry-btn-wrapper { display: none !important; }

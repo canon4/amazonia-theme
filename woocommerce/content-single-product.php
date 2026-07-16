@@ -24,7 +24,7 @@ if ( post_password_required() ) {
     <div id="product-<?php the_ID(); ?>" <?php wc_product_class( '', $product ); ?>>
 
         <!-- Hero Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
             <?php do_action( 'woocommerce_before_single_product_summary' ); ?>
 
             <!-- Product Image -->
@@ -195,54 +195,60 @@ if ( post_password_required() ) {
                     <?php echo apply_filters( 'woocommerce_short_description', $post->post_excerpt ); ?>
                 </div>
 
-                <div class="custom-add-to-cart-wrapper mb-8">
-                    <style>
-                        .custom-add-to-cart-wrapper form.cart {
-                            display: flex;
-                            flex-wrap: wrap;
-                            gap: 1rem;
-                            align-items: center;
-                        }
-                        .custom-add-to-cart-wrapper .quantity {
-                            display: flex;
-                            align-items: center;
-                        }
-                        .custom-add-to-cart-wrapper .quantity input {
-                            border-radius: 0.5rem;
-                            border: 2px solid #e2e8f0;
-                            padding: 0.85rem 1rem;
-                            width: 80px;
-                            text-align: center;
-                            background: transparent;
-                        }
-                        .custom-add-to-cart-wrapper button.single_add_to_cart_button {
-                            flex: 1;
-                            min-width: 200px;
-                            background-color: #11d411;
-                            color: #000000;
-                            font-weight: 700;
-                            padding: 1rem 2rem;
-                            border-radius: 0.5rem;
-                            box-shadow: 0 4px 6px -1px rgba(17, 212, 17, 0.2);
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 0.5rem;
-                            transition: all 0.3s;
-                            cursor: pointer;
-                            border: none;
-                        }
-                        .custom-add-to-cart-wrapper button.single_add_to_cart_button:hover {
-                            background-color: #0ea60e;
-                        }
-                        .custom-add-to-cart-wrapper button.single_add_to_cart_button::before {
-                            content: 'local_mall';
-                            font-family: 'Material Symbols Outlined';
-                            font-size: 20px;
-                        }
-                    </style>
+                <div class="custom-add-to-cart-wrapper mb-4">
                     <?php woocommerce_template_single_add_to_cart(); ?>
                 </div>
+
+                <!-- WhatsApp contact button -->
+                <div class="mb-8">
+                    <a href="#" aria-label="Contactar al vendedor por WhatsApp"
+                       class="inline-flex w-full items-center justify-center gap-2.5 rounded-xl border border-slate-200 bg-white px-7 py-3.5 font-['Outfit'] text-sm font-semibold tracking-wide !text-[#128C7E] !no-underline transition-all duration-200 hover:border-[#25D366] hover:bg-[#25D366] hover:!text-white active:scale-[0.98]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="shrink-0">
+                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                        </svg>
+                        Contactar al vendedor
+                    </a>
+                </div>
+
+                <!-- Vendido por -->
+                <?php
+                $amz_store_vendor_id = function_exists( 'wcfm_get_vendor_id_by_post' ) ? wcfm_get_vendor_id_by_post( $product->get_id() ) : 0;
+                if ( $amz_store_vendor_id ) :
+                    $amz_store_name = function_exists( 'wcfm_get_vendor_store_name' ) ? wcfm_get_vendor_store_name( $amz_store_vendor_id ) : '';
+                    $amz_store_url  = function_exists( 'wcfm_get_vendor_store' )      ? wcfm_get_vendor_store( $amz_store_vendor_id )      : '';
+                    $amz_store_logo = function_exists( 'wcfm_get_vendor_store_logo_by_vendor' ) ? wcfm_get_vendor_store_logo_by_vendor( $amz_store_vendor_id ) : '';
+                    if ( ! $amz_store_name ) {
+                        $amz_store_user = get_userdata( $amz_store_vendor_id );
+                        $amz_store_name = $amz_store_user ? $amz_store_user->display_name : '';
+                    }
+                ?>
+                <div class="mb-6 border border-slate-200 bg-slate-50/60 px-4 py-3.5">
+                    <p class="mb-2.5 text-[0.7rem] font-semibold uppercase tracking-widest text-slate-400">Vendido por</p>
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <?php if ( $amz_store_logo ) : ?>
+                                <img src="<?php echo esc_url( $amz_store_logo ); ?>"
+                                     alt="<?php echo esc_attr( $amz_store_name ); ?>"
+                                     class="h-10 w-10 rounded-full object-cover ring-1 ring-slate-200" />
+                            <?php else : ?>
+                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 text-primary">
+                                    <span class="material-symbols-outlined text-[20px]">storefront</span>
+                                </span>
+                            <?php endif; ?>
+                            <span class="font-['Outfit'] text-base font-semibold text-slate-800">
+                                <?php echo esc_html( $amz_store_name ); ?>
+                            </span>
+                        </div>
+                        <?php if ( $amz_store_url ) : ?>
+                        <a href="<?php echo esc_url( $amz_store_url ); ?>"
+                           class="shrink-0 text-xs font-semibold text-primary !no-underline transition-colors hover:text-green-700">
+                            Ver tienda
+                            <span class="material-symbols-outlined align-middle text-[14px] leading-none">arrow_forward</span>
+                        </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php endif; ?>
 
                 <?php
                 $attributes = $product->get_attributes();
@@ -279,7 +285,24 @@ if ( post_password_required() ) {
                     </div>
                 <?php endif; ?>
 
-                <?php do_action( 'woocommerce_single_product_summary' ); ?>
+                <?php
+                // Suprimir el botón "Formule una pregunta" de WCFM — reemplazado por el botón de WhatsApp.
+                // WCFM lo engancha como método de objeto (wcfm_enquiry_button) en prioridad variable (15/25/35),
+                // por lo que hay que recorrer $wp_filter para quitarlo sin depender de la instancia ni la prioridad.
+                global $wp_filter;
+                if ( isset( $wp_filter['woocommerce_single_product_summary'] ) ) {
+                    foreach ( $wp_filter['woocommerce_single_product_summary']->callbacks as $priority => $callbacks ) {
+                        foreach ( $callbacks as $key => $callback ) {
+                            if ( is_array( $callback['function'] )
+                                && is_object( $callback['function'][0] )
+                                && 'wcfm_enquiry_button' === $callback['function'][1] ) {
+                                unset( $wp_filter['woocommerce_single_product_summary']->callbacks[ $priority ][ $key ] );
+                            }
+                        }
+                    }
+                }
+                do_action( 'woocommerce_single_product_summary' );
+                ?>
             </div>
         </div>
 
@@ -306,102 +329,62 @@ if ( post_password_required() ) {
         } );
         ?>
 
-        <!-- Estilos compartidos: descripción + storytelling -->
-        <style>
-            .amz-glass-card {
-                background: rgba(244, 252, 240, 0.6);
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
-            }
-            .amz-gradient-border-left {
-                border-left-width: 3px;
-                border-image: linear-gradient(to bottom, #006b2c, #7ffc97) 1;
-            }
-            .amz-glow-hover:hover {
-                box-shadow: 0 0 30px rgba(0, 107, 44, 0.15);
-            }
-            .amz-fade-up {
-                opacity: 0;
-                transform: translateY(30px);
-                transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-            }
-            .amz-fade-up.visible {
-                opacity: 1;
-                transform: translateY(0);
-            }
-            /* Restaurar estilos de contenido del editor WordPress */
-            .amz-wp-content p { margin-bottom: 1em; }
-            .amz-wp-content img.alignleft,
-            .amz-wp-content .alignleft  { float: left;  margin: 0 1.5em 1em 0; display: inline; }
-            .amz-wp-content img.alignright,
-            .amz-wp-content .alignright { float: right; margin: 0 0 1em 1.5em; display: inline; }
-            .amz-wp-content img.aligncenter,
-            .amz-wp-content .aligncenter { display: block; margin-left: auto; margin-right: auto; margin-bottom: 1em; }
-            .amz-wp-content img.alignnone { margin-bottom: 1em; }
-            .amz-wp-content .wp-caption { max-width: 100%; }
-            .amz-wp-content .wp-caption-text { font-size: 0.875em; text-align: center; color: #64748b; margin-top: 0.25em; }
-            .amz-wp-content::after { content: ''; display: table; clear: both; }
-            .amz-wp-content ul { list-style: disc; padding-left: 1.5em; margin-bottom: 1em; }
-            .amz-wp-content ol { list-style: decimal; padding-left: 1.5em; margin-bottom: 1em; }
-            .amz-wp-content li { margin-bottom: 0.25em; }
-            .amz-wp-content h2,
-            .amz-wp-content h3,
-            .amz-wp-content h4 { font-weight: bold; margin-bottom: 0.5em; margin-top: 1em; }
-            .amz-wp-content blockquote { border-left: 3px solid #006b2c; padding-left: 1em; margin: 1em 0; font-style: italic; }
-            .amz-wp-content a { color: #006b2c; text-decoration: underline; }
-        </style>
-
         <?php $long_description = $product->get_description(); ?>
         <?php if ( $long_description ) : ?>
-        <section class="max-w-[1200px] mx-auto py-16 px-4 overflow-hidden">
-            <div class="flex flex-col items-start mb-10 amz-fade-up" style="transition-delay: 0s;">
-                <span class="text-xs font-semibold text-[#006b2c] tracking-widest uppercase mb-3" style="font-family:'Work Sans',sans-serif; letter-spacing:0.05em;">DESCRIPCIÓN</span>
-                <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-3 leading-tight" style="font-family:'Outfit',sans-serif;">Sobre Nuestro Producto</h2>
-                <div class="h-1 w-24 rounded-full" style="background:linear-gradient(to right,#006b2c,#7ffc97);"></div>
+        <section class="max-w-[900px] mx-auto py-14 px-6 overflow-hidden">
+            <div data-amz-fade class="flex flex-col items-center text-center mb-10 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+                <span class="mb-4 inline-flex items-center gap-2 font-display text-[0.7rem] font-bold uppercase tracking-[0.14em] text-primary before:h-0.5 before:w-7 before:rounded-sm before:bg-gradient-to-r before:from-primary before:to-green-400 before:content-['']">Descripción</span>
+                <h2 class="text-3xl lg:text-[2.5rem] font-bold text-slate-900 leading-tight tracking-tight font-['Outfit']">Sobre Nuestro Producto</h2>
             </div>
-            <div class="amz-fade-up amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left amz-glow-hover p-8 md:p-12" style="transition-delay:0.1s;">
-                <div class="amz-wp-content text-base lg:text-lg text-slate-600 leading-relaxed"
-                     style="font-family:'Inter',sans-serif;"><?php echo wp_kses_post( $long_description ); ?></div>
+            <div data-amz-fade class="rounded-2xl border border-slate-200/70 bg-white p-8 md:p-11 shadow-sm hover:shadow-[0_24px_48px_-18px_rgba(0,107,44,0.18)] opacity-0 translate-y-8 transition-all duration-500 ease-out delay-100">
+                <div class="amz-wp-content text-base lg:text-[1.0625rem] text-slate-600 leading-[1.85] font-['Inter']"><?php echo wp_kses_post( $long_description ); ?></div>
             </div>
         </section>
         <?php endif; ?>
 
-        <?php if ( $community_data ) : ?>
-        <section class="max-w-[1200px] mx-auto py-20 overflow-hidden">
+        <?php if ( $community_data ) :
+            $community_img = $community_data['logo'] ?: ( $gallery_img_1 ?: $community_data['banner'] );
+        ?>
+        <section class="max-w-[1200px] mx-auto py-14 px-6 overflow-hidden">
 
             <!-- Section Header -->
-            <div class="flex flex-col items-start mb-12 amz-fade-up" style="transition-delay: 0s;">
-                <span class="text-xs font-semibold text-[#006b2c] tracking-widest uppercase mb-3" style="font-family: 'Work Sans', sans-serif; letter-spacing: 0.05em;">ORIGEN &amp; PROPÓSITO</span>
-                <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-3 max-w-2xl leading-tight" style="font-family: 'Outfit', sans-serif;">Cada producto tiene una historia</h2>
-                <div class="h-1 w-24 rounded-full" style="background: linear-gradient(to right, #006b2c, #7ffc97);"></div>
+            <div data-amz-fade class="flex flex-col items-center text-center mb-12 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+                <span class="mb-4 inline-flex items-center gap-2 font-display text-[0.7rem] font-bold uppercase tracking-[0.14em] text-primary before:h-0.5 before:w-7 before:rounded-sm before:bg-gradient-to-r before:from-primary before:to-green-400 before:content-['']">Origen &amp; Propósito</span>
+                <h2 class="text-3xl lg:text-[2.5rem] font-bold text-slate-900 mb-3 max-w-2xl leading-tight tracking-tight font-['Outfit']">Cada producto tiene una historia</h2>
+                <p class="text-base text-slate-500 font-['Inter']">
+                    Elaborado por <span class="font-semibold text-[#006b2c]"><?php echo esc_html( $community_data['nombre'] ); ?></span>
+                </p>
             </div>
 
-            <div class="flex flex-col gap-12">
+            <div class="flex flex-col gap-10">
 
                 <!-- Card 1: La Comunidad — texto izquierda, imagen derecha -->
-                <div class="amz-fade-up group flex flex-col md:flex-row items-stretch amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left hover:-translate-y-1 transition-all duration-500 amz-glow-hover" style="transition-delay: 0.15s;">
-                    <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
+                <div data-amz-fade class="group flex flex-col md:flex-row items-stretch overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm opacity-0 translate-y-8 transition-all duration-500 ease-out delay-150 hover:-translate-y-1 hover:shadow-[0_24px_48px_-18px_rgba(0,107,44,0.18)]">
+                    <div class="w-full md:w-3/4 p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
                         <?php if ( $community_data['categoria'] ) : ?>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3 uppercase tracking-wider" style="background: rgba(127,252,151,0.3); color: #005320; font-family: 'Work Sans', sans-serif;">
+                        <span class="mb-3 inline-flex w-fit items-center rounded-full bg-[rgba(127,252,151,0.3)] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#005320] font-display">
                             <?php echo esc_html( $community_data['categoria'] ); ?>
                         </span>
                         <?php endif; ?>
-                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-3 leading-tight" style="font-family: 'Outfit', sans-serif;"><?php echo esc_html( $community_data['nombre'] ); ?></h3>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-3 leading-tight font-['Outfit']"><?php echo esc_html( $community_data['nombre'] ); ?></h3>
                         <?php if ( $community_data['historia'] ) : ?>
-                        <p class="text-base lg:text-lg text-slate-600 mb-6 leading-relaxed" style="font-family: 'Inter', sans-serif;">
+                        <p class="text-base lg:text-lg text-slate-600 mb-6 leading-relaxed font-['Inter']">
                             <?php echo esc_html( wp_trim_words( $community_data['historia'], 40, '…' ) ); ?>
                         </p>
                         <?php endif; ?>
-                        <a class="text-sm font-semibold text-[#006b2c] flex items-center gap-2 hover:translate-x-2 transition-transform duration-300 w-fit" style="font-family: 'Work Sans', sans-serif;" href="<?php echo esc_url( $community_data['url'] ); ?>">
+                        <a class="flex w-fit items-center gap-2 text-sm font-semibold text-[#006b2c] font-display transition-transform duration-300 hover:translate-x-2" href="<?php echo esc_url( $community_data['url'] ); ?>">
                             Conocer la comunidad
-                            <span class="material-symbols-outlined" style="font-size: 18px;">arrow_forward</span>
+                            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </a>
                     </div>
-                    <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden order-1 md:order-2">
-                        <?php if ( $gallery_img_1 ) : ?>
-                        <img alt="<?php echo esc_attr( $community_data['nombre'] ); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_1 ); ?>" loading="lazy" />
+                    <div class="w-full md:w-1/4 h-[300px] md:h-auto overflow-hidden order-1 md:order-2">
+                        <?php $card1_img = $gallery_img_1 ?: $community_img; ?>
+                        <?php if ( $card1_img ) : ?>
+                        <img alt="<?php echo esc_attr( $community_data['nombre'] ); ?>" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="<?php echo esc_url( $card1_img ); ?>" loading="lazy" />
                         <?php else : ?>
-                        <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#f0fdf4] to-[#dcfce7]">
+                            <span class="material-symbols-outlined text-[#86efac] text-[72px]">groups</span>
+                        </div>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -413,24 +396,24 @@ if ( post_password_required() ) {
 
                 <!-- Card 2: Tradición & Cultura — imagen izquierda, texto derecha -->
                 <?php if ( ! empty( $bullets ) ) : ?>
-                <div class="amz-fade-up group flex flex-col md:flex-row items-stretch amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left hover:-translate-y-1 transition-all duration-500 amz-glow-hover" style="transition-delay: 0.3s;">
+                <div data-amz-fade class="group flex flex-col md:flex-row items-stretch overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm opacity-0 translate-y-8 transition-all duration-500 ease-out delay-300 hover:-translate-y-1 hover:shadow-[0_24px_48px_-18px_rgba(0,107,44,0.18)]">
                     <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden">
                         <?php if ( $gallery_img_2 ) : ?>
-                        <img alt="Tradición artesanal" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_2 ); ?>" loading="lazy" />
+                        <img alt="Tradición artesanal" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="<?php echo esc_url( $gallery_img_2 ); ?>" loading="lazy" />
                         <?php else : ?>
                         <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
                         <?php endif; ?>
                     </div>
                     <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3 uppercase tracking-wider" style="background: rgba(195,238,184,0.4); color: #2b4f27; font-family: 'Work Sans', sans-serif;">
+                        <span class="mb-3 inline-flex w-fit items-center rounded-full bg-[rgba(195,238,184,0.4)] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#2b4f27] font-display">
                             TRADICIÓN &amp; CULTURA
                         </span>
-                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-4 leading-tight" style="font-family: 'Outfit', sans-serif;">Saberes que se tejen de generación en generación</h3>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-4 leading-tight font-['Outfit']">Saberes que se tejen de generación en generación</h3>
                         <ul class="space-y-3">
                             <?php foreach ( $bullets as $valor ) : ?>
-                            <li class="flex items-center gap-3 text-base text-slate-600" style="font-family: 'Inter', sans-serif;">
+                            <li class="flex items-center gap-3 text-base text-slate-600 font-['Inter']">
                                 <?php if ( ! empty( $valor['icono'] ) ) : ?>
-                                <span class="material-symbols-outlined text-[#006d36] shrink-0" style="font-size: 18px;"><?php echo esc_html( $valor['icono'] ); ?></span>
+                                <span class="material-symbols-outlined text-[#006d36] shrink-0 text-[18px]"><?php echo esc_html( $valor['icono'] ); ?></span>
                                 <?php else : ?>
                                 <span class="w-2 h-2 rounded-full bg-[#006d36] shrink-0 inline-block"></span>
                                 <?php endif; ?>
@@ -444,26 +427,26 @@ if ( post_password_required() ) {
 
                 <!-- Card 3: Valores de la Comunidad — texto izquierda, imagen derecha -->
                 <?php if ( ! empty( $valores ) ) : ?>
-                <div class="amz-fade-up group flex flex-col md:flex-row items-stretch amz-glass-card border border-slate-100 rounded-[24px] overflow-hidden amz-gradient-border-left hover:-translate-y-1 transition-all duration-500 amz-glow-hover" style="transition-delay: 0.45s;">
+                <div data-amz-fade class="group flex flex-col md:flex-row items-stretch overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm opacity-0 translate-y-8 transition-all duration-500 ease-out delay-[450ms] hover:-translate-y-1 hover:shadow-[0_24px_48px_-18px_rgba(0,107,44,0.18)]">
                     <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold w-fit mb-3 uppercase tracking-wider" style="background: #00873a; color: #f7fff2; font-family: 'Work Sans', sans-serif;">
+                        <span class="mb-3 inline-flex w-fit items-center rounded-full bg-[#00873a] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#f7fff2] font-display">
                             VALORES
                         </span>
-                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 leading-tight" style="font-family: 'Outfit', sans-serif;">Los principios que guían cada pieza</h3>
+                        <h3 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 leading-tight font-['Outfit']">Los principios que guían cada pieza</h3>
                         <div class="grid grid-cols-2 gap-4">
                             <?php foreach ( $valores as $valor ) : ?>
                             <div class="flex items-start gap-3">
                                 <?php if ( ! empty( $valor['icono'] ) ) : ?>
-                                <span class="material-symbols-outlined text-[#006b2c] shrink-0 mt-0.5" style="font-size: 24px;"><?php echo esc_html( $valor['icono'] ); ?></span>
+                                <span class="material-symbols-outlined text-[#006b2c] shrink-0 mt-0.5 text-[24px]"><?php echo esc_html( $valor['icono'] ); ?></span>
                                 <?php endif; ?>
-                                <span class="text-base text-slate-600" style="font-family: 'Inter', sans-serif;"><?php echo esc_html( $valor['texto'] ); ?></span>
+                                <span class="text-base text-slate-600 font-['Inter']"><?php echo esc_html( $valor['texto'] ); ?></span>
                             </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
                     <div class="w-full md:w-1/2 h-[300px] md:h-auto overflow-hidden order-1 md:order-2">
                         <?php if ( $gallery_img_3 ) : ?>
-                        <img alt="Valores artesanales" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src="<?php echo esc_url( $gallery_img_3 ); ?>" loading="lazy" />
+                        <img alt="Valores artesanales" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="<?php echo esc_url( $gallery_img_3 ); ?>" loading="lazy" />
                         <?php else : ?>
                         <div class="w-full h-full bg-slate-100 min-h-[300px]"></div>
                         <?php endif; ?>
@@ -473,23 +456,35 @@ if ( post_password_required() ) {
 
             </div>
         </section>
+        <?php endif; ?>
 
-        <script>
-        (function() {
-            document.addEventListener('DOMContentLoaded', function() {
-                var observer = new IntersectionObserver(function(entries) {
-                    entries.forEach(function(entry) {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('visible');
-                        }
-                    });
-                }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
-                document.querySelectorAll('.amz-fade-up').forEach(function(el) {
-                    observer.observe(el);
-                });
-            });
-        })();
-        </script>
+        <?php
+        // ── Productos relacionados ──────────────────────────────────
+        $related_ids = wc_get_related_products( $product->get_id(), 4 );
+        if ( ! empty( $related_ids ) ) :
+            $main_product = $product; // preservar el producto principal
+        ?>
+        <section class="max-w-[1200px] mx-auto py-14 border-t border-slate-100">
+            <div data-amz-fade class="flex flex-col items-center text-center mb-8 px-6 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+                <span class="mb-3 inline-flex items-center gap-2 font-display text-[0.7rem] font-bold uppercase tracking-[0.14em] text-primary before:h-0.5 before:w-7 before:rounded-sm before:bg-gradient-to-r before:from-primary before:to-green-400 before:content-['']">También te puede gustar</span>
+                <h2 class="text-2xl lg:text-[2rem] font-bold text-slate-900 leading-tight tracking-tight font-['Outfit']">Productos relacionados</h2>
+            </div>
+
+            <!-- Mobile: scroll horizontal snap | Desktop: grid 4 columnas -->
+            <ul data-amz-fade class="amz-related-list products list-none !p-0 !m-0 flex gap-4 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-6 lg:pb-0 opacity-0 translate-y-8 transition-all duration-700 ease-out delay-100">
+                <?php
+                global $post;
+                foreach ( $related_ids as $related_id ) {
+                    $post    = get_post( $related_id );
+                    $product = wc_get_product( $related_id );
+                    setup_postdata( $post );
+                    wc_get_template_part( 'content', 'product' );
+                }
+                wp_reset_postdata();
+                $product = $main_product;
+                ?>
+            </ul>
+        </section>
         <?php endif; ?>
 
         <?php
@@ -502,5 +497,24 @@ if ( post_password_required() ) {
 
     </div>
 </main>
+
+<script>
+(function () {
+    document.addEventListener('DOMContentLoaded', function () {
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove('opacity-0', 'translate-y-8');
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('[data-amz-fade]').forEach(function (el) {
+            observer.observe(el);
+        });
+    });
+})();
+</script>
 
 <?php do_action( 'woocommerce_after_single_product' ); ?>
