@@ -24,10 +24,9 @@ jQuery(document).ready(function ($) {
 			let $btn = $(this);
 			let id = parseInt($btn.data('product-id'), 10);
 			if (favoritesArray.includes(id)) {
-				$btn.addClass('text-red-500').removeClass('text-slate-400');
-				// Optional: if using filled icon, we could switch to material-symbols instead of material-symbols-outlined
+				$btn.addClass('text-red-500 is-favorited').removeClass('text-slate-400');
 			} else {
-				$btn.addClass('text-slate-400').removeClass('text-red-500');
+				$btn.addClass('text-slate-400').removeClass('text-red-500 is-favorited');
 			}
 		});
 	}

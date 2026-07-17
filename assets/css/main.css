@@ -775,6 +775,14 @@ html body .single_add_to_cart_button .material-symbols-outlined {
   align-self: center;
 }
 
+/* Corazón de favoritos: relleno cuando el producto está marcado (sin marcar queda igual,
+   solo el contorno). favorites.js alterna .is-favorited sobre el botón.
+   font-variation-settings NO es aditivo: al declarar FILL hay que repetir el resto de los
+   ejes de material-symbols.css, o volverían a su valor por defecto. */
+html body .amazonia-favorite-btn.is-favorited .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
 /* Ocultar el botón "Formule una pregunta" de WCFM (reemplazado por el botón de WhatsApp).
    Se usa el prefijo html body para ganar en especificidad a cualquier CSS del plugin. */
 html body p.store-enquiry,
