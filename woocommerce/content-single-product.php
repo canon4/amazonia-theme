@@ -84,7 +84,7 @@ if ( post_password_required() ) {
                     .product-gallery-wrapper .woocommerce-product-gallery__trigger {
                         position: absolute;
                         top: 1rem;
-                        right: 4rem; /* keep away from favorite button */
+                        right: 4rem;
                         z-index: 9;
                         background: white;
                         border-radius: 50%;
@@ -115,10 +115,6 @@ if ( post_password_required() ) {
                         Sale
                     </div>
                 <?php endif; ?>
-
-                <button class="amazonia-favorite-btn absolute top-4 right-4 h-10 w-10 bg-white/90 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors z-10 shadow-lg" data-product-id="<?php echo esc_attr( $product->get_id() ); ?>">
-                    <span class="material-symbols-outlined text-xl">favorite</span>
-                </button>
             </div>
 
             <!-- Product Details -->
@@ -146,9 +142,17 @@ if ( post_password_required() ) {
                 }
                 ?>
 
-                <h1 class="text-4xl lg:text-5xl font-black text-slate-900 dark:text-slate-100 mb-2 leading-tight">
-                    <?php the_title(); ?>
-                </h1>
+                <div class="mb-2 flex items-start justify-between gap-4">
+                    <h1 class="text-4xl lg:text-5xl font-black text-slate-900 dark:text-slate-100 leading-tight">
+                        <?php the_title(); ?>
+                    </h1>
+                    <?php // favorites.js alterna text-red-500 / text-slate-400 sobre el botón; el icono hereda el color. ?>
+                    <button class="amazonia-favorite-btn mt-1.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-400 transition-colors duration-200 hover:border-red-200 hover:text-red-500 dark:border-slate-700 dark:bg-slate-900/40"
+                            data-product-id="<?php echo esc_attr( $product->get_id() ); ?>"
+                            aria-label="Añadir a favoritos">
+                        <span class="material-symbols-outlined !text-[22px]" aria-hidden="true">favorite</span>
+                    </button>
+                </div>
 
                 <div class="mb-2 product-price-wrapper">
                     <style>

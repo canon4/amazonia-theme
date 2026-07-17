@@ -122,9 +122,9 @@ function amazonia_favorites_shortcode( $atts ) {
             <main class="w-full">
                 <!-- Header -->
                 <div class="max-w-4xl mb-12 mx-auto text-center">
-                    <h1 class="text-4xl lg:text-5xl font-black text-[#032e21] mb-6">My Favorites</h1>
+                    <h1 class="text-4xl lg:text-5xl font-black text-[#032e21] mb-6">Mis Favoritos</h1>
                     <p class="text-slate-600 md:text-lg leading-relaxed mx-auto max-w-2xl">
-                        A curated sanctuary of Amazonian treasures. These artifacts support the ancestral knowledge and sustainable livelihoods of forest communities.
+                        Aquí se muestran los productos que has marcado como favoritos. Guárdalos para volver a ellos cuando quieras y apoya con tu compra el saber ancestral de las comunidades del bosque.
                     </p>
                 </div>
 
