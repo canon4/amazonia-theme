@@ -728,6 +728,25 @@ li.product .aspect-square img {
   }
 }
 
+/* ===== "Más de esta tienda": carrusel con cards de ancho fijo =====
+   Siempre carrusel horizontal. El ancho fijo evita que una sola card
+   se estire para ocupar todo el contenedor. flex-basis definido gana
+   sobre el width:100% (!w-full) que trae cada card de producto. */
+.amz-store-list {
+  /* Centra las cards cuando caben; "safe" vuelve a alinear a la
+     izquierda si desbordan, para no cortar las primeras al scrollear. */
+  justify-content: safe center;
+}
+.amz-store-list > li {
+  flex: 0 0 220px;
+  scroll-snap-align: start;
+}
+@media (min-width: 1024px) {
+  .amz-store-list > li {
+    flex-basis: 240px;
+  }
+}
+
 /* ===== Single Product: Add to Cart button =====
    WooCommerce y Storefront inyectan background morado en .button.alt con alta especificidad.
    Se sobrescribe aquí para aplicar el verde primario del tema. */
@@ -743,6 +762,17 @@ html body .single_add_to_cart_button.button.alt:hover {
   background-color: var(--primary-dark) !important;
   border-color: var(--primary-dark) !important;
   color: #ffffff !important;
+}
+
+/* Icono del botón "Añadir al carrito": alinearlo con el texto.
+   material-symbols.css fija font-size:24px con la misma especificidad que la
+   utilidad text-[20px] de Tailwind y se carga DESPUÉS, por lo que el icono se
+   renderizaba a 24px (desbalanceado junto al texto de 16px). main.css carga al
+   final, así que aquí se restablece el tamaño correcto y se centra verticalmente. */
+html body .single_add_to_cart_button .material-symbols-outlined {
+  font-size: 20px;
+  line-height: 1;
+  align-self: center;
 }
 
 /* Ocultar el botón "Formule una pregunta" de WCFM (reemplazado por el botón de WhatsApp).

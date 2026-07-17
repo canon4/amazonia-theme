@@ -215,38 +215,48 @@ if ( post_password_required() ) {
                 $amz_store_vendor_id = function_exists( 'wcfm_get_vendor_id_by_post' ) ? wcfm_get_vendor_id_by_post( $product->get_id() ) : 0;
                 if ( $amz_store_vendor_id ) :
                     $amz_store_name = function_exists( 'wcfm_get_vendor_store_name' ) ? wcfm_get_vendor_store_name( $amz_store_vendor_id ) : '';
-                    $amz_store_url  = function_exists( 'wcfm_get_vendor_store' )      ? wcfm_get_vendor_store( $amz_store_vendor_id )      : '';
+                    $amz_store_url  = function_exists( 'wcfmmp_get_store_url' ) ? wcfmmp_get_store_url( $amz_store_vendor_id ) : get_author_posts_url( $amz_store_vendor_id );
                     $amz_store_logo = function_exists( 'wcfm_get_vendor_store_logo_by_vendor' ) ? wcfm_get_vendor_store_logo_by_vendor( $amz_store_vendor_id ) : '';
                     if ( ! $amz_store_name ) {
                         $amz_store_user = get_userdata( $amz_store_vendor_id );
                         $amz_store_name = $amz_store_user ? $amz_store_user->display_name : '';
                     }
                 ?>
-                <div class="mb-6 border border-slate-200 bg-slate-50/60 px-4 py-3.5">
-                    <p class="mb-2.5 text-[0.7rem] font-semibold uppercase tracking-widest text-slate-400">Vendido por</p>
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <?php if ( $amz_store_logo ) : ?>
-                                <img src="<?php echo esc_url( $amz_store_logo ); ?>"
-                                     alt="<?php echo esc_attr( $amz_store_name ); ?>"
-                                     class="h-10 w-10 rounded-full object-cover ring-1 ring-slate-200" />
-                            <?php else : ?>
-                                <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-100 text-primary">
-                                    <span class="material-symbols-outlined text-[20px]">storefront</span>
-                                </span>
-                            <?php endif; ?>
-                            <span class="font-['Outfit'] text-base font-semibold text-slate-800">
-                                <?php echo esc_html( $amz_store_name ); ?>
+                <?php
+                // material-symbols.css se carga después de tailwind.css y fija font-size: 24px
+                // con la misma especificidad, así que los iconos necesitan `!text-[..]`.
+                $amz_store_card_class = 'group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-4 !no-underline transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-[0_12px_28px_-14px_rgba(0,107,44,0.25)] dark:border-slate-700 dark:bg-slate-900/40';
+                $amz_store_ring_class = 'h-11 w-11 shrink-0 rounded-full ring-1 ring-slate-200 transition-all duration-200 group-hover:ring-primary/50 dark:ring-slate-700';
+                ?>
+                <div class="mb-6">
+                    <?php if ( $amz_store_url ) : ?>
+                    <a href="<?php echo esc_url( $amz_store_url ); ?>" class="<?php echo esc_attr( $amz_store_card_class ); ?>">
+                    <?php else : ?>
+                    <div class="<?php echo esc_attr( $amz_store_card_class ); ?>">
+                    <?php endif; ?>
+
+                        <?php if ( $amz_store_logo ) : ?>
+                            <img src="<?php echo esc_url( $amz_store_logo ); ?>"
+                                 alt="<?php echo esc_attr( $amz_store_name ); ?>"
+                                 class="<?php echo esc_attr( $amz_store_ring_class ); ?> object-cover" />
+                        <?php else : ?>
+                            <span class="<?php echo esc_attr( $amz_store_ring_class ); ?> flex items-center justify-center bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined !text-[20px]" aria-hidden="true">storefront</span>
                             </span>
-                        </div>
-                        <?php if ( $amz_store_url ) : ?>
-                        <a href="<?php echo esc_url( $amz_store_url ); ?>"
-                           class="shrink-0 text-xs font-semibold text-primary !no-underline transition-colors hover:text-green-700">
-                            Ver tienda
-                            <span class="material-symbols-outlined align-middle text-[14px] leading-none">arrow_forward</span>
-                        </a>
                         <?php endif; ?>
-                    </div>
+
+                        <div class="min-w-0 flex-1">
+                            <p class="mb-1 text-[0.7rem] font-semibold uppercase leading-none tracking-[0.14em] text-slate-400">Vendido por</p>
+                            <p class="truncate font-['Outfit'] text-base font-semibold leading-snug text-slate-800 transition-colors duration-200 group-hover:text-primary dark:text-slate-100">
+                                <?php echo esc_html( $amz_store_name ); ?>
+                            </p>
+                        </div>
+
+                        <?php if ( $amz_store_url ) : ?>
+                        <span class="material-symbols-outlined !text-[18px] shrink-0 text-slate-300 transition-all duration-200 group-hover:translate-x-1 group-hover:text-primary dark:text-slate-600" aria-hidden="true">arrow_forward</span>
+                        <?php endif; ?>
+
+                    <?php echo $amz_store_url ? '</a>' : '</div>'; ?>
                 </div>
                 <?php endif; ?>
 
@@ -286,9 +296,7 @@ if ( post_password_required() ) {
                 <?php endif; ?>
 
                 <?php
-                // Suprimir el botón "Formule una pregunta" de WCFM — reemplazado por el botón de WhatsApp.
-                // WCFM lo engancha como método de objeto (wcfm_enquiry_button) en prioridad variable (15/25/35),
-                // por lo que hay que recorrer $wp_filter para quitarlo sin depender de la instancia ni la prioridad.
+                
                 global $wp_filter;
                 if ( isset( $wp_filter['woocommerce_single_product_summary'] ) ) {
                     foreach ( $wp_filter['woocommerce_single_product_summary']->callbacks as $priority => $callbacks ) {
@@ -477,6 +485,48 @@ if ( post_password_required() ) {
                 foreach ( $related_ids as $related_id ) {
                     $post    = get_post( $related_id );
                     $product = wc_get_product( $related_id );
+                    setup_postdata( $post );
+                    wc_get_template_part( 'content', 'product' );
+                }
+                wp_reset_postdata();
+                $product = $main_product;
+                ?>
+            </ul>
+        </section>
+        <?php endif; ?>
+
+        <?php
+        // ── Más de esta tienda ──────────────────────────────────────
+        $store_product_ids = array();
+        if ( $vendor_id ) {
+            $store_products_query = new WP_Query( array(
+                'post_type'      => 'product',
+                'post_status'    => 'publish',
+                'posts_per_page' => 5,
+                'author'         => $vendor_id,
+                'post__not_in'   => array( $product->get_id() ),
+                'orderby'        => 'rand',
+                'fields'         => 'ids',
+            ) );
+            $store_product_ids = $store_products_query->posts;
+        }
+
+        if ( ! empty( $store_product_ids ) ) :
+            $main_product = $product; // preservar el producto principal
+        ?>
+        <section class="max-w-[1200px] mx-auto py-14 border-t border-slate-100">
+            <div data-amz-fade class="flex flex-col items-center text-center mb-8 px-6 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+                <span class="mb-3 inline-flex items-center gap-2 font-display text-[0.7rem] font-bold uppercase tracking-[0.14em] text-primary before:h-0.5 before:w-7 before:rounded-sm before:bg-gradient-to-r before:from-primary before:to-green-400 before:content-['']">Misma tienda</span>
+                <h2 class="text-2xl lg:text-[2rem] font-bold text-slate-900 leading-tight tracking-tight font-['Outfit']">Más de esta tienda</h2>
+            </div>
+
+            <!-- Carrusel horizontal con cards de ancho fijo (móvil y escritorio) -->
+            <ul data-amz-fade class="amz-store-list products list-none !p-0 !m-0 flex gap-4 overflow-x-auto px-6 pb-4 snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:gap-6 opacity-0 translate-y-8 transition-all duration-700 ease-out delay-100">
+                <?php
+                global $post;
+                foreach ( $store_product_ids as $store_product_id ) {
+                    $post    = get_post( $store_product_id );
+                    $product = wc_get_product( $store_product_id );
                     setup_postdata( $post );
                     wc_get_template_part( 'content', 'product' );
                 }

@@ -61,9 +61,11 @@ if ( $product->is_in_stock() ) : ?>
 		</div>
 
 		<button type="submit" name="add-to-cart" value="<?php echo esc_attr( $product->get_id() ); ?>"
-			class="single_add_to_cart_button button alt inline-flex min-h-[52px] min-w-[180px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border-0 bg-primary px-8 font-['Outfit'] text-base font-semibold tracking-wide text-white shadow-sm transition-all duration-200 hover:bg-green-700 hover:shadow-md active:scale-[0.98]">
-			<span class="material-symbols-outlined text-[20px] leading-none">shopping_bag</span>
-			<?php echo esc_html( $product->single_add_to_cart_text() ); ?>
+			class="single_add_to_cart_button button alt inline-flex min-h-[52px] min-w-[180px] flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border-0 bg-primary px-8 font-['Outfit'] text-base font-semibold leading-none tracking-wide text-white shadow-sm transition-all duration-200 hover:bg-green-700 hover:shadow-md active:scale-[0.98]">
+			<div class="inline-flex items-center justify-center gap-2 leading-none">
+				<span class="material-symbols-outlined shrink-0 text-[20px] leading-none">shopping_bag</span>
+				<span class="leading-none"><?php echo esc_html( $product->single_add_to_cart_text() ); ?></span>
+			</div>
 		</button>
 
 		<?php do_action( 'woocommerce_after_add_to_cart_button' ); ?>
