@@ -36,3 +36,7 @@ docs/*.exe
 preview/DESIGN.md
 preview/screen.png
 preview/code_Producto.html
+
+# Artefactos generados por graphify (grafo de conocimiento): se regeneran
+graphify-out/
+**/graphify-out/
