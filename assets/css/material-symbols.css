@@ -1,9 +1,13 @@
 /*
- * Material Symbols Outlined — self-hosted
- * Fuente descargada en assets/fonts/material-symbols-outlined.woff2
+ * Material Symbols Outlined — self-hosted y SUBSETEADO
+ * assets/fonts/material-symbols-outlined.woff2 contiene solo los ~125 iconos
+ * que usa el tema (~123 KB en lugar de 3.4 MB). Ver assets/fonts/used-icons.txt.
  *
- * Si el archivo local no existe en el servidor, el navegador usará
- * la URL remota como segundo intento (jsDelivr, no Google).
+ * El ?v= fuerza a los navegadores a descargar el subset y no la versión
+ * completa que pudiera estar cacheada (la .htaccess cachea woff2 1 año).
+ *
+ * Fallback jsDelivr: solo actúa si el archivo local NO se descarga; no cubre
+ * iconos ausentes del subset (para eso hay que regenerarlo).
  */
 
 @font-face {
@@ -12,7 +16,7 @@
   font-weight: 100 700;
   font-display: block;
   src:
-    url('../fonts/material-symbols-outlined.woff2') format('woff2'),
+    url('../fonts/material-symbols-outlined.woff2?v=3-subset') format('woff2'),
     url('https://cdn.jsdelivr.net/npm/material-symbols@0.28.1/material-symbols-outlined.woff2') format('woff2');
 }
 

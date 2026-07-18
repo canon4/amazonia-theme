@@ -66,18 +66,17 @@ add_action( 'wp_head', function() {
 }, 1 );
 
 /**
- * Carga Material Symbols de forma asíncrona (non-blocking).
- * El woff2 pesa 3.8 MB — con font-display:block bloquea el render hasta 3 s.
- * Estrategia: imprimir primero como media=print y en onload cambiar a all,
- * así el browser puede pintar el HTML sin esperar la fuente de iconos.
- * Los iconos serán invisibles el primer frame y se muestran en cuanto carga.
+ * Material Symbols: la fuente está subseteada a los ~125 iconos que usa el tema
+ * (~123 KB, antes 3.4 MB). Con ese peso ya NO hace falta el truco de carga
+ * asíncrona (preload as=style + onload): la hoja se encola normalmente y
+ * font-display:block muestra los iconos en cuanto llega la fuente.
+ *
+ * Al añadir un icono nuevo hay que REGENERAR el subset o se verá su nombre
+ * escrito como texto (pasó con forest/volunteer_activism, que vienen de la BD
+ * vía el selector $valor_icons de template-community-admin.php):
+ *     python performance/scripts/subset-material-symbols.py
+ * y subir el ?v= en assets/css/material-symbols.css.
  */
-add_filter( 'style_loader_tag', function( $tag, $handle ) {
-	if ( $handle !== 'material-symbols' ) return $tag;
-	$href = esc_url( get_template_directory_uri() . '/assets/css/material-symbols.css?ver=1.0.0' );
-	return '<link rel="preload" as="style" href="' . $href . '" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n"
-		 . '<noscript><link rel="stylesheet" href="' . $href . '"></noscript>' . "\n";
-}, 10, 2 );
 
 /**
  * Enqueue scripts and styles.
@@ -89,7 +88,7 @@ function amazonia_theme_scripts() {
 	// Material Symbols — self-hosted para evitar dependencia de Google Fonts en el servidor.
 	// El archivo woff2 está en assets/fonts/material-symbols-outlined.woff2
 	// Work Sans, Inter y Outfit también son self-hosted (ver main.css).
-	wp_enqueue_style( 'material-symbols', get_template_directory_uri() . '/assets/css/material-symbols.css', array(), '1.0.0' );
+	wp_enqueue_style( 'material-symbols', get_template_directory_uri() . '/assets/css/material-symbols.css', array(), '1.0.1' );
 
 	// Enqueue main stylesheet (style.css fallback)
 	wp_enqueue_style( 'amazonia-theme-style', get_stylesheet_uri(), array(), '1.0.0' );

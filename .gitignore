@@ -13,9 +13,15 @@ performance/node_modules/
 # Claude Code / agentes IA
 .agents/
 .claude/
+graphify-out/
 skills-lock.json
 context.md
 CLAUDE.md
+
+# Fuente base completa de iconos (3.4 MB) — solo para regenerar el subset.
+# En el repo va únicamente el subset (material-symbols-outlined.woff2, ~77 KB).
+# Descargable de https://cdn.jsdelivr.net/npm/material-symbols@0.28.1/material-symbols-outlined.woff2
+assets/fonts/material-symbols-outlined-full.woff2
 
 # Archivos de prototipado local
 preview/

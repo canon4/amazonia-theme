@@ -7,6 +7,126 @@
 
 ---
 
+## 2026-07-15 — Subset de fuente de iconos + hallazgos CORS
+
+### ✅ Aplicado — Material Symbols subseteada (mayor cuello de botella de peso)
+
+`assets/fonts/material-symbols-outlined.woff2` pesaba **3.4 MB** (la fuente
+variable completa, ~5.900 glifos) y el tema usa **125 iconos**. Se subseteó a
+esos 125 → **123 KB (−96.3 %)**. Es el asset más pesado de casi todas las
+páginas, así que baja el peso total y el tiempo de descarga de forma notable.
+
+| Métrica | Antes | Después |
+|---------|-------|---------|
+| `material-symbols-outlined.woff2` | 🔴 3.4 MB | ✅ 123 KB (−96.3 %) |
+
+⚠️ **Cómo extraer la lista de iconos (esto rompió la web una vez).** Un primer
+intento extrajo solo `<span class="material-symbols-outlined">nombre</span>` con
+el patrón `[a-z_]+` y sacó 70 iconos. Se rompieron varios, que salían con **su
+nombre escrito como texto** (las letras siguen en la fuente; si falta la
+ligadura se ve "FOREST" en vez del icono). Dos causas:
+- El patrón `[a-z_]+` **ignoraba dígitos** → perdía `diversity_3`, `inventory_2`.
+- Hay **listas de iconos en arrays PHP** que se guardan en la BD y se pintan con
+  `<?php echo $valor['icono'] ?>` — sobre todo `$valor_icons` en
+  `template-community-admin.php` (selector de valores de comunidad: `forest`,
+  `volunteer_activism`, `agriculture`, `spa`, `recycling`, `water_drop`,
+  `workspace_premium`…). Ningún regex de `<span>` los ve.
+
+Extracción actual (robusta): spans **con dígitos** ∪ (**todos los literales**
+tipo identificador del tema ∩ los 3.815 nombres válidos de la fuente). Así
+cualquier lista nueva se cubre sola. Mete algún falso positivo inofensivo
+(`http`, `class`, `width`…) a cambio de unos KB: 125 iconos = 123 KB.
+Riesgo residual: un icono que exista **solo en la BD** y en ningún sitio del
+código no se detecta (hoy no ocurre: el selector los define en código).
+
+Detalle técnico (no trivial): cada icono se dibuja como **ligadura** de su
+nombre, así que un `pyftsubset --text` ingenuo conserva las letras `a–z`/`_` y
+su *closure* vuelve a arrastrar los ~5.900 iconos (todos se escriben con esas
+letras). Solución: **podar la tabla GSUB** dejando solo las ligaduras cuya
+*secuencia de entrada* está en la lista de iconos usados, y luego subsetear.
+Ojo con los **alias**: `location_on` produce el glifo `place`, por eso se filtra
+por entrada y no por nombre de salida. Los ejes variables (`FILL/wght/GRAD/opsz`)
+se conservan.
+
+Archivos:
+- `performance/scripts/subset-material-symbols.py` — pipeline reproducible
+  (extrae la lista del código → poda → subset). **Regenerar al añadir iconos.**
+- `assets/fonts/used-icons.txt` — lista de los 70 iconos (autogenerada).
+- `assets/fonts/material-symbols-outlined-full.woff2` — base completa, ignorada
+  en git (descargable de jsDelivr).
+- `functions.php` — se retiró el truco de carga async `preload+onload` (ya
+  innecesario con 77 KB) y se subió la versión del handle a `1.0.1`.
+- `assets/css/material-symbols.css` — `?v=2-subset` en el `src` para invalidar
+  la caché de 1 año del `.htaccess`.
+
+Verificación: render por canvas en navegador → los 125 iconos ligan a un solo
+glifo (0 rotos, incluidos `location_on`→`place` y los que se rompieron:
+`forest`, `volunteer_activism`, `diversity_3`…); `document.fonts.check` = true.
+
+### 🚨 Producción (`amazoniamarket.online`) está SIN desplegar y corre nginx
+
+Medido el 2026-07-16 contra el dominio, **el subset no está allí**:
+- `material-symbols-outlined.woff2` → `Content-Length: 3411636` (la fuente
+  completa original), `Last-Modified: 2026-07-14`; tarda **2.2 s**.
+- `material-symbols.css?ver=1.0.0` (el cambio local lo sube a `1.0.1`) y el
+  `src` del woff2 va **sin `?v=`**.
+- `assets/fonts/used-icons.txt` → **404**.
+
+→ Las mejoras de esta entrada **no surten efecto hasta desplegar el tema**.
+
+**`Server: nginx`** — el `.htaccess` del tema es de Apache y **nginx lo ignora
+por completo**. Consecuencias medidas:
+- ✅ gzip sí funciona (lo hace nginx por su cuenta: HTML y CSS llegan gzipeados).
+- 🔴 **No hay `Cache-Control` ni `Expires` en NINGÚN asset estático** — las
+  reglas `mod_expires` del `.htaccess` no se aplican. Sin política de caché
+  explícita, el navegador revalida/re-descarga en cada visita.
+- 🔴 Cualquier cabecera futura de CORS para fuentes tendrá que ir en la **config
+  de nginx**, no en el `.htaccess`.
+
+### Medición de la home en producción (2026-07-16, sin desplegar)
+
+| Métrica | Valor |
+|---------|-------|
+| TTFB | 744 ms |
+| DOMContentLoaded | 4.7 s |
+| Load | 6.9 s |
+| Total | 4.87 MB en 45 requests |
+| Fuente de iconos | 🔴 3.33 MB (68 % del peso) — lo arregla el subset |
+| Imágenes | 1.2 MB en 12 JPEG (sin WebP/AVIF) |
+| Scripts | 16 (WooCommerce/WCFM), varios tardan 3.2–3.7 s |
+
+### ⏳ Pendiente (documentado, NO corregido en esta sesión, por decisión)
+
+1. **Iconos/fuentes bloqueados por CORS al entrar por IP.** La home se sirvió
+   desde `http://2.24.97.209` pero WordPress emite los assets con URL absoluta a
+   `http://amazoniamarket.online` (`WP_HOME`, `wp-config.php:124`). Los `.woff2`
+   y el módulo ES `assets.js` se piden en modo CORS y el servidor no envía
+   `Access-Control-Allow-Origin` → el navegador los bloquea (`net::ERR_FAILED
+   200 OK`). **Con el subset los iconos ya cargan si se entra por el dominio
+   correcto; el CORS solo afecta al acceso por IP/proxy.** Fix futuro: redirigir
+   al dominio canónico y/o `add_header Access-Control-Allow-Origin` para fuentes
+   — **en la config de nginx, NO en el `.htaccess`** (ver arriba: nginx lo ignora).
+2. **URLs `localhost` en la BD.** Una imagen se pide a
+   `http://localhost/wordpress/wp-content/uploads/2026/06/139-3-scaled.jpg`
+   (`ERR_CONNECTION_REFUSED`). Hay URLs absolutas de `localhost` guardadas en
+   contenido. Fix futuro: search-replace en BD al dominio de producción.
+
+### Auditoría estática (re-corrida esta sesión, `npm run audit:static`)
+
+| Chequeo | Resultado |
+|---------|-----------|
+| Imágenes sin `loading="lazy"` | ⚠️ 6 (revisar — algunos falsos positivos del regex) |
+| Imágenes sin `width`+`height` | ⚠️ 11 (riesgo de CLS) |
+| Fuentes CDN externas · scripts en `<head>` · `@import` | ✅ 0 |
+| `WP_Query` sin límite · sin `no_found_rows` | ✅ 0 |
+
+> Lighthouse / network / image-audit (`audit:lighthouse`, `audit:network`,
+> `audit:images`) **no se corrieron**: requieren el sitio local activo
+> (`localhost/wordpress`) y Apache+MySQL estaban apagados. Re-correr
+> `npm run audit:all` con el stack levantado para métricas LCP/CLS actualizadas.
+
+---
+
 ## Estado antes vs después
 
 | Métrica | Antes | Después | Herramienta |
