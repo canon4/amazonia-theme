@@ -1,0 +1,24 @@
+# Iconos que NO aparecen como <span class="material-symbols-outlined">nombre</span>
+# en las plantillas y que el escaneo automático no puede detectar con fiabilidad,
+# pero que SÍ se muestran en runtime porque vienen de:
+#   - pickers (el usuario elige el icono y se guarda en la BD)
+#   - datos guardados en la base de datos
+#
+# El build de iconos (npm run build:icons) SIEMPRE incluye estos.
+# Si añades un icono nuevo a un picker, agrégalo también aquí.
+#
+# Una línea por icono. Se ignoran líneas vacías y las que empiezan con '#'.
+
+# --- Picker de valores de comunidad ($valor_icons en template-community-admin.php) ---
+eco
+handshake
+diversity_3
+forest
+agriculture
+workspace_premium
+spa
+volunteer_activism
+groups
+favorite
+recycling
+water_drop

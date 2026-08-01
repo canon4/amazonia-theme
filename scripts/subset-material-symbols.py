@@ -27,6 +27,7 @@ from io import BytesIO
 THEME_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONT_OUT = os.path.join(THEME_DIR, "assets", "fonts", "material-symbols-outlined.woff2")
 USED_ICONS_TXT = os.path.join(THEME_DIR, "scripts", "used-icons.txt")
+EXTRA_ICONS_TXT = os.path.join(THEME_DIR, "scripts", "extra-icons.txt")
 # Fuente completa (solo build-time). Versión alineada con la que tenía el tema.
 FULL_FONT_URL = "https://cdn.jsdelivr.net/npm/material-symbols@0.28.1/material-symbols-outlined.woff2"
 
@@ -35,32 +36,38 @@ SCAN_EXTS = (".php",)
 SCAN_JS = ("assets/js/product-storytelling.js", "assets/js/community-admin.js")
 SKIP_DIRS = {"graphify-out", "node_modules", ".git", "scripts"}
 
-# <span class="material-symbols-outlined">icon_name</span>
+# <span class="material-symbols-outlined">icon_name</span>  (en PHP y en strings JS)
 # Exige un '<' tras el nombre (cierre de etiqueta) para no capturar expresiones PHP.
 SPAN_RE = re.compile(r'material-symbols-outlined[^>]*>\s*([a-z0-9_]+)\s*<')
-# Iconos referenciados desde JS (se crean dinámicamente).
-JS_RE = re.compile(r'material-symbols-outlined[^>]*>\s*([a-z0-9_]+)|["\']([a-z_]{3,})["\']')
-JS_KNOWN = {"add_photo_alternate", "autorenew", "close", "hourglass_empty",
-            "panorama", "storefront", "upload"}
+# Icono guardado como valor de array: 'icon' => 'name' / 'icono' => 'name'
+# (redes sociales, pickers que mapean por valor, defaults). Evita dashicons por el guion.
+ICON_KV_RE = re.compile(r"""['"]icon[oa]?['"]\s*=>\s*['"]([a-z0-9_]+)['"]""")
 
 
 def collect_icons():
     names = set()
+    # PHP: spans literales + iconos guardados como valor de array
     for root, dirs, files in os.walk(THEME_DIR):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
         for fn in files:
             if fn.endswith(SCAN_EXTS):
                 with open(os.path.join(root, fn), encoding="utf-8", errors="ignore") as fh:
-                    names.update(SPAN_RE.findall(fh.read()))
+                    txt = fh.read()
+                names.update(SPAN_RE.findall(txt))
+                names.update(ICON_KV_RE.findall(txt))
+    # JS relevantes: spans construidos dentro de strings
     for rel in SCAN_JS:
         p = os.path.join(THEME_DIR, rel)
         if os.path.exists(p):
             with open(p, encoding="utf-8", errors="ignore") as fh:
-                txt = fh.read()
-            for a, b in JS_RE.findall(txt):
-                for cand in (a, b):
-                    if cand in JS_KNOWN:
-                        names.add(cand)
+                names.update(SPAN_RE.findall(fh.read()))
+    # Lista explícita: iconos de pickers / que vienen de la BD (no detectables)
+    if os.path.exists(EXTRA_ICONS_TXT):
+        with open(EXTRA_ICONS_TXT, encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                if line and not line.startswith("#"):
+                    names.add(line)
     return {n for n in names if n}
 
 

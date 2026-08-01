@@ -3,6 +3,7 @@ add
 add_business
 add_photo_alternate
 admin_panel_settings
+agriculture
 arrow_back
 arrow_forward
 assignment_turned_in
@@ -25,6 +26,7 @@ edit_note
 expand_more
 favorite
 filter_list
+forest
 grid_view
 groups
 handshake
@@ -49,7 +51,10 @@ pending
 person
 person_add
 photo_camera
+play_circle
 public
+push_pin
+recycling
 remove
 rule
 schedule
@@ -60,10 +65,16 @@ share
 shield_lock
 shopping_bag
 shopping_cart
+spa
 star
 store
 storefront
+tag
 thumb_up
 upload
 verified
 verified_user
+volunteer_activism
+water_drop
+work
+workspace_premium
