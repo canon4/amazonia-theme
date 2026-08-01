@@ -1,8 +1,7 @@
 node_modules/
 
-# Build tools raíz (no van al repo — sí van los de subdirectorios como /performance)
-/package.json
-/package-lock.json
+# El package.json/package-lock.json de la raíz SÍ van al repo:
+# documentan el build de Tailwind (npm run build:css). Solo se ignora node_modules.
 
 # Suite de rendimiento — reportes generados (no van al repo)
 performance/reports/

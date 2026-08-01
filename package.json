@@ -1,0 +1,16 @@
+{
+  "name": "amazonia-theme",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build de Tailwind CSS para el tema Amazonia (marketplace WooCommerce + WCFM).",
+  "scripts": {
+    "build:css": "tailwindcss -i ./assets/css/tailwind-input.css -o ./assets/css/tailwind.css --minify",
+    "watch:css": "tailwindcss -i ./assets/css/tailwind-input.css -o ./assets/css/tailwind.css --watch",
+    "build:icons": "python scripts/subset-material-symbols.py"
+  },
+  "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.7",
+    "tailwindcss": "^3.4.17"
+  }
+}

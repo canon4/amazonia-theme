@@ -1,9 +1,12 @@
 /*
- * Material Symbols Outlined — self-hosted
- * Fuente descargada en assets/fonts/material-symbols-outlined.woff2
+ * Material Symbols Outlined — self-hosted, SUBSET.
+ * assets/fonts/material-symbols-outlined.woff2 contiene solo los iconos que el
+ * tema usa (~68), no la fuente completa (3.3MB → ~63KB).
  *
- * Si el archivo local no existe en el servidor, el navegador usará
- * la URL remota como segundo intento (jsDelivr, no Google).
+ * Si añades un icono nuevo en las plantillas, regenera el subset:
+ *   npm run build:icons
+ * (ver scripts/subset-material-symbols.mjs). Sin regenerar, el icono nuevo no
+ * renderizará porque su glifo no está en el subset.
  */
 
 @font-face {
@@ -11,9 +14,7 @@
   font-style: normal;
   font-weight: 100 700;
   font-display: block;
-  src:
-    url('../fonts/material-symbols-outlined.woff2') format('woff2'),
-    url('https://cdn.jsdelivr.net/npm/material-symbols@0.28.1/material-symbols-outlined.woff2') format('woff2');
+  src: url('../fonts/material-symbols-outlined.woff2') format('woff2');
 }
 
 .material-symbols-outlined {

@@ -97,9 +97,6 @@ function amazonia_theme_scripts() {
 	// Enqueue compiled main.css (incluye @font-face de Work Sans, Inter, Outfit)
 	wp_enqueue_style( 'amazonia-main-style', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0.0' );
 
-	// Enqueue main.js
-	wp_enqueue_script( 'amazonia-main-js', get_template_directory_uri() . '/assets/js/main.js', array('jquery'), '1.0.0', true );
-
 	// Enqueue navigation.js
 	wp_enqueue_script( 'amazonia-navigation-js', get_template_directory_uri() . '/assets/js/navigation.js', array(), '1.0.0', true );
 
@@ -249,6 +246,26 @@ function amazonia_enqueue_cart_styles() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_cart_styles' );
+
+/**
+ * Encola el CSS de los perfiles (diseño "Amazonia Perfiles").
+ * Cubre las dos pantallas hermanas: el single del CPT "comunidad" (Pantalla A)
+ * y la página de tienda de WCFM (Pantalla B). Solo ahí, para no pesar en el
+ * resto del sitio.
+ */
+function amazonia_enqueue_community_profile_styles() {
+	$is_store = function_exists( 'wcfmmp_is_store_page' ) && wcfmmp_is_store_page();
+
+	if ( is_singular( 'comunidad' ) || $is_store ) {
+		wp_enqueue_style(
+			'amazonia-community-profile',
+			get_template_directory_uri() . '/assets/css/community-profile.css',
+			array( 'amazonia-main-style' ),
+			'1.1.0'
+		);
+	}
+}
+add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_profile_styles' );
 
 /**
  * Register widget area.

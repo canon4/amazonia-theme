@@ -429,6 +429,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                 <div class="rounded-2xl overflow-hidden aspect-video shadow-lg relative group">
                     <img class="w-full h-full object-cover filter brightness-[0.9] group-hover:scale-105 transition-transform duration-700"
                          alt="Manos artesanas trenzando fibras vegetales sostenibles"
+                         data-asset="images.comunidades.artesanas"
                          src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-artesanas.jpg' ); ?>"
                          loading="lazy" width="1200" height="675" />
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>

@@ -17,11 +17,21 @@ $comunidad_total  = $comunidad_counts ? (int) $comunidad_counts->publish : 0;
 
     <!-- Hero -->
     <section class="relative overflow-hidden bg-forest-green">
+        <!-- Banner de fondo (gestionado desde assets.js: images.comunidades.portada; fallback local).
+             A plena vista, sin overlay de color. -->
+        <img data-asset="images.comunidades.portada"
+             src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-hero-selva.jpg' ); ?>"
+             alt="" aria-hidden="true" loading="eager"
+             class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none" />
+
+        <!-- Viñeta verde: sombra interior en los bordes de la imagen -->
+        <div class="absolute inset-0 pointer-events-none [box-shadow:inset_0_0_70px_22px_rgba(26,92,42,0.85)]" aria-hidden="true"></div>
+
         <!-- Glows decorativos -->
         <div class="absolute -top-24 -right-20 w-72 h-72 bg-primary/30 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
         <div class="absolute -bottom-32 -left-24 w-80 h-80 bg-green-400/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
 
-        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-20 py-16 md:py-20">
+        <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-20 py-16 md:py-20 [text-shadow:0_2px_10px_rgba(0,0,0,0.6)]">
             <?php
             if ( function_exists( 'woocommerce_breadcrumb' ) ) {
                 woocommerce_breadcrumb( array(
