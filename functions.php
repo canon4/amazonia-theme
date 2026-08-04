@@ -14,6 +14,7 @@ require_once get_template_directory() . '/inc/invite-codes.php';
 require_once get_template_directory() . '/inc/community-admin.php';
 require_once get_template_directory() . '/inc/community-cpt.php';
 require_once get_template_directory() . '/inc/community-admin-panel.php';
+require_once get_template_directory() . '/inc/vendor-whatsapp.php';
 
 /**
  * Theme Setup
