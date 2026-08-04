@@ -431,10 +431,12 @@ function amazonia_community_admin_edit_cap( $allcaps, $caps, $args, $user ) {
 
 // ─── 9. Banner de comunidad debajo del header de la tienda WCFM ─────────────
 //
-// Usa wcfmmp_store_after_header (fuera del div#wcfm_store_header)
-// para no competir con el CSS del plugin y poder usar Tailwind libremente.
-
-add_action( 'wcfmmp_store_after_header', 'amazonia_store_community_banner' );
+// DESACTIVADO: la pertenencia a la comunidad pasó a estar integrada dentro de la
+// cabecera del perfil de tienda (badge en wcfm/store/wcfmmp-view-store.php), tal
+// como pide el diseño "Amazonia Perfiles" — no como una banda suelta pegada
+// debajo del header. La función se conserva por si otra plantilla la necesita.
+//
+// add_action( 'wcfmmp_store_after_header', 'amazonia_store_community_banner' );
 /**
  * Muestra un banner de comunidad debajo del header WCFM.
  * Solo se muestra si el vendor tiene 'community_id' asignado.
@@ -488,4 +490,203 @@ function amazonia_store_community_banner( $vendor_id ) {
 		</a>
 	</div>
 	<?php
+}
+
+/**
+ * Estadísticas públicas de una tienda (vendedor WCFM).
+ *
+ * El rating se agrega desde las reseñas de PRODUCTO de WooCommerce, porque el
+ * módulo de reseñas de tienda de WCFM no está en uso: la tabla
+ * {prefix}wcfm_marketplace_reviews existe pero está vacía y el plugin no expone
+ * helpers de rating de tienda en esta instalación.
+ *
+ * Devuelve rating = null cuando la tienda todavía no tiene ninguna reseña, para
+ * que la vista pueda ocultar el dato en lugar de pintar un 0 engañoso.
+ *
+ * @param int $vendor_id ID del usuario vendedor.
+ * @return array{product_count:int, rating:float|null, review_count:int}
+ */
+function amazonia_get_store_stats( $vendor_id ) {
+	global $wpdb;
+
+	$vendor_id = absint( $vendor_id );
+	$empty     = [ 'product_count' => 0, 'rating' => null, 'review_count' => 0 ];
+	if ( ! $vendor_id ) {
+		return $empty;
+	}
+
+	$cache_key = 'amazonia_store_stats_' . $vendor_id;
+	$cached    = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	// Una sola consulta: cuenta productos publicados y agrega las medias que
+	// WooCommerce ya mantiene por producto (_wc_average_rating / _wc_review_count).
+	$row = $wpdb->get_row(
+		$wpdb->prepare(
+			"SELECT COUNT(p.ID) AS product_count,
+			        COALESCE( SUM( CAST( rc.meta_value AS UNSIGNED ) ), 0 ) AS review_count,
+			        COALESCE( SUM( CAST( ar.meta_value AS DECIMAL(10,2) ) * CAST( rc.meta_value AS UNSIGNED ) ), 0 ) AS rating_sum
+			   FROM {$wpdb->posts} p
+			   LEFT JOIN {$wpdb->postmeta} ar ON ar.post_id = p.ID AND ar.meta_key = '_wc_average_rating'
+			   LEFT JOIN {$wpdb->postmeta} rc ON rc.post_id = p.ID AND rc.meta_key = '_wc_review_count'
+			  WHERE p.post_author = %d
+			    AND p.post_type   = 'product'
+			    AND p.post_status = 'publish'",
+			$vendor_id
+		)
+	);
+
+	if ( ! $row ) {
+		return $empty;
+	}
+
+	$review_count = (int) $row->review_count;
+	$stats        = [
+		'product_count'    => (int) $row->product_count,
+		'review_count'     => $review_count,
+		// Media ponderada por nº de reseñas de cada producto.
+		'rating'           => $review_count > 0 ? round( (float) $row->rating_sum / $review_count, 1 ) : null,
+		'completed_orders' => amazonia_count_vendor_completed_orders( $vendor_id ),
+	];
+
+	set_transient( $cache_key, $stats, 15 * MINUTE_IN_SECONDS );
+
+	return $stats;
+}
+
+/**
+ * Invalida la caché de estadísticas cuando cambia una reseña de producto.
+ */
+function amazonia_flush_store_stats_cache( $comment_id ) {
+	$comment = get_comment( $comment_id );
+	if ( ! $comment ) {
+		return;
+	}
+	$product = get_post( $comment->comment_post_ID );
+	if ( $product && 'product' === $product->post_type ) {
+		delete_transient( 'amazonia_store_stats_' . $product->post_author );
+	}
+}
+add_action( 'wp_insert_comment', 'amazonia_flush_store_stats_cache' );
+add_action( 'wp_set_comment_status', 'amazonia_flush_store_stats_cache' );
+
+/**
+ * Resuelve una URL de imagen guardada en los metadatos de comunidad.
+ *
+ * Los campos de comunidad guardan la URL absoluta del archivo ORIGINAL (a menudo
+ * la variante "-scaled" de 2560 px, de varios MB). Servir eso directamente en una
+ * tarjeta de 140 px desperdicia ancho de banda y bloquea el render.
+ *
+ * Además, esas URLs quedan fijadas al host con el que se subió el archivo
+ * (p. ej. http://localhost). Si el sitio se sirve desde otro dominio (ngrok,
+ * producción), la imagen se rompe. Por eso se reescribe el host al baseurl de
+ * uploads actual ANTES de buscar el adjunto.
+ *
+ * @param string $url  URL guardada en el meta.
+ * @param string $size Tamaño registrado de WordPress a devolver.
+ * @return array{id:int, url:string} id = 0 si no se pudo resolver el adjunto.
+ */
+function amazonia_resolve_community_image( $url, $size = 'large' ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return [ 'id' => 0, 'url' => '' ];
+	}
+
+	$uploads = wp_get_upload_dir();
+
+	// Reescribe cualquier host anterior al baseurl de uploads vigente.
+	if ( preg_match( '#/wp-content/uploads/(.+)$#', $url, $m ) ) {
+		$url = trailingslashit( $uploads['baseurl'] ) . $m[1];
+	}
+
+	$cache_key = 'amazonia_img_' . md5( $url . '|' . $size );
+	$cached    = get_transient( $cache_key );
+	if ( is_array( $cached ) ) {
+		return $cached;
+	}
+
+	$id     = attachment_url_to_postid( $url );
+	$result = [ 'id' => (int) $id, 'url' => $url ];
+
+	if ( $id ) {
+		$src = wp_get_attachment_image_src( $id, $size );
+		if ( $src ) {
+			$result['url'] = $src[0];
+		}
+	}
+
+	set_transient( $cache_key, $result, DAY_IN_SECONDS );
+
+	return $result;
+}
+
+/**
+ * Devuelve el <img> de una imagen de comunidad ya optimizada (srcset + lazy).
+ * Si el adjunto no se puede resolver, cae a una <img> simple con la URL normalizada.
+ *
+ * @param string $url  URL guardada en el meta.
+ * @param string $size Tamaño de WordPress.
+ * @param string $alt  Texto alternativo.
+ * @param array  $attr Atributos extra.
+ * @return string HTML escapado listo para imprimir.
+ */
+function amazonia_community_image_html( $url, $size, $alt, $attr = [] ) {
+	$img = amazonia_resolve_community_image( $url, $size );
+	if ( '' === $img['url'] ) {
+		return '';
+	}
+
+	$attr = wp_parse_args( $attr, [ 'alt' => $alt, 'loading' => 'lazy', 'decoding' => 'async' ] );
+
+	if ( $img['id'] ) {
+		// wp_get_attachment_image añade srcset/sizes automáticamente.
+		return wp_get_attachment_image( $img['id'], $size, false, $attr );
+	}
+
+	$out = '<img src="' . esc_url( $img['url'] ) . '"';
+	foreach ( $attr as $k => $v ) {
+		$out .= ' ' . esc_attr( $k ) . '="' . esc_attr( $v ) . '"';
+	}
+	return $out . ' />';
+}
+
+/**
+ * Nº de pedidos COMPLETADOS de un vendedor.
+ *
+ * Se lee de la tabla de pedidos de WCFM ({prefix}wcfm_marketplace_orders), que ya
+ * guarda el estado por vendedor en `order_status`. Así funciona igual con HPOS
+ * activo o sin él, sin tener que unir contra wc_orders/posts.
+ *
+ * Se cuenta DISTINCT order_id porque la tabla tiene una fila por línea de pedido.
+ * El "tiempo medio de despacho" del diseño no se calcula: no hay un dato fiable
+ * de fecha de despacho en esta instalación.
+ *
+ * @param int $vendor_id
+ * @return int
+ */
+function amazonia_count_vendor_completed_orders( $vendor_id ) {
+	global $wpdb;
+
+	$vendor_id = absint( $vendor_id );
+	if ( ! $vendor_id ) {
+		return 0;
+	}
+
+	$table = $wpdb->prefix . 'wcfm_marketplace_orders';
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) ) !== $table ) {
+		return 0;
+	}
+
+	return (int) $wpdb->get_var(
+		$wpdb->prepare(
+			"SELECT COUNT( DISTINCT order_id )
+			   FROM {$table}
+			  WHERE vendor_id    = %d
+			    AND is_trashed   = 0
+			    AND order_status = 'completed'",
+			$vendor_id
+		)
+	);
 }

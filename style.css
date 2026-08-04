@@ -1,8 +1,8 @@
 /*
 Theme Name: Amazonia Theme
-Theme URI: https://example.com/amazonia
-Author: DeepMind
-Author URI: https://example.com
+Theme URI: https://github.com/canon4/amazonia-theme
+Author: Diego Fernando Cañon Perez
+Author URI: https://github.com/canon4
 Description: A custom multi-vendor marketplace theme built for WooCommerce and WCFM.
 Version: 1.0.0
 License: GNU General Public License v2 or later
@@ -16,9 +16,8 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-}
+/* La regla .material-symbols-outlined (font-variation-settings) vive en
+   assets/css/material-symbols.css para no duplicarla. */
 
 /* Ocultar la X nativa en inputs de búsqueda (para Chrome/Safari) */
 input[type="search"]::-webkit-search-decoration,

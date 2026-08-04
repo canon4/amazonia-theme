@@ -38,9 +38,11 @@ export const ASSETS = {
     ],
 
     comunidades: {
-      portada: "",
+      portada:
+        "https://res.cloudinary.com/dknuryv7i/image/upload/v1785098378/bannerComunidad_wiite4.webp",
       selva: "",
-      artesanas: "",
+      artesanas:
+        "https://res.cloudinary.com/dknuryv7i/image/upload/v1782525133/21_ayfwxf.webp",
       login: "",
     },
 
@@ -65,4 +67,28 @@ export const ASSETS = {
 
 if (typeof window !== "undefined") {
   window.AMAZONIA_ASSETS = ASSETS;
+
+  /**
+   * Resolver de imágenes por atributo.
+   * Cualquier <img data-asset="images.comunidades.portada"> toma su src del slot
+   * correspondiente en ASSETS si tiene URL (CDN); si el slot está vacío, se
+   * conserva el src local del HTML como fallback. Funciona en todas las páginas.
+   */
+  var resolveAssets = function () {
+    document.querySelectorAll("img[data-asset]").forEach(function (img) {
+      var url = img
+        .getAttribute("data-asset")
+        .split(".")
+        .reduce(function (o, k) {
+          return o && o[k] != null ? o[k] : null;
+        }, ASSETS);
+      if (url) img.src = url;
+    });
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", resolveAssets);
+  } else {
+    resolveAssets();
+  }
 }

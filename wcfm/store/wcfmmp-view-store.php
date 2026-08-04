@@ -1,16 +1,19 @@
 <?php
 /**
- * Custom Template for displaying a single store (vendor) page.
- * Overrides the WCFM Marketplace default template.
+ * Página individual de tienda (vendedor). Sobrescribe la plantilla por defecto
+ * de WCFM Marketplace.
  *
- * Diseño minimalista de página de vendedor para ecommerce:
- *  - Cabecera con banner, avatar, valoración y datos clave del vendedor.
- *  - Barra de estadísticas con información real de la base de datos.
- *  - Carruseles de productos (propios del vendedor y relacionados).
+ * Implementa la "Pantalla B · Perfil de Tienda" del diseño Amazonia Perfiles:
+ * hermana de single-comunidad.php (mismo hero, mismos stat tiles, misma familia
+ * de tarjetas), con la pertenencia a la comunidad integrada en la cabecera.
  *
- * Todos los datos provienen del objeto de tienda de WCFM y de WooCommerce.
+ * Toda sección sin datos se oculta por completo. Las métricas provienen de la
+ * base de datos real: rating agregado de las reseñas de producto y pedidos
+ * completados de la tabla de WCFM (ver inc/community-cpt.php).
+ *
+ * @package Amazonia_Theme
  */
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) exit;
 
 global $WCFM, $WCFMmp;
 
@@ -20,27 +23,23 @@ if ( empty( $wcfm_store_name ) ) return;
 $seller_info = get_user_by( 'slug', $wcfm_store_name );
 if ( ! $seller_info ) return;
 
-$store_user = wcfmmp_get_store( $seller_info->ID );
+$vendor_id  = (int) $seller_info->ID;
+$store_user = wcfmmp_get_store( $vendor_id );
 $store_info = $store_user->get_shop_info();
 
 /* ---------------------------------------------------------------------------
- * Datos base del vendedor (reales, desde la BD)
+ * Identidad de la tienda
  * ------------------------------------------------------------------------ */
-$store_name        = isset( $store_info['store_name'] ) && $store_info['store_name'] !== '' ? esc_html( $store_info['store_name'] ) : esc_html( $seller_info->display_name );
-$store_description = isset( $store_info['shop_description'] ) ? wp_kses_post( $store_info['shop_description'] ) : '';
-
-$banner_url = $store_user->get_banner();
-if ( ! $banner_url ) {
-	$banner_url = ! empty( $WCFMmp->wcfmmp_marketplace_options['store_default_banner'] )
-		? wcfm_get_attachment_url( $WCFMmp->wcfmmp_marketplace_options['store_default_banner'] )
-		: esc_url( $WCFMmp->plugin_url . 'assets/images/default_banner.jpg' );
-}
+$store_name = ! empty( $store_info['store_name'] ) ? $store_info['store_name'] : $seller_info->display_name;
+$store_desc = isset( $store_info['shop_description'] ) ? $store_info['shop_description'] : '';
 $avatar_url = $store_user->get_avatar();
+$banner_url = $store_user->get_banner();
 $email      = $store_user->get_email();
 $phone      = $store_user->get_phone();
 $address    = $store_user->get_address_string();
+$store_url  = function_exists( 'wcfmmp_get_store_url' ) ? wcfmmp_get_store_url( $vendor_id ) : get_author_posts_url( $vendor_id );
 
-/* Ubicación corta: Ciudad, País */
+/* Ubicación corta para la línea del hero */
 $city    = isset( $store_info['address']['city'] ) ? $store_info['address']['city'] : '';
 $country = isset( $store_info['address']['country'] ) ? $store_info['address']['country'] : '';
 if ( $country && function_exists( 'WC' ) ) {
@@ -49,422 +48,459 @@ if ( $country && function_exists( 'WC' ) ) {
 		$country = $countries[ $country ];
 	}
 }
-$location_parts = array_filter( array( $city, $country ) );
-$short_location = ! empty( $location_parts ) ? implode( ', ', $location_parts ) : '';
+$short_location = implode( ' · ', array_filter( [ $city, $country ] ) );
 
-/* Categoría del vendedor (badge) */
+/* "Vendedor desde" */
+$register_date = $store_user->get_register_date();
+$member_since  = $register_date ? date_i18n( 'Y', strtotime( $register_date ) ) : '';
+
+/* Categoría del vendedor (chip del hero) */
 $badge_text        = '';
-$vendor_categories = wp_get_object_terms( $seller_info->ID, 'wcfm_vendor_category' );
+$vendor_categories = wp_get_object_terms( $vendor_id, 'wcfm_vendor_category' );
 if ( ! is_wp_error( $vendor_categories ) && ! empty( $vendor_categories ) ) {
 	$badge_text = $vendor_categories[0]->name;
 }
-if ( ! $badge_text ) {
-	$badge_text = __( 'Productor Local', 'amazonia-theme' );
-}
-
-/* Métricas reales del vendedor */
-$avg_rating     = (float) $store_user->get_avg_review_rating();
-$review_count   = (int) $store_user->get_total_review_count();
-$follower_count = (int) $store_user->get_total_follower_count();
-
-$register_date = $store_user->get_register_date();
-$member_since  = $register_date ? date_i18n( 'M Y', strtotime( $register_date ) ) : '';
-
-/* Redes sociales (solo se muestran las que existan) */
-$socials     = $store_user->get_social_profiles();
-$social_map  = array(
-	'fb'        => array( 'label' => 'Facebook',  'icon' => 'thumb_up' ),
-	'instagram' => array( 'label' => 'Instagram', 'icon' => 'photo_camera' ),
-	'twitter'   => array( 'label' => 'Twitter',   'icon' => 'tag' ),
-	'youtube'   => array( 'label' => 'YouTube',   'icon' => 'play_circle' ),
-	'linkedin'  => array( 'label' => 'LinkedIn',  'icon' => 'work' ),
-	'pinterest' => array( 'label' => 'Pinterest', 'icon' => 'push_pin' ),
-);
-
-/* Categorías de producto de la tienda */
-$store_cats = $store_user->get_store_taxonomies( 'product_cat' );
-
-/* URL de la tienda para "ver todo" */
-$store_url = function_exists( 'wcfmmp_get_store_url' ) ? wcfmmp_get_store_url( $seller_info->ID ) : get_author_posts_url( $seller_info->ID );
 
 /* ---------------------------------------------------------------------------
- * Consultas de productos
+ * Pertenencia a comunidad (el puente tienda -> comunidad)
  * ------------------------------------------------------------------------ */
-$vendor_products = new WP_Query( array(
+$community_id   = (int) get_user_meta( $vendor_id, 'community_id', true );
+$community      = $community_id ? amazonia_get_community_data( $community_id ) : null;
+
+/* ---------------------------------------------------------------------------
+ * Métricas de confianza (datos reales)
+ * ------------------------------------------------------------------------ */
+$stats = amazonia_get_store_stats( $vendor_id );
+
+$tiles = [];
+if ( null !== $stats['rating'] ) {
+	$tiles[] = [
+		'n'    => number_format_i18n( $stats['rating'], 1 ),
+		'l'    => sprintf( _n( '%s reseña', '%s reseñas', $stats['review_count'], 'amazonia-theme' ), number_format_i18n( $stats['review_count'] ) ),
+		'star' => true,
+	];
+}
+if ( $stats['product_count'] > 0 ) {
+	$tiles[] = [
+		'n' => number_format_i18n( $stats['product_count'] ),
+		'l' => _n( 'Producto', 'Productos', $stats['product_count'], 'amazonia-theme' ),
+	];
+}
+if ( $stats['completed_orders'] > 0 ) {
+	$tiles[] = [
+		'n' => number_format_i18n( $stats['completed_orders'] ),
+		'l' => _n( 'Pedido completado', 'Pedidos completados', $stats['completed_orders'], 'amazonia-theme' ),
+	];
+}
+if ( $member_since ) {
+	$tiles[] = [ 'n' => $member_since, 'l' => __( 'Vendedor desde', 'amazonia-theme' ) ];
+}
+
+/* ---------------------------------------------------------------------------
+ * Catálogo: filtro por categoría vía query string (?product_cat=slug)
+ * ------------------------------------------------------------------------ */
+$active_cat = isset( $_GET['product_cat'] ) ? sanitize_title( wp_unslash( $_GET['product_cat'] ) ) : '';
+
+// WCFM devuelve IDs de término, no objetos: hay que resolverlos antes de usarlos.
+$store_cats = [];
+$store_cat_ids = $store_user->get_store_taxonomies( 'product_cat' );
+if ( ! is_wp_error( $store_cat_ids ) && ! empty( $store_cat_ids ) ) {
+	foreach ( (array) $store_cat_ids as $cat_id ) {
+		$term = is_object( $cat_id ) ? $cat_id : get_term( (int) $cat_id, 'product_cat' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$store_cats[] = $term;
+		}
+	}
+}
+
+$product_args = [
 	'post_type'      => 'product',
 	'post_status'    => 'publish',
-	'author'         => $seller_info->ID,
+	'author'         => $vendor_id,
 	'posts_per_page' => 12,
 	'orderby'        => 'date',
 	'order'          => 'DESC',
-) );
-$product_count = (int) $vendor_products->found_posts;
-
-/* Categorías de los productos del vendedor -> productos relacionados */
-$cat_ids = array();
-if ( ! empty( $vendor_products->posts ) ) {
-	foreach ( $vendor_products->posts as $vp ) {
-		$terms = wp_get_post_terms( $vp->ID, 'product_cat', array( 'fields' => 'ids' ) );
-		if ( ! is_wp_error( $terms ) ) {
-			$cat_ids = array_merge( $cat_ids, $terms );
-		}
-	}
-	$cat_ids = array_values( array_unique( $cat_ids ) );
+];
+if ( $active_cat ) {
+	$product_args['tax_query'] = [
+		[ 'taxonomy' => 'product_cat', 'field' => 'slug', 'terms' => $active_cat ],
+	];
 }
-
-$related_args = array(
-	'post_type'      => 'product',
-	'post_status'    => 'publish',
-	'posts_per_page' => 12,
-	'orderby'        => 'date',
-	'order'          => 'DESC',
-	'author__not_in' => array( $seller_info->ID ),
-);
-if ( ! empty( $cat_ids ) ) {
-	$related_args['tax_query'] = array(
-		array(
-			'taxonomy' => 'product_cat',
-			'field'    => 'term_id',
-			'terms'    => $cat_ids,
-		),
-	);
-}
-$related_products = new WP_Query( $related_args );
+$vendor_products = new WP_Query( $product_args );
 
 /* ---------------------------------------------------------------------------
- * Helpers de render
+ * Políticas de envío / devoluciones (solo las que tengan texto)
  * ------------------------------------------------------------------------ */
-if ( ! function_exists( 'amazonia_store_rating_stars' ) ) {
-	/** Devuelve el HTML de estrellas para una valoración media (0-5). */
-	function amazonia_store_rating_stars( $rating, $size = 18 ) {
-		$html = '<div class="flex items-center text-amber-400" aria-hidden="true">';
-		for ( $i = 1; $i <= 5; $i++ ) {
-			$icon = ( $i <= round( $rating ) ) ? 'star' : 'star';
-			$cls  = ( $i <= round( $rating ) ) ? 'text-amber-400' : 'text-slate-300';
-			$html .= '<span class="material-symbols-outlined ' . $cls . '" style="font-size:' . intval( $size ) . 'px">star</span>';
-		}
-		$html .= '</div>';
-		return $html;
-	}
+$policies = array_filter( [
+	__( 'Tiempos de envío', 'amazonia-theme' ) => $store_user->get_shipping_policy(),
+	__( 'Devoluciones', 'amazonia-theme' )     => $store_user->get_refund_policy(),
+] );
+
+/* ---------------------------------------------------------------------------
+ * Reseñas: se listan las de los PRODUCTOS de la tienda.
+ * El módulo de reseñas de tienda de WCFM no está en uso (tabla vacía).
+ * ------------------------------------------------------------------------ */
+$reviews     = [];
+$product_ids = get_posts( [
+	'post_type'   => 'product',
+	'post_status' => 'publish',
+	'author'      => $vendor_id,
+	'numberposts' => -1,
+	'fields'      => 'ids',
+] );
+if ( $product_ids ) {
+	$reviews = get_comments( [
+		'post__in' => $product_ids,
+		'status'   => 'approve',
+		'type'     => 'review',
+		'number'   => 10,
+	] );
 }
 
-if ( ! function_exists( 'amazonia_render_product_carousel' ) ) {
-	/**
-	 * Renderiza un carrusel horizontal de productos a partir de un WP_Query.
-	 * Usa la plantilla content-product.php del tema para cada tarjeta.
-	 */
-	function amazonia_render_product_carousel( $query, $carousel_id, $empty_message = '' ) {
-		if ( ! $query->have_posts() ) {
-			if ( $empty_message ) {
-				echo '<p class="text-slate-500">' . esc_html( $empty_message ) . '</p>';
-			}
-			return;
-		}
-		?>
-		<div class="relative group/carousel" data-carousel>
-			<!-- Flecha anterior -->
-			<button type="button" data-carousel-prev
-				class="hidden sm:flex absolute -left-4 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg shadow-black/10 text-slate-700 hover:text-primary hover:scale-105 transition-all opacity-0 pointer-events-none"
-				aria-label="<?php esc_attr_e( 'Anterior', 'amazonia-theme' ); ?>">
-				<span class="material-symbols-outlined">chevron_left</span>
-			</button>
-
-			<div id="<?php echo esc_attr( $carousel_id ); ?>" data-carousel-track
-				class="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-3 amazonia-no-scrollbar">
-				<?php
-				wc_setup_loop( array( 'is_paginated' => false ) );
-				$i = 0;
-				while ( $query->have_posts() ) {
-					$query->the_post();
-					wc_set_loop_prop( 'loop', ++$i );
-					echo '<div class="snap-start shrink-0 w-[52%] sm:w-[38%] md:w-[220px] lg:w-[210px] flex">';
-					wc_get_template_part( 'content', 'product' );
-					echo '</div>';
-				}
-				wc_reset_loop();
-				wp_reset_postdata();
-				?>
-			</div>
-
-			<!-- Flecha siguiente -->
-			<button type="button" data-carousel-next
-				class="hidden sm:flex absolute -right-4 top-1/2 -translate-y-1/2 z-20 h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg shadow-black/10 text-slate-700 hover:text-primary hover:scale-105 transition-all"
-				aria-label="<?php esc_attr_e( 'Siguiente', 'amazonia-theme' ); ?>">
-				<span class="material-symbols-outlined">chevron_right</span>
-			</button>
-		</div>
-		<?php
-	}
-}
+/* Redes sociales del vendedor (solo las que existan) */
+$socials    = $store_user->get_social_profiles();
+$social_map = [
+	'fb'        => [ 'label' => 'Facebook',  'icon' => 'thumb_up' ],
+	'instagram' => [ 'label' => 'Instagram', 'icon' => 'photo_camera' ],
+	'twitter'   => [ 'label' => 'Twitter',   'icon' => 'tag' ],
+	'youtube'   => [ 'label' => 'YouTube',   'icon' => 'play_circle' ],
+	'linkedin'  => [ 'label' => 'LinkedIn',  'icon' => 'work' ],
+	'pinterest' => [ 'label' => 'Pinterest', 'icon' => 'push_pin' ],
+];
 
 get_header( 'shop' );
 ?>
 
-<style>
-	.amazonia-no-scrollbar::-webkit-scrollbar { display: none; }
-	.amazonia-no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
+<div class="amz-profile wcfmmp-single-store-holder">
 
-<div class="wcfmmp-single-store-holder w-full min-h-screen bg-background-light dark:bg-background-dark pb-24 font-display text-slate-800 dark:text-slate-100">
+	<!-- ── Hero + badge de comunidad integrado ───────────────────── -->
+	<header class="amz-hero">
+		<div class="amz-hero__bg"></div>
+		<?php if ( $banner_url ) : ?>
+			<div class="amz-hero__img" style="background-image:url('<?php echo esc_url( $banner_url ); ?>')" role="presentation"></div>
+		<?php endif; ?>
+		<div class="amz-hero__glow-a"></div>
+		<div class="amz-hero__glow-b"></div>
 
-	<!-- ==================== HERO ==================== -->
-	<section class="relative w-full h-[300px] md:h-[380px] bg-cover bg-center" style="background-image:url('<?php echo esc_url( $banner_url ); ?>');">
-		<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
-		<div class="absolute inset-0 max-w-[1400px] mx-auto px-4 sm:px-8 flex flex-col justify-end pb-24 md:pb-28">
-			<div class="flex flex-wrap items-center gap-3 mb-3">
-				<span class="bg-primary text-white text-[11px] font-bold uppercase tracking-wider py-1.5 px-3 rounded-full shadow-lg">
-					<?php echo esc_html( mb_strtoupper( $badge_text ) ); ?>
-				</span>
-				<?php if ( $short_location ) : ?>
-					<span class="text-white/90 text-sm flex items-center gap-1 font-medium">
-						<span class="material-symbols-outlined text-[18px]">location_on</span>
-						<span class="capitalize"><?php echo esc_html( mb_strtolower( $short_location ) ); ?></span>
-					</span>
+		<div class="amz-shell amz-hero__inner">
+
+			<?php if ( $community ) : ?>
+				<a class="amz-badge-comm" href="<?php echo esc_url( $community['url'] ); ?>">
+					<?php
+					$comm_logo = amazonia_resolve_community_image( $community['logo'], 'thumbnail' );
+					if ( $comm_logo['url'] ) :
+						?>
+						<img src="<?php echo esc_url( $comm_logo['url'] ); ?>" alt="" aria-hidden="true" width="22" height="22" loading="lazy" />
+					<?php else : ?>
+						<span class="material-symbols-outlined" aria-hidden="true">groups</span>
+					<?php endif; ?>
+					<?php
+					if ( ! empty( $community['num_familias'] ) ) {
+						printf(
+							/* translators: 1: nombre de la comunidad, 2: nº de familias */
+							esc_html__( 'Parte de la %1$s · %2$s familias', 'amazonia-theme' ),
+							esc_html( $community['nombre'] ),
+							esc_html( number_format_i18n( $community['num_familias'] ) )
+						);
+					} else {
+						printf(
+							/* translators: %s: nombre de la comunidad */
+							esc_html__( 'Parte de la %s', 'amazonia-theme' ),
+							esc_html( $community['nombre'] )
+						);
+					}
+					?>
+					<span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+				</a>
+			<?php endif; ?>
+
+			<div class="amz-hero__row">
+				<?php if ( $avatar_url ) : ?>
+					<img class="amz-logo amz-logo--store" src="<?php echo esc_url( $avatar_url ); ?>"
+					     alt="<?php echo esc_attr( sprintf( __( 'Logo de %s', 'amazonia-theme' ), $store_name ) ); ?>"
+					     width="120" height="120" loading="eager" />
+				<?php else : ?>
+					<div class="amz-logo amz-logo--store" aria-hidden="true"><?php echo esc_html( mb_substr( $store_name, 0, 1 ) ); ?></div>
 				<?php endif; ?>
+
+				<div class="amz-hero__body">
+					<?php if ( $badge_text ) : ?>
+						<div class="amz-chips">
+							<span class="amz-chip amz-chip--cat"><?php echo esc_html( $badge_text ); ?></span>
+						</div>
+					<?php endif; ?>
+
+					<h1 class="amz-title"><?php echo esc_html( $store_name ); ?></h1>
+
+					<?php if ( $store_desc ) : ?>
+						<p class="amz-lede"><?php echo esc_html( wp_trim_words( wp_strip_all_tags( $store_desc ), 28, '…' ) ); ?></p>
+					<?php endif; ?>
+
+					<?php if ( $short_location ) : ?>
+						<div class="amz-meta">
+							<span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+							<?php echo esc_html( $short_location ); ?>
+						</div>
+					<?php endif; ?>
+				</div>
 			</div>
-			<h1 class="text-4xl md:text-5xl font-black text-white tracking-tight drop-shadow-sm"><?php echo $store_name; ?></h1>
 		</div>
+	</header>
+
+	<!-- ── Barra de confianza (stat tiles hermanos de la Pantalla A) ── -->
+	<?php if ( $tiles ) : ?>
+		<div class="amz-shell amz-stats-wrap">
+			<div class="amz-stats">
+				<?php foreach ( $tiles as $tile ) : ?>
+					<div class="amz-stat">
+						<div class="amz-stat__n">
+							<?php if ( ! empty( $tile['star'] ) ) : ?>
+								<span class="material-symbols-outlined" aria-hidden="true"
+								      style="font-size:.72em;color:var(--amz-star);font-variation-settings:'FILL' 1;vertical-align:baseline">star</span>
+							<?php endif; ?>
+							<?php echo esc_html( $tile['n'] ); ?>
+						</div>
+						<div class="amz-stat__l"><?php echo esc_html( $tile['l'] ); ?></div>
+					</div>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	<?php endif; ?>
+
+	<!-- ── Catálogo ──────────────────────────────────────────────── -->
+	<section class="amz-shell amz-section">
+		<div class="amz-catalog-head">
+			<div class="amz-h2row" style="margin-bottom:0">
+				<h2 class="amz-h2"><?php esc_html_e( 'Catálogo', 'amazonia-theme' ); ?></h2>
+			</div>
+
+			<?php if ( $store_cats ) : ?>
+				<div class="amz-filters">
+					<a class="amz-filter" href="<?php echo esc_url( $store_url ); ?>"
+					   <?php echo $active_cat ? '' : 'aria-current="true"'; ?>>
+						<?php esc_html_e( 'Todos', 'amazonia-theme' ); ?>
+					</a>
+					<?php foreach ( $store_cats as $cat ) : ?>
+						<a class="amz-filter" href="<?php echo esc_url( add_query_arg( 'product_cat', $cat->slug, $store_url ) ); ?>"
+						   <?php echo ( $active_cat === $cat->slug ) ? 'aria-current="true"' : ''; ?>>
+							<?php echo esc_html( $cat->name ); ?>
+						</a>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+		</div>
+
+		<?php if ( $vendor_products->have_posts() ) : ?>
+			<div class="amz-products">
+				<?php
+				while ( $vendor_products->have_posts() ) :
+					$vendor_products->the_post();
+					$product = wc_get_product( get_the_ID() );
+					if ( ! $product ) {
+						continue;
+					}
+					$terms    = get_the_terms( get_the_ID(), 'product_cat' );
+					$cat_name = ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : '';
+					$rating   = (float) $product->get_average_rating();
+					?>
+					<a class="amz-product" href="<?php the_permalink(); ?>">
+						<div class="amz-product__media">
+							<?php
+							if ( has_post_thumbnail() ) {
+								the_post_thumbnail( 'woocommerce_thumbnail', [ 'alt' => esc_attr( get_the_title() ), 'loading' => 'lazy' ] );
+							}
+							if ( $cat_name ) :
+								?>
+								<span class="amz-product__cat"><?php echo esc_html( $cat_name ); ?></span>
+							<?php endif; ?>
+						</div>
+						<div class="amz-product__body">
+							<h3><?php echo esc_html( get_the_title() ); ?></h3>
+							<div class="amz-product__foot">
+								<span class="amz-product__price"><?php echo wp_kses_post( $product->get_price_html() ); ?></span>
+								<?php if ( $rating > 0 ) : ?>
+									<span class="amz-product__rate">
+										<span class="material-symbols-outlined" aria-hidden="true">star</span>
+										<?php echo esc_html( number_format_i18n( $rating, 1 ) ); ?>
+									</span>
+								<?php endif; ?>
+							</div>
+						</div>
+					</a>
+					<?php
+				endwhile;
+				wp_reset_postdata();
+				?>
+			</div>
+		<?php else : ?>
+			<div class="amz-empty--dashed">
+				<div class="amz-empty__ico"><span class="material-symbols-outlined" aria-hidden="true">shopping_bag</span></div>
+				<h3><?php esc_html_e( 'Aún no hay productos', 'amazonia-theme' ); ?></h3>
+				<p>
+					<?php
+					echo $active_cat
+						? esc_html__( 'No hay piezas en esta categoría. Prueba con otra.', 'amazonia-theme' )
+						: esc_html__( 'Este taller está preparando sus primeras piezas. Vuelve pronto.', 'amazonia-theme' );
+					?>
+				</p>
+			</div>
+		<?php endif; ?>
 	</section>
 
-	<!-- ==================== TARJETA DE PERFIL (superpuesta) ==================== -->
-	<div class="max-w-[1400px] mx-auto px-4 sm:px-8 -mt-16 relative z-10">
-		<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-black/5 border border-slate-100 dark:border-slate-700 p-5 sm:p-7">
-			<div class="flex flex-col md:flex-row md:items-center gap-6">
+	<!-- ── Envío y devoluciones (solo si hay políticas escritas) ──── -->
+	<?php if ( $policies ) : ?>
+		<section class="amz-band">
+			<div class="amz-shell amz-section" style="max-width:1000px">
+				<div class="amz-h2row">
+					<h2 class="amz-h2"><?php esc_html_e( 'Envío y devoluciones', 'amazonia-theme' ); ?></h2>
+				</div>
+				<div class="amz-policies">
+					<?php $first = true; foreach ( $policies as $title => $body ) : ?>
+						<details class="amz-policy"<?php echo $first ? ' open' : ''; ?>>
+							<summary><?php echo esc_html( $title ); ?></summary>
+							<p><?php echo wp_kses_post( $body ); ?></p>
+						</details>
+					<?php $first = false; endforeach; ?>
+				</div>
+			</div>
+		</section>
+	<?php endif; ?>
 
-				<!-- Avatar + nombre + valoración -->
-				<div class="flex items-center gap-4 flex-1 min-w-0">
-					<img src="<?php echo esc_url( $avatar_url ); ?>" alt="<?php echo esc_attr( $store_name ); ?>"
-						class="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover ring-4 ring-white dark:ring-slate-800 shadow-md shrink-0"
-						width="96" height="96" loading="lazy">
-					<div class="min-w-0">
-						<h2 class="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white truncate"><?php echo $store_name; ?></h2>
-						<div class="flex items-center gap-2 mt-1.5 flex-wrap">
-							<?php if ( $review_count > 0 ) : ?>
-								<?php echo amazonia_store_rating_stars( $avg_rating, 18 ); ?>
-								<span class="text-sm font-semibold text-slate-700 dark:text-slate-200"><?php echo esc_html( number_format( $avg_rating, 1 ) ); ?></span>
-								<span class="text-sm text-slate-400">(<?php echo esc_html( $review_count ); ?> <?php esc_html_e( 'reseñas', 'amazonia-theme' ); ?>)</span>
-							<?php else : ?>
-								<span class="inline-flex items-center gap-1 text-xs font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full">
-									<span class="material-symbols-outlined text-[15px]">verified</span>
-									<?php esc_html_e( 'Nuevo en Amazonia', 'amazonia-theme' ); ?>
+	<!-- ── Ubicación y contacto ──────────────────────────────────── -->
+	<?php if ( $address || $email || $phone ) : ?>
+		<section class="amz-shell amz-section">
+			<div class="amz-contact-grid">
+				<?php if ( $address ) : ?>
+					<div class="amz-card">
+						<div class="amz-map">
+							<span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+						</div>
+						<div class="amz-card__pad">
+							<h3><?php esc_html_e( 'Dónde estamos', 'amazonia-theme' ); ?></h3>
+							<p><?php echo esc_html( $address ); ?></p>
+						</div>
+					</div>
+				<?php endif; ?>
+
+				<?php if ( $email || $phone ) : ?>
+					<div class="amz-card">
+						<div class="amz-card__pad">
+							<h3><?php esc_html_e( 'Escríbele al taller', 'amazonia-theme' ); ?></h3>
+							<p><?php esc_html_e( 'Resuelve tus dudas sobre una pieza, un encargo a medida o los tiempos de entrega.', 'amazonia-theme' ); ?></p>
+							<div class="amz-contact-actions">
+								<?php if ( $phone ) : ?>
+									<a class="amz-contact-btn amz-contact-btn--wa" target="_blank" rel="noopener noreferrer"
+									   href="https://wa.me/<?php echo esc_attr( preg_replace( '/[^0-9]/', '', $phone ) ); ?>">
+										<span class="material-symbols-outlined" aria-hidden="true">chat</span>
+										<?php esc_html_e( 'WhatsApp', 'amazonia-theme' ); ?>
+									</a>
+								<?php endif; ?>
+								<?php if ( $email ) : ?>
+									<a class="amz-contact-btn" href="mailto:<?php echo esc_attr( $email ); ?>">
+										<span class="material-symbols-outlined" aria-hidden="true">mail</span>
+										<?php esc_html_e( 'Enviar correo', 'amazonia-theme' ); ?>
+									</a>
+								<?php endif; ?>
+								<?php if ( $phone ) : ?>
+									<a class="amz-contact-btn" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>">
+										<span class="material-symbols-outlined" aria-hidden="true">call</span>
+										<?php echo esc_html( $phone ); ?>
+									</a>
+								<?php endif; ?>
+							</div>
+						</div>
+					</div>
+				<?php endif; ?>
+			</div>
+		</section>
+	<?php endif; ?>
+
+	<!-- ── Reseñas ───────────────────────────────────────────────── -->
+	<section class="amz-shell amz-section" style="max-width:1000px">
+		<div class="amz-h2row">
+			<h2 class="amz-h2"><?php esc_html_e( 'Reseñas', 'amazonia-theme' ); ?></h2>
+		</div>
+
+		<?php if ( $reviews ) : ?>
+			<div class="amz-reviews">
+				<?php
+				foreach ( $reviews as $review ) :
+					$score  = get_comment_meta( $review->comment_ID, 'rating', true );
+					$author = $review->comment_author ? $review->comment_author : __( 'Anónimo', 'amazonia-theme' );
+					?>
+					<article class="amz-review">
+						<div class="amz-review__head">
+							<div class="amz-review__av" aria-hidden="true"><?php echo esc_html( mb_strtoupper( mb_substr( $author, 0, 1 ) ) ); ?></div>
+							<div class="amz-review__who">
+								<div class="amz-review__name"><?php echo esc_html( $author ); ?></div>
+								<div class="amz-review__date">
+									<?php
+									printf(
+										/* translators: 1: fecha, 2: nombre del producto */
+										esc_html__( '%1$s · sobre %2$s', 'amazonia-theme' ),
+										esc_html( date_i18n( get_option( 'date_format' ), strtotime( $review->comment_date ) ) ),
+										esc_html( get_the_title( $review->comment_post_ID ) )
+									);
+									?>
+								</div>
+							</div>
+							<?php if ( $score ) : ?>
+								<span class="amz-review__score">
+									<span class="material-symbols-outlined" aria-hidden="true">star</span>
+									<?php echo esc_html( number_format_i18n( (float) $score, 1 ) ); ?>
 								</span>
 							<?php endif; ?>
 						</div>
-					</div>
-				</div>
+						<p><?php echo esc_html( $review->comment_content ); ?></p>
+					</article>
+				<?php endforeach; ?>
+			</div>
+		<?php else : ?>
+			<div class="amz-empty--dashed">
+				<div class="amz-empty__ico"><span class="material-symbols-outlined" aria-hidden="true">chat_bubble</span></div>
+				<h3><?php esc_html_e( 'Todavía sin reseñas', 'amazonia-theme' ); ?></h3>
+				<p><?php esc_html_e( 'Sé la primera persona en compartir tu experiencia con este taller.', 'amazonia-theme' ); ?></p>
+			</div>
+		<?php endif; ?>
+	</section>
 
-				<!-- CTAs -->
-				<div class="flex items-center gap-3 shrink-0">
-					<?php if ( $phone ) : ?>
-						<a href="https://wa.me/<?php echo preg_replace( '/[^0-9]/', '', $phone ); ?>" target="_blank" rel="noopener"
-							class="flex-1 md:flex-none bg-[#25D366] hover:bg-[#1ebe57] text-white font-semibold py-3 px-5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-							<span class="material-symbols-outlined text-xl">chat</span>
-							<span class="hidden sm:inline"><?php esc_html_e( 'WhatsApp', 'amazonia-theme' ); ?></span>
+	<!-- ── Cierre: vuelta a la comunidad + redes ─────────────────── -->
+	<footer class="amz-close amz-close--store">
+		<div class="amz-shell amz-close__inner">
+			<div>
+				<div class="amz-close__name"><?php echo esc_html( $store_name ); ?></div>
+				<?php if ( $community ) : ?>
+					<a class="amz-close__back" href="<?php echo esc_url( $community['url'] ); ?>">
+						<?php
+						printf(
+							/* translators: %s: nombre de la comunidad */
+							esc_html__( '← Volver a la %s', 'amazonia-theme' ),
+							esc_html( $community['nombre'] )
+						);
+						?>
+					</a>
+				<?php endif; ?>
+			</div>
+
+			<?php if ( $store_user->has_social() ) : ?>
+				<div class="amz-socials">
+					<?php
+					foreach ( $social_map as $key => $meta ) :
+						if ( empty( $socials[ $key ] ) ) {
+							continue;
+						}
+						?>
+						<a class="amz-btn amz-btn--ghost" href="<?php echo esc_url( $socials[ $key ] ); ?>"
+						   target="_blank" rel="noopener noreferrer">
+							<span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true"><?php echo esc_html( $meta['icon'] ); ?></span>
+							<?php echo esc_html( $meta['label'] ); ?>
 						</a>
-					<?php endif; ?>
-					<?php if ( $email ) : ?>
-						<a href="mailto:<?php echo esc_attr( $email ); ?>"
-							class="flex-1 md:flex-none bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 font-semibold py-3 px-5 rounded-xl flex items-center justify-center gap-2 transition-colors">
-							<span class="material-symbols-outlined text-xl">mail</span>
-							<span class="hidden sm:inline"><?php esc_html_e( 'Contactar', 'amazonia-theme' ); ?></span>
-						</a>
-					<?php endif; ?>
+					<?php endforeach; ?>
 				</div>
-			</div>
-
-			<!-- Barra de estadísticas reales -->
-			<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
-				<div class="text-center">
-					<p class="text-2xl font-black text-slate-900 dark:text-white"><?php echo esc_html( $product_count ); ?></p>
-					<p class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-0.5"><?php esc_html_e( 'Productos', 'amazonia-theme' ); ?></p>
-				</div>
-				<div class="text-center">
-					<p class="text-2xl font-black text-slate-900 dark:text-white">
-						<?php echo $review_count > 0 ? esc_html( number_format( $avg_rating, 1 ) ) : '—'; ?>
-					</p>
-					<p class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-0.5"><?php esc_html_e( 'Valoración', 'amazonia-theme' ); ?></p>
-				</div>
-				<div class="text-center">
-					<p class="text-2xl font-black text-slate-900 dark:text-white"><?php echo esc_html( $follower_count ); ?></p>
-					<p class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-0.5"><?php esc_html_e( 'Seguidores', 'amazonia-theme' ); ?></p>
-				</div>
-				<div class="text-center">
-					<p class="text-2xl font-black text-slate-900 dark:text-white capitalize"><?php echo $member_since ? esc_html( $member_since ) : '—'; ?></p>
-					<p class="text-xs text-slate-400 font-medium uppercase tracking-wider mt-0.5"><?php esc_html_e( 'Miembro desde', 'amazonia-theme' ); ?></p>
-				</div>
-			</div>
+			<?php endif; ?>
 		</div>
-	</div>
+	</footer>
 
-	<!-- ==================== CUERPO ==================== -->
-	<div class="max-w-[1400px] mx-auto px-4 sm:px-8 mt-8">
-		<div class="flex flex-col lg:flex-row gap-8">
-
-			<!-- Sidebar: información del vendedor -->
-			<aside class="lg:w-1/3 xl:w-[30%] flex flex-col gap-6 lg:sticky lg:top-24 lg:self-start">
-
-				<!-- Sobre la tienda -->
-				<?php if ( $store_description ) : ?>
-					<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
-						<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-							<span class="material-symbols-outlined text-primary">storefront</span>
-							<?php esc_html_e( 'Sobre la tienda', 'amazonia-theme' ); ?>
-						</h3>
-						<div class="prose prose-sm max-w-none text-slate-600 dark:text-slate-300 leading-relaxed">
-							<?php echo $store_description; ?>
-						</div>
-					</div>
-				<?php endif; ?>
-
-				<!-- Información de contacto -->
-				<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
-					<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-						<span class="material-symbols-outlined text-primary">contact_page</span>
-						<?php esc_html_e( 'Información', 'amazonia-theme' ); ?>
-					</h3>
-					<ul class="flex flex-col gap-4 text-sm">
-						<?php if ( $address ) : ?>
-							<li class="flex items-start gap-3">
-								<span class="material-symbols-outlined text-slate-400 text-[20px] mt-0.5">location_on</span>
-								<span class="text-slate-600 dark:text-slate-300"><?php echo esc_html( $address ); ?></span>
-							</li>
-						<?php endif; ?>
-						<?php if ( $phone ) : ?>
-							<li class="flex items-start gap-3">
-								<span class="material-symbols-outlined text-slate-400 text-[20px] mt-0.5">call</span>
-								<a href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ); ?>" class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors"><?php echo esc_html( $phone ); ?></a>
-							</li>
-						<?php endif; ?>
-						<?php if ( $email ) : ?>
-							<li class="flex items-start gap-3">
-								<span class="material-symbols-outlined text-slate-400 text-[20px] mt-0.5">mail</span>
-								<a href="mailto:<?php echo esc_attr( $email ); ?>" class="text-slate-600 dark:text-slate-300 hover:text-primary transition-colors break-all"><?php echo esc_html( $email ); ?></a>
-							</li>
-						<?php endif; ?>
-					</ul>
-
-					<?php if ( $store_user->has_social() ) : ?>
-						<div class="flex flex-wrap gap-2 mt-5 pt-5 border-t border-slate-100 dark:border-slate-700">
-							<?php foreach ( $social_map as $key => $meta ) :
-								if ( empty( $socials[ $key ] ) ) continue; ?>
-								<a href="<?php echo esc_url( $socials[ $key ] ); ?>" target="_blank" rel="noopener"
-									class="h-9 w-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-primary hover:text-white transition-colors"
-									aria-label="<?php echo esc_attr( $meta['label'] ); ?>">
-									<span class="material-symbols-outlined text-[18px]"><?php echo esc_html( $meta['icon'] ); ?></span>
-								</a>
-							<?php endforeach; ?>
-						</div>
-					<?php endif; ?>
-				</div>
-
-				<!-- Categorías de la tienda -->
-				<?php if ( ! is_wp_error( $store_cats ) && ! empty( $store_cats ) ) : ?>
-					<div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 p-6">
-						<h3 class="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-							<span class="material-symbols-outlined text-primary">sell</span>
-							<?php esc_html_e( 'Categorías', 'amazonia-theme' ); ?>
-						</h3>
-						<div class="flex flex-wrap gap-2">
-							<?php foreach ( $store_cats as $cat ) :
-								$cat_link = add_query_arg( 'product_cat', $cat->slug, $store_url ); ?>
-								<a href="<?php echo esc_url( $cat_link ); ?>"
-									class="text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-primary/10 hover:text-primary px-3 py-1.5 rounded-full transition-colors">
-									<?php echo esc_html( $cat->name ); ?>
-								</a>
-							<?php endforeach; ?>
-						</div>
-					</div>
-				<?php endif; ?>
-
-				<!-- Valores / sellos de confianza -->
-				<div class="bg-primary/5 rounded-2xl border border-primary/10 p-6">
-					<div class="flex flex-col gap-3">
-						<div class="flex items-center gap-3">
-							<span class="material-symbols-outlined text-primary bg-white rounded-full shadow-sm p-1 text-[20px]">handshake</span>
-							<span class="text-sm font-medium text-slate-700 dark:text-slate-200"><?php esc_html_e( 'Comercio justo y directo', 'amazonia-theme' ); ?></span>
-						</div>
-						<div class="flex items-center gap-3">
-							<span class="material-symbols-outlined text-primary bg-white rounded-full shadow-sm p-1 text-[20px]">volunteer_activism</span>
-							<span class="text-sm font-medium text-slate-700 dark:text-slate-200"><?php esc_html_e( 'Hecho a mano por la comunidad', 'amazonia-theme' ); ?></span>
-						</div>
-						<div class="flex items-center gap-3">
-							<span class="material-symbols-outlined text-primary bg-white rounded-full shadow-sm p-1 text-[20px]">forest</span>
-							<span class="text-sm font-medium text-slate-700 dark:text-slate-200"><?php esc_html_e( 'Producción sostenible', 'amazonia-theme' ); ?></span>
-						</div>
-					</div>
-				</div>
-			</aside>
-
-			<!-- Contenido: carruseles de productos -->
-			<div class="lg:w-2/3 xl:w-[70%] flex flex-col gap-12">
-
-				<!-- Carrusel de productos del vendedor -->
-				<section>
-					<div class="flex justify-between items-end mb-6">
-						<div>
-							<h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white"><?php esc_html_e( 'Nuestros productos', 'amazonia-theme' ); ?></h2>
-							<p class="text-slate-500 dark:text-slate-400 mt-1"><?php esc_html_e( 'Piezas auténticas directamente de la comunidad', 'amazonia-theme' ); ?></p>
-						</div>
-						<?php if ( $product_count > 0 ) : ?>
-							<a href="<?php echo esc_url( $store_url ); ?>" class="text-primary font-semibold hover:text-primary/80 flex items-center gap-1 group shrink-0 pb-1">
-								<span class="hidden sm:inline"><?php esc_html_e( 'Ver todo', 'amazonia-theme' ); ?></span>
-								<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_forward</span>
-							</a>
-						<?php endif; ?>
-					</div>
-					<?php amazonia_render_product_carousel( $vendor_products, 'store-products-carousel', __( 'Esta tienda aún no tiene productos publicados.', 'amazonia-theme' ) ); ?>
-				</section>
-
-				<!-- Carrusel de productos relacionados -->
-				<?php if ( $related_products->have_posts() ) : ?>
-					<section>
-						<div class="flex justify-between items-end mb-6">
-							<div>
-								<h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white"><?php esc_html_e( 'También te puede interesar', 'amazonia-theme' ); ?></h2>
-								<p class="text-slate-500 dark:text-slate-400 mt-1"><?php esc_html_e( 'Productos similares de otras comunidades', 'amazonia-theme' ); ?></p>
-							</div>
-						</div>
-						<?php amazonia_render_product_carousel( $related_products, 'related-products-carousel' ); ?>
-					</section>
-				<?php endif; ?>
-
-			</div>
-		</div>
-	</div>
 </div>
-
-<script>
-( function () {
-	function initCarousel( root ) {
-		var track = root.querySelector( '[data-carousel-track]' );
-		if ( ! track ) return;
-		var prev = root.querySelector( '[data-carousel-prev]' );
-		var next = root.querySelector( '[data-carousel-next]' );
-
-		function step() { return Math.max( track.clientWidth * 0.85, 260 ); }
-
-		function toggle( btn, hidden ) {
-			if ( ! btn ) return;
-			btn.classList.toggle( 'opacity-0', hidden );
-			btn.classList.toggle( 'pointer-events-none', hidden );
-		}
-
-		function update() {
-			var max = track.scrollWidth - track.clientWidth - 2;
-			var scrollable = max > 2;
-			toggle( prev, ! scrollable || track.scrollLeft <= 2 );
-			toggle( next, ! scrollable || track.scrollLeft >= max );
-		}
-
-		if ( prev ) prev.addEventListener( 'click', function () { track.scrollBy( { left: -step(), behavior: 'smooth' } ); } );
-		if ( next ) next.addEventListener( 'click', function () { track.scrollBy( { left: step(), behavior: 'smooth' } ); } );
-		track.addEventListener( 'scroll', update, { passive: true } );
-		window.addEventListener( 'resize', update );
-		update();
-	}
-
-	document.querySelectorAll( '[data-carousel]' ).forEach( initCarousel );
-} )();
-</script>
 
 <?php get_footer( 'shop' ); ?>
