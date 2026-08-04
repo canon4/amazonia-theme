@@ -9,6 +9,11 @@
 #
 # Una línea por icono. Se ignoran líneas vacías y las que empiezan con '#'.
 
+# --- Iconos de navegación de Mi Cuenta (navigation.php usa $icon = 'name', no detectables por el scanner) ---
+dashboard
+download
+logout
+
 # --- Picker de valores de comunidad ($valor_icons en template-community-admin.php) ---
 eco
 handshake

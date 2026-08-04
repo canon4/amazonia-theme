@@ -19,8 +19,10 @@ chevron_right
 close
 compost
 cookie
+dashboard
 delete
 diversity_3
+download
 eco
 edit_note
 expand_more
@@ -41,6 +43,7 @@ location_on
 lock
 lock_reset
 login
+logout
 mail
 manage_accounts
 menu
