@@ -40,7 +40,7 @@
                         echo '<a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="' . $shop_url . '">Tienda</a>
                               <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="' . $categorias_url . '">Categorías</a>
                               <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="' . esc_url( home_url( '/?page_id=53/' ) ) . '">Comunidades</a>
-                              <a class="text-slate-600 dark:text-slate-400 text-sm font-medium hover:text-primary transition-colors no-underline" href="#">Impacto</a>';
+                              ';
                     }
                     ?>
                 </nav>
