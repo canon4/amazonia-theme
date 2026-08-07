@@ -24,20 +24,9 @@ add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_admin_panel' );
 function amazonia_enqueue_community_admin_panel() {
 	if ( ! is_page_template( 'template-community-admin.php' ) ) return;
 
-	wp_enqueue_style(
-		'amazonia-community-admin',
-		get_template_directory_uri() . '/assets/css/community-admin.css',
-		[],
-		'1.3.0'
-	);
+	amazonia_style( 'amazonia-community-admin', 'assets/css/community-admin.css' );
 
-	wp_enqueue_script(
-		'amazonia-community-admin-js',
-		get_template_directory_uri() . '/assets/js/community-admin.js',
-		[ 'jquery' ],
-		'1.3.0',
-		true
-	);
+	amazonia_script( 'amazonia-community-admin-js', 'assets/js/community-admin.js', [ 'jquery' ] );
 
 	wp_localize_script( 'amazonia-community-admin-js', 'amazoniaCommunityAdmin', [
 		'ajaxUrl'      => admin_url( 'admin-ajax.php' ),

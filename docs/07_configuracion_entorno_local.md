@@ -75,17 +75,21 @@ El colega solo necesita repetir los pasos 1–3. La URL `http://localhost` es la
 
 ## Deploy a producción
 
-Antes de subir la DB a producción, reemplazar todas las URLs locales:
+**El código del tema no se despliega a mano.** Un merge a `main` lo publica automáticamente; ver
+[`08_cicd_despliegue.md`](08_cicd_despliegue.md).
+
+Lo que sigue aplica **solo si migras la base de datos** desde local a producción (algo que el pipeline no
+hace y que rara vez hace falta). Antes de subir el dump, reemplaza las URLs locales:
 
 ```bash
-php wp-cli.phar search-replace 'http://localhost' 'http://2.24.97.209:8081' --all-tables
+php wp-cli.phar search-replace 'http://localhost' 'https://amazoniamarket.zogui.cloud' --all-tables
 ```
 
-Y actualizar las dos filas en `wp_options` si no quedaron bien:
+Y actualiza las dos filas en `wp_options` si no quedaron bien:
 
 ```sql
 UPDATE wp_options
-SET option_value = 'http://2.24.97.209:8081'
+SET option_value = 'https://amazoniamarket.zogui.cloud'
 WHERE option_name IN ('siteurl', 'home');
 ```
 
@@ -96,5 +100,5 @@ WHERE option_name IN ('siteurl', 'home');
 | Entorno | URL base |
 |---------|----------|
 | Local (XAMPP) | `http://localhost` |
-| Producción | `http://2.24.97.209:8081` |
+| Producción | `https://amazoniamarket.zogui.cloud` |
 | Docker/CI | Variable de entorno `WP_HOME` |
