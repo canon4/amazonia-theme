@@ -40,7 +40,11 @@ jobs:
 
       - name: Empaquetar el tema
         run: |
-          tar czf theme.tar.gz \
+          # El .tar.gz se escribe FUERA del árbol que se empaqueta (RUNNER_TEMP).
+          # Escribirlo dentro de "." hace que tar vea crecer su propio archivo de
+          # salida mientras lo lee ("file changed as we read it"), porque no
+          # existía al arrancar y por tanto ningún --exclude lo cubre.
+          tar czf "$RUNNER_TEMP/theme.tar.gz" \
             --exclude='.git' \
             --exclude='.github' \
             --exclude='.claude' \
@@ -55,6 +59,7 @@ jobs:
             --exclude='assets/css/tailwind-input.css' \
             --exclude='.gitignore' \
             .
+          mv "$RUNNER_TEMP/theme.tar.gz" theme.tar.gz
 
       - uses: actions/upload-artifact@v4
         with:
