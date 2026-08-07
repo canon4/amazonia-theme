@@ -206,10 +206,16 @@ jobs:
             exit 1
           fi
 
-          if ! printf '%s' "$html" | grep -q "tailwind\.css?ver=$esperado"; then
+          # Comparación nativa de bash (sin pipe a un proceso externo): con
+          # `grep -q` bajo `pipefail`, en cuanto grep encuentra la primera
+          # coincidencia cierra el pipe y sale 0, pero printf puede seguir
+          # escribiendo el resto de $html y recibir SIGPIPE — pipefail toma
+          # ese fallo de printf como el resultado del pipeline entero, y el
+          # chequeo reporta "no encontrado" aunque grep SÍ lo haya encontrado.
+          if [[ "$html" != *"tailwind.css?ver=$esperado"* ]]; then
             echo "::error::El HTML no sirve tailwind.css?ver=$esperado."
             echo "Versiones encontradas en la página:"
-            printf '%s' "$html" | grep -oE 'tailwind\.css\?ver=[0-9]+' | sort -u || true
+            grep -oE 'tailwind\.css\?ver=[0-9]+' <<< "$html" | sort -u || true
             exit 1
           fi
           echo "Smoke test OK: el sitio responde y sirve los assets nuevos."
