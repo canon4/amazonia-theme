@@ -139,7 +139,12 @@ def main():
     font.save(FONT_OUT)
     size_kb = os.path.getsize(FONT_OUT) // 1024
 
-    with open(USED_ICONS_TXT, "w", encoding="utf-8") as fh:
+    # newline='\n' fuerza LF en cualquier plataforma. Sin esto, el modo texto
+    # de Python traduce '\n' al separador del SO (CRLF en Windows), y el
+    # archivo generado en un runner de CI (Linux, LF) difiere línea por línea
+    # de uno generado en Windows aunque el contenido sea idéntico — lo que
+    # rompe el gate de CI que compara este archivo con git diff.
+    with open(USED_ICONS_TXT, "w", encoding="utf-8", newline="\n") as fh:
         fh.write("\n".join(sorted(wanted)) + "\n")
 
     print(f"OK — subset escrito: {FONT_OUT} ({size_kb} KB, {len(keep_glyphs)} iconos)")

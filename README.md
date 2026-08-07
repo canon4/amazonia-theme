@@ -46,6 +46,29 @@ Para el entorno de desarrollo local (XAMPP, base de datos, URLs), sigue la guía
 
 ---
 
+## Despliegue
+
+Un merge a `main` publica el cambio en producción automáticamente, en segundos y sin caída del sitio: el
+tema se sincroniza dentro de un volumen que monta el contenedor, sin reconstruir la imagen Docker ni
+reiniciar WordPress.
+
+| Workflow | Cuándo | Qué hace |
+|----------|--------|----------|
+| [`ci.yml`](.github/workflows/ci.yml) | Pull request | Compila assets, corre los gates y `php -l` |
+| [`deploy.yml`](.github/workflows/deploy.yml) | Push a `main` | Publica, verifica y revierte si falla |
+
+Dos cosas que conviene saber antes de tu primer PR:
+
+- **Commitea `assets/css/tailwind.css` y el subset de iconos** cuando cambies plantillas o añadas iconos.
+  Hay gates de CI que fallan si quedan desincronizados.
+- **Nunca encoles un asset con una versión escrita a mano.** Usa `amazonia_style()` / `amazonia_script()`;
+  si no, el navegador de los usuarios servirá el archivo viejo hasta un mes.
+
+Guía completa, runbook de fallos y procedimiento de rollback:
+[`docs/08_cicd_despliegue.md`](docs/08_cicd_despliegue.md).
+
+---
+
 ## Compilar los estilos (Tailwind)
 
 El CSS de Tailwind se compila localmente; **no** se carga desde CDN. La configuración está en
@@ -54,10 +77,13 @@ El CSS de Tailwind se compila localmente; **no** se carga desde CDN. La configur
 ```bash
 # Entrada:  assets/css/tailwind-input.css
 # Salida:   assets/css/tailwind.css
-npx tailwindcss -i ./assets/css/tailwind-input.css -o ./assets/css/tailwind.css --minify
+npm run build:css
 ```
 
-> Recompila cada vez que agregues clases nuevas en los `.php` o en `assets/js/**/*.js`.
+> Recompila cada vez que agregues clases nuevas en los `.php` o en `assets/js/**/*.js`, y **commitea el
+> `tailwind.css` resultante**: CI falla si el CSS compilado no corresponde a las plantillas. En producción
+> el pipeline lo vuelve a compilar, así que no hace falta compilarlo antes de desplegar — pero sí para que
+> tu entorno local se vea bien y para que pase el PR.
 
 ---
 
@@ -65,6 +91,7 @@ npx tailwindcss -i ./assets/css/tailwind-input.css -o ./assets/css/tailwind.css 
 
 ```
 amazonia-theme/
+├── .github/           # Workflows de CI/CD (validación en PR y despliegue)
 ├── assets/            # CSS compilado, JS, fuentes self-hosted
 │   ├── css/           # tailwind.css, main.css, cart, checkout, header, etc.
 │   ├── js/            # main, navigation, favorites, checkout-map, constantes
@@ -98,6 +125,7 @@ La carpeta [`docs/`](docs/) contiene las guías del proyecto:
 | [`05_guia_creacion_producto.md`](docs/05_guia_creacion_producto.md) | Creación de productos |
 | [`06_metadatos_formatos.md`](docs/06_metadatos_formatos.md) | Metadatos y formatos |
 | [`07_configuracion_entorno_local.md`](docs/07_configuracion_entorno_local.md) | Configuración del entorno local |
+| [`08_cicd_despliegue.md`](docs/08_cicd_despliegue.md) | CI/CD, despliegue y rollback |
 | [`guia-admin-comunidad.md`](docs/guia-admin-comunidad.md) | Administración del panel de comunidades |
 
 Rendimiento: [`GUIA-RENDIMIENTO.md`](GUIA-RENDIMIENTO.md) y [`CHANGELOG-RENDIMIENTO.md`](CHANGELOG-RENDIMIENTO.md).

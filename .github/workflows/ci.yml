@@ -1,0 +1,97 @@
+name: CI
+
+# Validación en pull request. El despliegue vive en deploy.yml.
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    name: Build de assets y gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: |
+          npm ci
+          # Versiones fijas: el subsetting de fuentes no es reproducible byte a byte
+          # entre versiones de fonttools (varía ~100 bytes de metadatos).
+          pip install fonttools==4.55.3 brotli==1.1.0
+
+      - name: Compilar Tailwind
+        run: npm run build:css
+
+      - name: Regenerar el subset de iconos
+        run: npm run build:icons
+
+      # ── Gates ────────────────────────────────────────────────────────────
+
+      - name: Gate — el subset de iconos está sincronizado
+        run: |
+          if ! git diff --quiet scripts/used-icons.txt; then
+            echo "::error file=scripts/used-icons.txt::Hay iconos usados en las plantillas que no están en el subset."
+            echo ""
+            echo "Diferencias detectadas:"
+            git diff -- scripts/used-icons.txt
+            echo ""
+            echo "Solución: ejecuta 'npm run build:icons' y commitea"
+            echo "scripts/used-icons.txt junto con assets/fonts/material-symbols-outlined.woff2."
+            echo ""
+            echo "Sin esto, los iconos nuevos se renderizan como cajas vacías en producción."
+            exit 1
+          fi
+          echo "Subset de iconos sincronizado."
+
+      # Nota: NO se compara el .woff2 en sí. Sus bytes cambian entre versiones de
+      # fonttools aunque el conjunto de iconos sea idéntico, lo que haría el gate
+      # intermitente. used-icons.txt es la entrada semántica real.
+
+      - name: Gate — tailwind.css está sincronizado
+        run: |
+          if ! git diff --quiet assets/css/tailwind.css; then
+            echo "::error file=assets/css/tailwind.css::El CSS compilado no corresponde a las plantillas actuales."
+            echo ""
+            echo "Solución: ejecuta 'npm run build:css' y commitea assets/css/tailwind.css."
+            exit 1
+          fi
+          echo "tailwind.css sincronizado."
+
+      - name: Gate — ningún asset con versión escrita a mano
+        run: |
+          # El .htaccess cachea CSS/JS un mes y las fuentes un año. Un asset
+          # encolado con una versión literal se congela en el navegador del
+          # usuario. Todo debe pasar por amazonia_style()/amazonia_script().
+          # Se excluye languages/, cuyos .l10n.php llevan 'mime-version'=>'1.0'.
+          hallazgos=$(grep -rnE "'[0-9]+\.[0-9]+(\.[0-9]+)?'" --include='*.php' . \
+                      | grep -v '^\./languages/' || true)
+          if [ -n "$hallazgos" ]; then
+            echo "::error::Hay versiones de asset escritas a mano:"
+            echo "$hallazgos"
+            echo ""
+            echo "Solución: usa amazonia_style()/amazonia_script() (ver functions.php),"
+            echo "que derivan la versión del mtime del archivo."
+            exit 1
+          fi
+          echo "Sin versiones literales."
+
+      - name: Lint de sintaxis PHP
+        run: |
+          find . -name '*.php' -not -path './node_modules/*' -print0 \
+            | xargs -0 -n1 -P4 php -l

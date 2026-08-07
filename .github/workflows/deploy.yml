@@ -1,0 +1,228 @@
+name: Deploy del tema
+
+# Despliegue visual: sincroniza el tema dentro del volumen que monta el
+# contenedor. No reconstruye la imagen ni reinicia WordPress.
+# Ver docs/08_cicd_despliegue.md.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-produccion
+  cancel-in-progress: false
+
+env:
+  THEME_PATH: /srv/amazonia/theme
+  COMPOSE_FILE: /srv/wordpress/wordpress-app/docker-compose.yml
+
+jobs:
+  build:
+    name: Compilar assets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Compilar Tailwind
+        run: |
+          npm ci
+          npm run build:css
+
+      # El subset de iconos NO se regenera aquí: build:icons descarga la fuente
+      # completa desde jsDelivr, y una caída de ese CDN bloquearía los deploys.
+      # El .woff2 commiteado ya está validado por el gate de used-icons.txt en CI.
+
+      - name: Empaquetar el tema
+        run: |
+          tar czf theme.tar.gz \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.claude' \
+            --exclude='node_modules' \
+            --exclude='performance' \
+            --exclude='docs' \
+            --exclude='scripts' \
+            --exclude='*.md' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='tailwind.config.js' \
+            --exclude='assets/css/tailwind-input.css' \
+            --exclude='.gitignore' \
+            .
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: theme
+          path: theme.tar.gz
+          retention-days: 7
+
+  deploy:
+    name: Publicar en producción
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: theme
+
+      - name: Desempaquetar
+        run: |
+          mkdir -p theme
+          tar xzf theme.tar.gz -C theme
+
+      # ── Guarda: nunca sincronizar un árbol incompleto ────────────────────
+      # rsync --delete sobre un directorio vacío borraría el tema en producción
+      # y tumbaría el sitio. Se comprueba antes de tocar nada.
+      - name: Verificar el artefacto antes de publicar
+        run: |
+          set -euo pipefail
+          for f in style.css functions.php index.php header.php footer.php; do
+            if [ ! -f "theme/$f" ]; then
+              echo "::error::Falta theme/$f — el build produjo un árbol incompleto. Se aborta antes del rsync."
+              exit 1
+            fi
+          done
+          n=$(find theme -type f | wc -l)
+          if [ "$n" -lt 100 ]; then
+            echo "::error::Solo $n archivos en el artefacto (se esperan >=100). Se aborta antes del rsync."
+            exit 1
+          fi
+          echo "Artefacto verificado: $n archivos."
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Registrar el host
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+
+      # ── Snapshot para poder revertir ─────────────────────────────────────
+      - name: Guardar la versión actual
+        run: |
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -se <<'REMOTE'
+          set -euo pipefail
+          rsync -rlpt --delete "${{ env.THEME_PATH }}/current/" "${{ env.THEME_PATH }}/previous/"
+          echo "Snapshot guardado en previous/."
+          REMOTE
+
+      # ── Publicar ─────────────────────────────────────────────────────────
+      # --checksum: el checkout del runner deja mtime fresco en TODOS los
+      #   archivos, así que la comparación por defecto (tamaño+mtime)
+      #   retransmitiría todo y rompería el cache busting por mtime. Con -c
+      #   rsync decide por contenido y no toca lo que no cambió.
+      # --delay-updates: deja los archivos nuevos en temporales y los renombra
+      #   al final, para no servir una mezcla de tema viejo y nuevo.
+      # -rlptz en vez de -a: sin -og, que exigiría root para preservar dueños.
+      #   --chmod garantiza que Apache pueda leer sin depender del umask.
+      - name: Sincronizar el tema en el volumen
+        run: |
+          set -euo pipefail
+          rsync -rlptzc --delete --delay-updates --chmod=D755,F644 \
+            theme/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ env.THEME_PATH }}/current/"
+
+      # ── Versionar las fuentes ────────────────────────────────────────────
+      # La URL del woff2 vive dentro de los .css, donde el ?ver= del enqueue no
+      # llega, y el .htaccess las cachea un año. Se reescribe en destino (no en
+      # el runner) para que la versión salga del mismo inodo que lee filemtime()
+      # en PHP: así preload y @font-face coinciden y la fuente se pide una vez.
+      - name: Versionar las URLs de las fuentes
+        run: |
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -se <<'REMOTE'
+          set -euo pipefail
+          cd "${{ env.THEME_PATH }}/current"
+          for f in assets/fonts/*.woff2; do
+            base=$(basename "$f")
+            v=$(date +%s -r "$f")
+            # El (\?ver=[0-9]+)? opcional lo hace idempotente: sustituye la
+            # versión anterior en vez de encadenar ?ver=1&ver=2.
+            sed -i -E "s|(url\([\"']?\.\./fonts/${base})(\?ver=[0-9]+)?([\"']?\))|\1?ver=${v}\3|g" assets/css/*.css
+          done
+          echo "Fuentes versionadas."
+          REMOTE
+
+      # ── Refrescar OPcache ────────────────────────────────────────────────
+      # graceful recarga los workers de Apache sin reiniciar el contenedor.
+      # El nombre se resuelve dinámicamente porque el compose no define
+      # container_name. Es un refuerzo: opcache.validate_timestamps=1 (default)
+      # ya recogería los .php nuevos en <=2 s.
+      # Este paso NUNCA falla el deploy: llegados aquí el tema ya está publicado,
+      # y opcache.validate_timestamps recogerá los .php en <=2 s de todas formas.
+      # Hacerlo fatal provocaría un rollback de un despliegue que salió bien.
+      - name: Recargar Apache sin downtime
+        run: |
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -s <<'REMOTE' || true
+          cid=$(docker compose -f "${{ env.COMPOSE_FILE }}" ps -q wordpress 2>/dev/null || true)
+          if [ -z "$cid" ]; then
+            echo "AVISO: no se pudo resolver el contenedor (¿el usuario no está en el grupo docker?)."
+            echo "Se omite el reload; los cambios se recogerán por validate_timestamps."
+            exit 0
+          fi
+          if docker exec "$cid" apache2ctl graceful 2>/dev/null; then
+            echo "Apache recargado (sin reinicio del contenedor)."
+          else
+            echo "AVISO: falló el reload de Apache; los cambios se recogerán por validate_timestamps."
+          fi
+          REMOTE
+
+      # ── Smoke test ───────────────────────────────────────────────────────
+      # Verifica de una vez que el sitio responde 200, que el deploy llegó y
+      # que el cache busting funciona: el HTML debe traer el ?ver= que
+      # corresponde al mtime real del tailwind.css recién publicado.
+      - name: Smoke test
+        run: |
+          set -euo pipefail
+          esperado=$(ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "date +%s -r ${{ env.THEME_PATH }}/current/assets/css/tailwind.css")
+          echo "Versión esperada de tailwind.css: $esperado"
+
+          # Reintentos: graceful deja terminar las peticiones en curso.
+          html=''
+          for intento in 1 2 3 4 5; do
+            if html=$(curl -fsS --max-time 20 "${{ secrets.SITE_URL }}"); then
+              break
+            fi
+            echo "Intento $intento falló, reintentando en 5 s..."
+            sleep 5
+          done
+
+          if [ -z "$html" ]; then
+            echo "::error::El sitio no respondió tras 5 intentos."
+            exit 1
+          fi
+
+          if ! printf '%s' "$html" | grep -q "tailwind\.css?ver=$esperado"; then
+            echo "::error::El HTML no sirve tailwind.css?ver=$esperado."
+            echo "Versiones encontradas en la página:"
+            printf '%s' "$html" | grep -oE 'tailwind\.css\?ver=[0-9]+' | sort -u || true
+            exit 1
+          fi
+          echo "Smoke test OK: el sitio responde y sirve los assets nuevos."
+
+      # ── Rollback ─────────────────────────────────────────────────────────
+      - name: Revertir al fallar
+        if: failure()
+        run: |
+          ssh "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" bash -se <<'REMOTE'
+          set -euo pipefail
+          if [ ! -f "${{ env.THEME_PATH }}/previous/style.css" ]; then
+            echo "::error::No hay snapshot válido en previous/. Se requiere intervención manual."
+            exit 1
+          fi
+          rsync -rlpt --delete --delay-updates "${{ env.THEME_PATH }}/previous/" "${{ env.THEME_PATH }}/current/"
+          cid=$(docker compose -f "${{ env.COMPOSE_FILE }}" ps -q wordpress 2>/dev/null || true)
+          if [ -n "$cid" ]; then
+            docker exec "$cid" apache2ctl graceful || true
+          fi
+          echo "Rollback completado: producción restaurada a la versión anterior."
+          REMOTE

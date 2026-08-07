@@ -54,16 +54,80 @@ function amazonia_theme_setup() {
 add_action( 'after_setup_theme', 'amazonia_theme_setup' );
 
 /**
+ * ─── Cache busting de assets ────────────────────────────────────────────────
+ *
+ * El .htaccess de la raíz de WordPress sirve CSS/JS con "Expires: 1 month" y
+ * las fuentes woff2 con "1 year". Si un asset se encola con una versión
+ * literal escrita a mano, al desplegar un cambio el navegador de un usuario
+ * recurrente sigue sirviendo el archivo viejo durante todo ese tiempo.
+ *
+ * Por eso NINGÚN asset del tema debe encolarse con una versión escrita a mano:
+ * usa amazonia_style() / amazonia_script(), que derivan la versión del mtime
+ * del archivo. El pipeline de despliegue solo actualiza el mtime de lo que
+ * realmente cambió, así que un cambio en main.css no invalida tailwind.css.
+ *
+ * Ver docs/08_cicd_despliegue.md.
+ */
+
+/**
+ * Versión de un asset del tema, para cache busting.
+ *
+ * @param string $rel Ruta relativa a la raíz del tema (ej. 'assets/css/main.css').
+ * @return string Timestamp de modificación, o la versión del tema si falta el archivo.
+ */
+function amazonia_asset_ver( $rel ) {
+	$path = get_template_directory() . '/' . ltrim( $rel, '/' );
+	return file_exists( $path ) ? (string) filemtime( $path ) : wp_get_theme()->get( 'Version' );
+}
+
+/**
+ * URL de un asset del tema con su versión ya incrustada como query string.
+ * Para casos donde no se puede usar wp_enqueue_* (preloads, filtros de tag).
+ *
+ * @param string $rel Ruta relativa a la raíz del tema.
+ * @return string URL absoluta con ?ver=.
+ */
+function amazonia_asset_url( $rel ) {
+	return add_query_arg( 'ver', amazonia_asset_ver( $rel ), get_template_directory_uri() . '/' . ltrim( $rel, '/' ) );
+}
+
+/**
+ * Encola un estilo del tema con su versión calculada a partir del mtime.
+ *
+ * @param string $handle Handle de WordPress.
+ * @param string $rel    Ruta relativa a la raíz del tema.
+ * @param array  $deps   Dependencias.
+ */
+function amazonia_style( $handle, $rel, $deps = array() ) {
+	wp_enqueue_style( $handle, get_template_directory_uri() . '/' . $rel, $deps, amazonia_asset_ver( $rel ) );
+}
+
+/**
+ * Encola un script del tema con su versión calculada a partir del mtime.
+ *
+ * @param string $handle    Handle de WordPress.
+ * @param string $rel       Ruta relativa a la raíz del tema.
+ * @param array  $deps      Dependencias.
+ * @param bool   $in_footer Cargar en el footer.
+ */
+function amazonia_script( $handle, $rel, $deps = array(), $in_footer = true ) {
+	wp_enqueue_script( $handle, get_template_directory_uri() . '/' . $rel, $deps, amazonia_asset_ver( $rel ), $in_footer );
+}
+
+/**
  * Preload de fuentes críticas (Work Sans e Inter).
  * Debe ejecutarse con prioridad 1 para emitirse ANTES de los estilos.
  * Esto elimina el FOUT (Flash of Unstyled Text) y reduce el LCP percibido.
+ *
+ * Las URLs llevan la misma versión que el @font-face de main.css (que el
+ * despliegue reescribe con el mismo mtime), para que el navegador reconozca
+ * preload y @font-face como el mismo recurso y no descargue la fuente dos veces.
  */
 add_action( 'wp_head', function() {
-	$fonts_uri = get_template_directory_uri() . '/assets/fonts';
 	// Work Sans — fuente de títulos y navegación (crítica above-the-fold)
-	echo '<link rel="preload" as="font" type="font/woff2" crossorigin href="' . esc_url( $fonts_uri . '/work-sans-latin.woff2' ) . '">' . "\n";
+	echo '<link rel="preload" as="font" type="font/woff2" crossorigin href="' . esc_url( amazonia_asset_url( 'assets/fonts/work-sans-latin.woff2' ) ) . '">' . "\n";
 	// Inter — fuente de cuerpo (crítica para legibilidad inmediata)
-	echo '<link rel="preload" as="font" type="font/woff2" crossorigin href="' . esc_url( $fonts_uri . '/inter-latin.woff2' ) . '">' . "\n";
+	echo '<link rel="preload" as="font" type="font/woff2" crossorigin href="' . esc_url( amazonia_asset_url( 'assets/fonts/inter-latin.woff2' ) ) . '">' . "\n";
 }, 1 );
 
 /**
@@ -75,7 +139,9 @@ add_action( 'wp_head', function() {
  */
 add_filter( 'style_loader_tag', function( $tag, $handle ) {
 	if ( $handle !== 'material-symbols' ) return $tag;
-	$href = esc_url( get_template_directory_uri() . '/assets/css/material-symbols.css?ver=1.0.0' );
+	// La versión se recalcula aquí porque este filtro reconstruye el <link> entero
+	// y descarta el href que ya había generado wp_enqueue_style().
+	$href = esc_url( amazonia_asset_url( 'assets/css/material-symbols.css' ) );
 	return '<link rel="preload" as="style" href="' . $href . '" onload="this.onload=null;this.rel=\'stylesheet\'">' . "\n"
 		 . '<noscript><link rel="stylesheet" href="' . $href . '"></noscript>' . "\n";
 }, 10, 2 );
@@ -85,27 +151,27 @@ add_filter( 'style_loader_tag', function( $tag, $handle ) {
  */
 function amazonia_theme_scripts() {
 	// Tailwind CSS compilado localmente (sin JS runtime, sin CDN)
-	wp_enqueue_style( 'amazonia-tailwind', get_template_directory_uri() . '/assets/css/tailwind.css', array(), '1.0.0' );
+	amazonia_style( 'amazonia-tailwind', 'assets/css/tailwind.css' );
 
 	// Material Symbols — self-hosted para evitar dependencia de Google Fonts en el servidor.
 	// El archivo woff2 está en assets/fonts/material-symbols-outlined.woff2
 	// Work Sans, Inter y Outfit también son self-hosted (ver main.css).
-	wp_enqueue_style( 'material-symbols', get_template_directory_uri() . '/assets/css/material-symbols.css', array(), '1.0.0' );
+	amazonia_style( 'material-symbols', 'assets/css/material-symbols.css' );
 
 	// Enqueue main stylesheet (style.css fallback)
-	wp_enqueue_style( 'amazonia-theme-style', get_stylesheet_uri(), array(), '1.0.0' );
+	wp_enqueue_style( 'amazonia-theme-style', get_stylesheet_uri(), array(), amazonia_asset_ver( 'style.css' ) );
 
 	// Enqueue compiled main.css (incluye @font-face de Work Sans, Inter, Outfit)
-	wp_enqueue_style( 'amazonia-main-style', get_template_directory_uri() . '/assets/css/main.css', array(), '1.0.0' );
+	amazonia_style( 'amazonia-main-style', 'assets/css/main.css' );
 
 	// Enqueue navigation.js
-	wp_enqueue_script( 'amazonia-navigation-js', get_template_directory_uri() . '/assets/js/navigation.js', array(), '1.0.0', true );
+	amazonia_script( 'amazonia-navigation-js', 'assets/js/navigation.js' );
 
 	// Enqueue asset constants (ES module — sets window.AMAZONIA_ASSETS)
-	wp_enqueue_script( 'amazonia-assets-constants', get_template_directory_uri() . '/assets/js/constants/assets.js', array(), '1.0.0', true );
+	amazonia_script( 'amazonia-assets-constants', 'assets/js/constants/assets.js' );
 
 	// Enqueue favorites.js
-	wp_enqueue_script( 'amazonia-favorites-js', get_template_directory_uri() . '/assets/js/favorites.js', array('jquery'), '1.0.0', true );
+	amazonia_script( 'amazonia-favorites-js', 'assets/js/favorites.js', array( 'jquery' ) );
 	$user_favorites = array();
 	if ( is_user_logged_in() ) {
 		$meta = get_user_meta( get_current_user_id(), 'amazonia_favorites', true );
@@ -155,12 +221,7 @@ add_filter( 'woocommerce_breadcrumb_defaults', function( $defaults ) {
  */
 function amazonia_enqueue_wcfm_dashboard_styles() {
 	if ( is_page_template( 'template-wcfm-dashboard.php' ) ) {
-		wp_enqueue_style(
-			'amazonia-wcfm-dashboard',
-			get_template_directory_uri() . '/assets/css/wcfm-dashboard.css',
-			array(),
-			'1.0.0'
-		);
+		amazonia_style( 'amazonia-wcfm-dashboard', 'assets/css/wcfm-dashboard.css' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_wcfm_dashboard_styles' );
@@ -187,12 +248,7 @@ add_action( 'wcfm_before_header_panel_item', 'amazonia_wcfm_back_to_store_button
  */
 function amazonia_enqueue_vendor_register_styles() {
 	if ( is_page( 'vendor-register' ) ) {
-		wp_enqueue_style(
-			'amazonia-vendor-register',
-			get_template_directory_uri() . '/assets/css/vendor-register.css',
-			array(),
-			'1.0.0'
-		);
+		amazonia_style( 'amazonia-vendor-register', 'assets/css/vendor-register.css' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_vendor_register_styles' );
@@ -203,12 +259,7 @@ add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_vendor_register_styles' );
  */
 function amazonia_enqueue_checkout_styles() {
 	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-		wp_enqueue_style(
-			'amazonia-checkout',
-			get_template_directory_uri() . '/assets/css/checkout.css',
-			array( 'amazonia-main-style' ),
-			'1.0.2'
-		);
+		amazonia_style( 'amazonia-checkout', 'assets/css/checkout.css', array( 'amazonia-main-style' ) );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_checkout_styles' );
@@ -220,13 +271,7 @@ add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_checkout_styles' );
  */
 function amazonia_enqueue_checkout_map_script() {
 	if ( function_exists( 'is_checkout' ) && is_checkout() ) {
-		wp_enqueue_script(
-			'amazonia-checkout-map',
-			get_template_directory_uri() . '/assets/js/checkout-map.js',
-			array(),
-			'1.0.0',
-			true
-		);
+		amazonia_script( 'amazonia-checkout-map', 'assets/js/checkout-map.js' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_checkout_map_script' );
@@ -238,12 +283,7 @@ add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_checkout_map_script' );
  */
 function amazonia_enqueue_cart_styles() {
 	if ( function_exists( 'is_cart' ) && is_cart() ) {
-		wp_enqueue_style(
-			'amazonia-cart',
-			get_template_directory_uri() . '/assets/css/cart.css',
-			array( 'amazonia-main-style' ),
-			'1.0.4'
-		);
+		amazonia_style( 'amazonia-cart', 'assets/css/cart.css', array( 'amazonia-main-style' ) );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_cart_styles' );
@@ -258,12 +298,7 @@ function amazonia_enqueue_community_profile_styles() {
 	$is_store = function_exists( 'wcfmmp_is_store_page' ) && wcfmmp_is_store_page();
 
 	if ( is_singular( 'comunidad' ) || $is_store ) {
-		wp_enqueue_style(
-			'amazonia-community-profile',
-			get_template_directory_uri() . '/assets/css/community-profile.css',
-			array( 'amazonia-main-style' ),
-			'1.1.0'
-		);
+		amazonia_style( 'amazonia-community-profile', 'assets/css/community-profile.css', array( 'amazonia-main-style' ) );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_profile_styles' );
