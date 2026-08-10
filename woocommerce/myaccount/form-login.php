@@ -51,6 +51,36 @@ html {
 	overflow: hidden;
 	background-color: #f6f8f6;
 }
+
+/* Aviso de privacidad del registro: texto pequeño + convertido a botón */
+.woocommerce-privacy-policy-text {
+	font-size: 0.75rem;
+	line-height: 1.4;
+	color: #64748b;
+}
+.woocommerce-privacy-policy-text p {
+	display: none;
+}
+.woocommerce-privacy-policy-text .amazonia-privacy-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	width: 100%;
+	padding: 0.65rem 1.25rem;
+	border: 1px solid var(--color-primary, #16a34a);
+	border-radius: 9999px;
+	color: var(--color-primary, #16a34a);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	text-decoration: none;
+	text-align: center;
+	transition: all 0.3s ease;
+}
+.woocommerce-privacy-policy-text .amazonia-privacy-btn:hover {
+	background-color: var(--color-primary, #16a34a);
+	color: #fff;
+}
 </style>
 
 <?php do_action( 'woocommerce_before_customer_login_form' ); ?>
@@ -111,10 +141,10 @@ html {
 			<?php if ( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) : ?>
 			
 			<div class="flex border-b border-primary/20 mb-10" role="tablist">
-				<button class="flex-1 py-4 text-center font-bold text-lg text-primary border-b-2 border-primary focus:outline-none transition-all" onclick="document.getElementById('login-form').classList.remove('hidden'); document.getElementById('register-form').classList.add('hidden'); this.classList.add('text-primary', 'border-primary'); this.classList.remove('text-slate-400', 'border-transparent'); this.nextElementSibling.classList.add('text-slate-400', 'border-transparent'); this.nextElementSibling.classList.remove('text-primary', 'border-primary');" type="button">
+				<button class="flex-1 py-4 text-center font-bold text-lg text-primary border-b-2 border-primary focus:outline-none transition-all" onclick="document.getElementById('login-form').classList.remove('hidden'); document.getElementById('register-form').classList.add('hidden'); this.classList.add('text-primary', 'border-primary'); this.classList.remove('text-slate-400', 'border-transparent'); this.nextElementSibling.classList.add('text-slate-400', 'border-transparent'); this.nextElementSibling.classList.remove('text-primary', 'border-primary'); this.closest('.overflow-y-auto').scrollTo(0, 0);" type="button">
 					<?php esc_html_e( 'Login', 'woocommerce' ); ?>
 				</button>
-				<button class="flex-1 py-4 text-center font-bold text-lg text-slate-400 border-b-2 border-transparent hover:text-primary transition-all focus:outline-none" onclick="document.getElementById('register-form').classList.remove('hidden'); document.getElementById('login-form').classList.add('hidden'); this.classList.add('text-primary', 'border-primary'); this.classList.remove('text-slate-400', 'border-transparent'); this.previousElementSibling.classList.add('text-slate-400', 'border-transparent'); this.previousElementSibling.classList.remove('text-primary', 'border-primary');" type="button">
+				<button class="flex-1 py-4 text-center font-bold text-lg text-slate-400 border-b-2 border-transparent hover:text-primary transition-all focus:outline-none" onclick="document.getElementById('register-form').classList.remove('hidden'); document.getElementById('login-form').classList.add('hidden'); this.classList.add('text-primary', 'border-primary'); this.classList.remove('text-slate-400', 'border-transparent'); this.previousElementSibling.classList.add('text-slate-400', 'border-transparent'); this.previousElementSibling.classList.remove('text-primary', 'border-primary'); this.closest('.overflow-y-auto').scrollTo(0, 0);" type="button">
 					<?php esc_html_e( 'Register', 'woocommerce' ); ?>
 				</button>
 			</div>
@@ -265,5 +295,22 @@ html {
 	</div>
 
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+	var notice = document.querySelector('.woocommerce-privacy-policy-text');
+	var link = notice ? notice.querySelector('a.woocommerce-privacy-policy-link') : null;
+
+	if ( notice && link && ! notice.querySelector('.amazonia-privacy-btn') ) {
+		var btn = document.createElement('a');
+		btn.href = link.href;
+		btn.target = '_blank';
+		btn.rel = 'noopener';
+		btn.className = 'amazonia-privacy-btn';
+		btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">shield</span> Acepto la Política de Privacidad y Tratamiento de Datos';
+		notice.appendChild(btn);
+	}
+});
+</script>
 
 <?php do_action( 'woocommerce_after_customer_login_form' ); ?>
