@@ -260,19 +260,6 @@ html {
 
 			</div>
 
-			<!-- Vendor Registration CTA -->
-			<div class="mt-8 pt-8 border-t border-primary/10 text-center">
-				<p class="text-sm text-slate-500 dark:text-slate-400 mb-3">
-					¿Quieres vender en Amazonia Market?
-				</p>
-				<a href="<?php echo esc_url( home_url( '/vendor-register' ) ); ?>"
-				   class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full border-2 border-primary text-primary font-bold text-sm hover:bg-primary hover:text-white transition-all duration-300 group">
-					<span class="material-symbols-outlined text-[18px]">storefront</span>
-					Regístrate como Vendedor
-					<span class="material-symbols-outlined text-[16px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
-				</a>
-			</div>
-
 <?php endif; ?>
 		</div>
 	</div>
