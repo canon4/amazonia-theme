@@ -15,6 +15,7 @@ require_once get_template_directory() . '/inc/community-admin.php';
 require_once get_template_directory() . '/inc/community-cpt.php';
 require_once get_template_directory() . '/inc/community-admin-panel.php';
 require_once get_template_directory() . '/inc/vendor-whatsapp.php';
+require_once get_template_directory() . '/inc/store-gallery.php';
 
 /**
  * Theme Setup
@@ -222,6 +223,7 @@ add_filter( 'woocommerce_breadcrumb_defaults', function( $defaults ) {
 function amazonia_enqueue_wcfm_dashboard_styles() {
 	if ( is_page_template( 'template-wcfm-dashboard.php' ) ) {
 		amazonia_style( 'amazonia-wcfm-dashboard', 'assets/css/wcfm-dashboard.css' );
+		amazonia_style( 'amazonia-store-gallery-admin', 'assets/css/store-gallery-admin.css' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_wcfm_dashboard_styles' );
@@ -320,6 +322,7 @@ function amazonia_enqueue_community_profile_styles() {
 
 	if ( is_singular( 'comunidad' ) || $is_store ) {
 		amazonia_style( 'amazonia-community-profile', 'assets/css/community-profile.css', array( 'amazonia-main-style' ) );
+		amazonia_script( 'amazonia-lightbox', 'assets/js/amz-lightbox.js' );
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_profile_styles' );

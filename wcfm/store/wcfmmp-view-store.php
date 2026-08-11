@@ -32,6 +32,28 @@ $store_info = $store_user->get_shop_info();
  * ------------------------------------------------------------------------ */
 $store_name = ! empty( $store_info['store_name'] ) ? $store_info['store_name'] : $seller_info->display_name;
 $store_desc = isset( $store_info['shop_description'] ) ? $store_info['shop_description'] : '';
+
+/*
+ * Versión completa de la descripción para la sección "Sobre la tienda"
+ * (a diferencia de $store_desc, que se recorta a texto plano para el lede
+ * del hero). Admite el video que el vendedor pegue como URL suelta
+ * (YouTube/Vimeo/etc.) en su descripción: wp_kses_post() sanea el HTML
+ * primero y luego $wp_embed->autoembed() convierte esa URL en el
+ * reproductor, igual que hace WordPress con el contenido de una entrada.
+ */
+$store_desc_html = '';
+if ( $store_desc ) {
+	global $wp_embed;
+	$store_desc_html = wp_kses_post( $store_desc );
+	if ( $wp_embed ) {
+		$store_desc_html = $wp_embed->autoembed( $store_desc_html );
+	}
+	$store_desc_html = wpautop( $store_desc_html );
+}
+
+/* Fotos del taller/equipo que el vendedor sube en Ajustes > Store (ver inc/store-gallery.php) */
+$store_gallery = function_exists( 'amazonia_get_store_gallery' ) ? amazonia_get_store_gallery( $vendor_id ) : array();
+
 $avatar_url = $store_user->get_avatar();
 $banner_url = $store_user->get_banner();
 $email      = $store_user->get_email();
@@ -351,6 +373,50 @@ get_header( 'shop' );
 			</div>
 		<?php endif; ?>
 	</section>
+
+	<!-- ── Sobre la tienda (descripción completa; admite video pegado como URL) ── -->
+	<?php if ( $store_desc_html ) : ?>
+		<section class="amz-shell amz-section" style="max-width:1000px">
+			<div class="amz-h2row">
+				<h2 class="amz-h2"><?php esc_html_e( 'Sobre la tienda', 'amazonia-theme' ); ?></h2>
+			</div>
+			<div class="amz-about-content">
+				<?php echo $store_desc_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ya saneado con wp_kses_post() más arriba. ?>
+			</div>
+		</section>
+	<?php endif; ?>
+
+	<!-- ── Galería (fotos del taller/equipo que el vendedor sube en Ajustes) ── -->
+	<?php if ( $store_gallery ) : ?>
+		<section class="amz-shell amz-section" style="max-width:1000px">
+			<div class="amz-h2row">
+				<h2 class="amz-h2"><?php esc_html_e( 'Galería', 'amazonia-theme' ); ?></h2>
+			</div>
+			<div class="amz-gallery-grid">
+				<?php foreach ( $store_gallery as $attachment_id ) :
+					$full_url = wp_get_attachment_image_url( $attachment_id, 'large' );
+					if ( ! $full_url ) {
+						continue;
+					}
+					?>
+					<a class="amz-gallery-item" href="<?php echo esc_url( $full_url ); ?>" data-amz-lightbox
+					   aria-label="<?php echo esc_attr( sprintf( __( 'Ver foto de %s en grande', 'amazonia-theme' ), $store_name ) ); ?>">
+						<?php
+						echo wp_get_attachment_image(
+							$attachment_id,
+							'medium',
+							false,
+							array(
+								'loading' => 'lazy',
+								'alt'     => esc_attr( $store_name ),
+							)
+						);
+						?>
+					</a>
+				<?php endforeach; ?>
+			</div>
+		</section>
+	<?php endif; ?>
 
 	<!-- ── Envío y devoluciones (solo si hay políticas escritas) ──── -->
 	<?php if ( $policies ) : ?>
