@@ -39,6 +39,11 @@ $phone      = $store_user->get_phone();
 $address    = $store_user->get_address_string();
 $store_url  = function_exists( 'wcfmmp_get_store_url' ) ? wcfmmp_get_store_url( $vendor_id ) : get_author_posts_url( $vendor_id );
 
+/* Coordenadas guardadas por el vendedor en "Mi tienda > Ajustes > Location" (si las fijó) */
+$store_lat = get_user_meta( $vendor_id, '_wcfm_store_lat', true );
+$store_lng = get_user_meta( $vendor_id, '_wcfm_store_lng', true );
+$has_map_coords = ( '' !== $store_lat && '' !== $store_lng );
+
 /* Ubicación corta para la línea del hero */
 $city    = isset( $store_info['address']['city'] ) ? $store_info['address']['city'] : '';
 $country = isset( $store_info['address']['country'] ) ? $store_info['address']['country'] : '';
@@ -372,7 +377,7 @@ get_header( 'shop' );
 			<div class="amz-contact-grid">
 				<?php if ( $address ) : ?>
 					<div class="amz-card">
-						<div class="amz-map">
+						<div class="amz-map"<?php echo $has_map_coords ? ' data-lat="' . esc_attr( $store_lat ) . '" data-lng="' . esc_attr( $store_lng ) . '" data-name="' . esc_attr( $store_name ) . '"' : ''; ?>>
 							<span class="material-symbols-outlined" aria-hidden="true">location_on</span>
 						</div>
 						<div class="amz-card__pad">

@@ -277,6 +277,27 @@ function amazonia_enqueue_checkout_map_script() {
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_checkout_map_script' );
 
 /**
+ * Corrige un bug de WC Frontend Manager: cuando el admin nunca elige
+ * explicitamente la libreria de mapas en Ajustes > WCFM Marketplace, el
+ * plugin usa por defecto la cadena mal escrita "leaftlet" en vez de
+ * "leaflet" (ver wc-frontend-manager/views/settings/wcfm-view-wcfmmarketplace-settings.php).
+ * Como la condicion que muestra el selector de ubicacion en "Mi tienda >
+ * Ajustes > Location" solo compara con "leaflet" (bien escrito), ese bug
+ * hace que el mapa para fijar la ubicacion de la tienda nunca aparezca
+ * para los vendedores mientras no se configure una API key de Google Maps.
+ * Aqui fijamos la opcion correctamente una sola vez (sin pisar la eleccion
+ * del admin si ya la configuro).
+ */
+function amazonia_fix_wcfm_map_lib_default() {
+	$options = get_option( 'wcfmmp_marketplace_options', array() );
+	if ( empty( $options['wcfm_map_lib'] ) ) {
+		$options['wcfm_map_lib'] = 'leaflet';
+		update_option( 'wcfmmp_marketplace_options', $options );
+	}
+}
+add_action( 'init', 'amazonia_fix_wcfm_map_lib_default' );
+
+/**
  * Encola el CSS del carrito (resumen "Total del carrito"). Evita que la
  * direccion de envio por tienda se desborde de la caja. Solo se carga en el
  * carrito, no en el checkout.
@@ -302,6 +323,22 @@ function amazonia_enqueue_community_profile_styles() {
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_profile_styles' );
+
+/**
+ * Mapa real (Leaflet) en el bloque "Dónde estamos" de la página de tienda,
+ * reemplazando el panel decorativo cuando el vendedor fijó su ubicación en
+ * "Mi tienda > Ajustes > Location" (ver amazonia_fix_wcfm_map_lib_default).
+ * Reutiliza la libreria Leaflet que WCFM ya trae incluida (sin API key).
+ */
+function amazonia_enqueue_store_map_script() {
+	if ( function_exists( 'wcfmmp_is_store_page' ) && wcfmmp_is_store_page() ) {
+		$leaflet_base = WP_PLUGIN_URL . '/wc-frontend-manager/includes/libs/leaflet/';
+		wp_enqueue_style( 'wcfm-leaflet-map-style-css', $leaflet_base . 'leaflet.css', array(), '1.9.4' );
+		wp_enqueue_script( 'wcfm-leaflet-map-js', $leaflet_base . 'leaflet.js', array( 'jquery' ), '1.9.4', true );
+		amazonia_script( 'amazonia-store-map', 'assets/js/store-map.js', array( 'wcfm-leaflet-map-js' ) );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_store_map_script' );
 
 /**
  * Register widget area.
