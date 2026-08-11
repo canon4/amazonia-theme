@@ -1,0 +1,26 @@
+/**
+ * Estilos del mapa de geolocalización de productos (WCFM) en /tienda/.
+ * El plugin lo renderiza sin bordes redondeados ni separación clara; aquí lo
+ * alineamos a la estética de tarjetas del tema (bordes redondeados, sombra
+ * suave) y le damos aire respecto al grid de productos, ya que ahora se
+ * muestra DESPUÉS del listado (ver amazonia_move_shop_geolocation_map_below_products
+ * en functions.php) en vez de antes.
+ */
+.wcfmmp-product-geolocate-wrapper {
+	margin-top: 32px;
+	margin-bottom: 0;
+	border-radius: 20px;
+	overflow: hidden;
+	border: 1px solid rgba(0, 0, 0, 0.08);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.wcfmmp-product-geolocate-wrapper .wcfmmp-product-geolocate-search-form {
+	padding: 16px;
+}
+
+.wcfmmp-product-geolocate-wrapper .wcfmmp-product-list-map {
+	border-radius: 0 0 20px 20px;
+	overflow: hidden;
+	margin-bottom: 0;
+}

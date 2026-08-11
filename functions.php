@@ -341,6 +341,32 @@ function amazonia_enqueue_store_map_script() {
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_store_map_script' );
 
 /**
+ * Mueve el mapa de geolocalización de productos de WCFM (Mi tienda >
+ * Ajustes > Location > "Show Product Location") de ANTES del listado de
+ * productos en /tienda/ a DESPUÉS del listado. Por defecto WCFM lo cuelga en
+ * 'woocommerce_before_shop_loop' con prioridad 1, así que es lo primero que
+ * se ve al entrar a la tienda; lo reenganchamos a
+ * 'woocommerce_after_shop_loop' para que quede como cierre, no como portada.
+ */
+function amazonia_move_shop_geolocation_map_below_products() {
+	global $WCFMmp;
+	if ( empty( $WCFMmp ) || empty( $WCFMmp->frontend ) ) {
+		return;
+	}
+	$callback = array( $WCFMmp->frontend, 'wcfmmp_product_list_geo_location_filter' );
+	remove_action( 'woocommerce_before_shop_loop', $callback, 1 );
+	add_action( 'woocommerce_after_shop_loop', $callback, 5 );
+}
+add_action( 'wp', 'amazonia_move_shop_geolocation_map_below_products' );
+
+function amazonia_enqueue_shop_map_styles() {
+	if ( function_exists( 'is_shop' ) && ( is_shop() || is_product_taxonomy() ) ) {
+		amazonia_style( 'amazonia-shop-map', 'assets/css/shop-map.css', array( 'amazonia-main-style' ) );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_shop_map_styles' );
+
+/**
  * Register widget area.
  */
 function amazonia_widgets_init() {
