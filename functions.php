@@ -204,6 +204,13 @@ add_filter( 'script_loader_tag', function ( $tag, $handle, $src ) {
 // Evita que WooCommerce redirija al producto cuando la búsqueda devuelve un único resultado.
 add_filter( 'woocommerce_redirect_single_search_result', '__return_false' );
 
+// El plugin de Envia.com marca por defecto "Enviar a una dirección diferente"
+// cuando el destino de envío es "billing" y el pickup está activo (ver
+// shipping-system-live-rates-fulfillment-envia/source/triggers/ajaxActions.php).
+// Se revierte ese comportamiento para que el checkbox inicie sin marcar, como
+// espera el cliente al llegar a "Finalizar compra".
+add_filter( 'woocommerce_ship_to_different_address_checked', '__return_false', 20 );
+
 // Breadcrumb global: barra verde con separador chevron en todas las páginas WooCommerce.
 // La página Comunidades no se ve afectada porque llama woocommerce_breadcrumb() con sus propios args.
 add_filter( 'woocommerce_breadcrumb_defaults', function( $defaults ) {
