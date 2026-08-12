@@ -69,11 +69,31 @@ function amazonia_current_user_is_vendor() {
 }
 
 /**
- * Encola el uploader (wp.media) + el script del botón flotante, solo en el
- * dashboard de WCFM y solo para vendedores.
+ * ¿Estamos en la pantalla "Ajustes" del dashboard de WCFM?
+ *
+ * El dashboard entero (Pedidos, Productos, Reportes, Ajustes...) usa la
+ * misma plantilla template-wcfm-dashboard.php, así que filtrar solo por eso
+ * hacía que el botón flotante apareciera en TODAS las pantallas del panel.
+ * is_wcfm_endpoint_url() sí distingue el endpoint actual dentro del
+ * dashboard (WCFM registra la pestaña de ajustes como 'wcfm-settings').
+ */
+function amazonia_is_wcfm_settings_page() {
+	if ( ! is_page_template( 'template-wcfm-dashboard.php' ) ) {
+		return false;
+	}
+	if ( function_exists( 'is_wcfm_endpoint_url' ) ) {
+		return is_wcfm_endpoint_url( 'wcfm-settings' );
+	}
+	// Respaldo si la función del plugin no está disponible por alguna razón.
+	return isset( $_GET['tab'] ) || false !== strpos( (string) ( $_SERVER['REQUEST_URI'] ?? '' ), 'settings' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+}
+
+/**
+ * Encola el uploader (wp.media) + el script del botón flotante, solo en la
+ * pantalla de Ajustes del dashboard de WCFM y solo para vendedores.
  */
 function amazonia_enqueue_store_gallery_admin_assets() {
-	if ( ! is_page_template( 'template-wcfm-dashboard.php' ) || ! amazonia_current_user_is_vendor() ) {
+	if ( ! amazonia_is_wcfm_settings_page() || ! amazonia_current_user_is_vendor() ) {
 		return;
 	}
 
@@ -103,7 +123,7 @@ add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_store_gallery_admin_assets' 
  * plugin renderice (o no) su propio HTML.
  */
 function amazonia_render_store_gallery_fab() {
-	if ( ! is_page_template( 'template-wcfm-dashboard.php' ) || ! amazonia_current_user_is_vendor() ) {
+	if ( ! amazonia_is_wcfm_settings_page() || ! amazonia_current_user_is_vendor() ) {
 		return;
 	}
 
