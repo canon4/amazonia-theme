@@ -1,32 +1,61 @@
 /**
- * store-gallery-admin.js — Uploader de la "Galería de la tienda" en el panel
- * del vendedor (WCFM Dashboard > Ajustes > Store), inyectado por
- * inc/store-gallery.php. Usa el selector de medios nativo de WordPress
- * (wp.media), igual que cualquier otro uploader del admin.
+ * store-gallery-admin.js — Botón flotante + modal de la "Galería de la
+ * tienda" en el dashboard del vendedor. Vive por fuera de cualquier
+ * formulario de WCFM: abre/cierra su propio modal y guarda por AJAX
+ * (wp_ajax_amazonia_save_store_gallery), sin depender de cómo WCFM
+ * renderice su HTML. Ver inc/store-gallery.php.
  */
 ( function ( $ ) {
 	'use strict';
 
 	function init() {
-		var $grid  = $( '#amazonia_store_gallery_grid' );
-		var $input = $( '#amazonia_store_gallery_input' );
-		var $add   = $( '#amazonia_store_gallery_add' );
+		var $fab    = $( '#amazonia_gallery_fab' );
+		var $modal  = $( '#amazonia_gallery_modal' );
+		var $grid   = $( '#amazonia_store_gallery_grid' );
+		var $add    = $( '#amazonia_store_gallery_add' );
+		var $save   = $( '#amazonia_store_gallery_save' );
+		var $status = $( '#amazonia_store_gallery_status' );
+		var cfg     = window.amazoniaStoreGallery || {};
 
-		if ( ! $grid.length || ! window.wp || ! wp.media ) {
+		if ( ! $fab.length || ! $modal.length ) {
 			return;
 		}
 
 		var max = parseInt( $grid.data( 'max' ), 10 ) || 6;
-		var cfg = window.amazoniaStoreGallery || {};
 
 		function currentIds() {
-			var val = $input.val();
-			return val ? val.split( ',' ).filter( Boolean ) : [];
+			return $grid.find( '.amazonia-gallery-admin-item' ).map( function () {
+				return String( $( this ).data( 'id' ) );
+			} ).get();
 		}
 
-		function setIds( ids ) {
-			$input.val( ids.join( ',' ) );
+		function openModal() {
+			$modal.removeAttr( 'hidden' );
+			requestAnimationFrame( function () {
+				$modal.addClass( 'is-open' );
+			} );
+			document.body.style.overflow = 'hidden';
 		}
+
+		function closeModal() {
+			$modal.removeClass( 'is-open' );
+			document.body.style.overflow = '';
+			setTimeout( function () {
+				$modal.attr( 'hidden', true );
+			}, 200 );
+		}
+
+		$fab.on( 'click', openModal );
+		$modal.on( 'click', function ( e ) {
+			if ( e.target === $modal.get( 0 ) || $( e.target ).closest( '.amazonia-gallery-modal__close' ).length ) {
+				closeModal();
+			}
+		} );
+		$( document ).on( 'keydown', function ( e ) {
+			if ( 'Escape' === e.key && $modal.hasClass( 'is-open' ) ) {
+				closeModal();
+			}
+		} );
 
 		function addItem( id, thumbUrl ) {
 			var $item = $(
@@ -39,12 +68,8 @@
 		}
 
 		$grid.on( 'click', '.amazonia-gallery-admin-remove', function () {
-			var $item = $( this ).closest( '.amazonia-gallery-admin-item' );
-			var id    = String( $item.data( 'id' ) );
-			$item.remove();
-			setIds( currentIds().filter( function ( existing ) {
-				return existing !== id;
-			} ) );
+			$( this ).closest( '.amazonia-gallery-admin-item' ).remove();
+			$status.text( '' );
 		} );
 
 		var frame;
@@ -54,6 +79,10 @@
 			var remaining = max - currentIds().length;
 			if ( remaining <= 0 ) {
 				window.alert( cfg.limitMessage || ( 'Puedes subir hasta ' + max + ' fotos.' ) );
+				return;
+			}
+
+			if ( ! window.wp || ! wp.media ) {
 				return;
 			}
 
@@ -90,14 +119,30 @@
 					room--;
 				} );
 
-				setIds( ids );
-
 				if ( room <= 0 ) {
 					window.alert( cfg.limitMessage || ( 'Puedes subir hasta ' + max + ' fotos.' ) );
 				}
+				$status.text( '' );
 			} );
 
 			frame.open();
+		} );
+
+		$save.on( 'click', function () {
+			$save.prop( 'disabled', true );
+			$status.text( '…' );
+
+			$.post( cfg.ajaxUrl, {
+				action: 'amazonia_save_store_gallery',
+				nonce: cfg.nonce,
+				ids: currentIds().join( ',' ),
+			} ).done( function ( res ) {
+				$status.text( ( res && res.success ) ? ( cfg.saved || 'Guardado.' ) : ( cfg.saveError || 'Error.' ) );
+			} ).fail( function () {
+				$status.text( cfg.saveError || 'No se pudo guardar la galería. Intenta de nuevo.' );
+			} ).always( function () {
+				$save.prop( 'disabled', false );
+			} );
 		} );
 	}
 

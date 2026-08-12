@@ -1,12 +1,141 @@
 /**
- * Galería de la tienda — panel del vendedor (WCFM Dashboard > Ajustes > Store).
+ * Galería de la tienda — botón flotante + modal, panel del vendedor.
  * Ver inc/store-gallery.php.
  */
+
+/* ─── Botón flotante ────────────────────────────────────────────────
+ * position: sticky (no fixed): se mantiene visible mientras se hace
+ * scroll, pero al llegar al final real de la página se "suelta" y queda
+ * en el flujo normal, en vez de quedar pegado tapando el pie de página
+ * u otras cajas flotantes (p. ej. el aviso de Envia) para siempre.
+ * ────────────────────────────────────────────────────────────────── */
+.amazonia-gallery-fab {
+	position: sticky;
+	bottom: 24px;
+	margin: 0 24px 0 auto;
+	z-index: 99997;
+	width: 56px;
+	height: 56px;
+	border-radius: 50%;
+	border: none;
+	background: #2F5C3E;
+	color: #fff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 26px;
+	cursor: pointer;
+	box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+	transition: background .15s ease, transform .15s ease;
+}
+.amazonia-gallery-fab:hover {
+	background: #1f3d29;
+	transform: scale(1.05);
+}
+
+/* ─── Modal ─────────────────────────────────────────────────────── */
+.amazonia-gallery-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 99998;
+	background: rgba(15, 23, 42, .55);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	opacity: 0;
+	transition: opacity .2s ease;
+}
+.amazonia-gallery-modal.is-open {
+	opacity: 1;
+}
+.amazonia-gallery-modal[hidden] {
+	display: none;
+}
+.amazonia-gallery-modal__panel {
+	background: #fff;
+	border-radius: 16px;
+	padding: 24px;
+	max-width: 640px;
+	width: 100%;
+	max-height: 85vh;
+	overflow-y: auto;
+	box-shadow: 0 20px 60px rgba(0, 0, 0, .3);
+}
+.amazonia-gallery-modal__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 8px;
+}
+.amazonia-gallery-modal__head h2 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 700;
+	color: #1e293b;
+}
+.amazonia-gallery-modal__close {
+	border: none;
+	background: transparent;
+	font-size: 24px;
+	line-height: 1;
+	cursor: pointer;
+	color: #64748b;
+	padding: 4px;
+}
+.amazonia-gallery-modal__close:hover {
+	color: #1e293b;
+}
+.amazonia-gallery-modal__hint {
+	margin: 0 0 16px;
+	font-size: 13px;
+	color: #64748b;
+}
+.amazonia-gallery-modal__actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 16px;
+}
+.amazonia-gallery-btn {
+	flex: 1;
+	padding: 10px 16px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	border: 1px solid transparent;
+}
+.amazonia-gallery-btn--ghost {
+	background: #fff;
+	border-color: #2F5C3E;
+	color: #2F5C3E;
+}
+.amazonia-gallery-btn--ghost:hover {
+	background: #f0f7f2;
+}
+.amazonia-gallery-btn--solid {
+	background: #2F5C3E;
+	color: #fff;
+}
+.amazonia-gallery-btn--solid:hover {
+	background: #1f3d29;
+}
+.amazonia-gallery-btn--solid:disabled {
+	background: #cbd5e1;
+	cursor: not-allowed;
+}
+.amazonia-gallery-modal__status {
+	margin: 10px 0 0;
+	font-size: 13px;
+	color: #2F5C3E;
+	min-height: 18px;
+}
+
+/* ─── Cuadrícula de fotos (usado también dentro del modal) ───────── */
 .amazonia-gallery-admin-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 	gap: 10px;
-	max-width: 640px;
 }
 .amazonia-gallery-admin-item {
 	position: relative;
