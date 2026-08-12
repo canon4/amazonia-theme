@@ -103,3 +103,31 @@ a.wcfm_header_back_to_store i.wcfmfa {
     box-shadow:  0 10px 40px -10px rgba(0, 0, 0, 0.5),
                  inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
 }
+
+/* ─── Botón "Sincronizar con Envia" (recuadro flotante de origen de envío)
+ * Lo imprime el plugin amazonia-vendor-shipping con class="button" plano,
+ * sin estilo propio, por lo que se veía como texto suelto en vez de una
+ * acción. Se diferencia del texto de estado con un botón sólido.
+ * ────────────────────────────────────────────────────────────────── */
+#avs-origin-sync {
+    display:        inline-flex;
+    align-items:    center;
+    gap:            6px;
+    background:     var(--wcfm_primary_color);
+    color:          #fff !important;
+    border:         none;
+    border-radius:  6px;
+    padding:        8px 16px;
+    font-size:      13px;
+    font-weight:    600;
+    cursor:         pointer;
+    transition:     background .15s ease;
+}
+#avs-origin-sync:hover:not(:disabled) {
+    background: var(--wcfm_primary_color_hover);
+}
+#avs-origin-sync:disabled {
+    background: #cbd5e1;
+    color:      #64748b !important;
+    cursor:     not-allowed;
+}
