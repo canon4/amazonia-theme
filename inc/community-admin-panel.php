@@ -38,6 +38,7 @@ function amazonia_enqueue_community_admin_panel() {
 			'searching'    => __( 'Buscando...', 'amazonia-theme' ),
 			'saving'       => __( 'Guardando...', 'amazonia-theme' ),
 			'confirm_link' => __( '¿Vincular este usuario a tu comunidad?', 'amazonia-theme' ),
+			'copied'       => __( 'Copiado', 'amazonia-theme' ),
 		],
 	] );
 }
@@ -145,24 +146,13 @@ function amazonia_ajax_create_vendor() {
 	// Ocultar barra de admin al vendedor
 	update_user_meta( $user_id, 'show_admin_bar_front', false );
 
-	// Enviar credenciales por email
-	$blogname = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
-	$subject  = sprintf( __( '[%s] Tus credenciales de acceso', 'amazonia-theme' ), $blogname );
-	$message  = sprintf(
-		__( "Hola %s,\n\nTu tienda \"%s\" ha sido creada en %s.\n\nUsuario: %s\nContraseña: %s\nAcceder: %s\n\n¡Bienvenido/a!", 'amazonia-theme' ),
-		$first_name ?: $store_name,
-		$store_name,
-		$blogname,
-		$username,
-		$password,
-		wc_get_page_permalink( 'myaccount' )
-	);
-	wp_mail( $email, $subject, $message );
-
+	// La contraseña se muestra al admin de la comunidad para que la copie
+	// y se la entregue al vendedor manualmente (no se envía por email).
 	wp_send_json_success( [
-		'message'  => sprintf( __( 'Tienda "%s" creada. Se enviaron las credenciales a %s.', 'amazonia-theme' ), $store_name, $email ),
+		'message'  => sprintf( __( 'Tienda "%s" creada. Copia la contraseña y compártela con el vendedor.', 'amazonia-theme' ), $store_name ),
 		'user_id'  => $user_id,
 		'username' => $username,
+		'password' => $password,
 		'store'    => $store_name,
 		'email'    => $email,
 	] );

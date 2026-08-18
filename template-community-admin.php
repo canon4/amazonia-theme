@@ -500,12 +500,26 @@ body { margin: 0; padding: 0; }
 								</div>
 							</div>
 							<p style="font-size:.8rem;color:#94a3b8;margin:-.25rem 0 0;">
-								<?php esc_html_e( 'Se generará una contraseña automática y se enviará al email del vendedor.', 'amazonia-theme' ); ?>
+								<?php esc_html_e( 'Se generará una contraseña automática que podrás copiar y entregar al vendedor.', 'amazonia-theme' ); ?>
 							</p>
 							<button type="submit" class="ca-btn">
 								<?php esc_html_e( 'Crear tienda', 'amazonia-theme' ); ?>
 							</button>
 							<div id="ca-create-feedback" class="ca-feedback"></div>
+							<div id="ca-create-credentials" class="ca-credentials-box" style="display:none;">
+								<p class="ca-credentials-title"><?php esc_html_e( 'Credenciales de acceso — cópialas y envíaselas al vendedor:', 'amazonia-theme' ); ?></p>
+								<div class="ca-credentials-row">
+									<label><?php esc_html_e( 'Usuario', 'amazonia-theme' ); ?></label>
+									<input type="text" id="ca-cred-username" readonly />
+								</div>
+								<div class="ca-credentials-row">
+									<label><?php esc_html_e( 'Contraseña', 'amazonia-theme' ); ?></label>
+									<input type="text" id="ca-cred-password" readonly />
+									<button type="button" id="ca-cred-copy" class="ca-btn ca-btn-secondary">
+										<?php esc_html_e( 'Copiar', 'amazonia-theme' ); ?>
+									</button>
+								</div>
+							</div>
 						</form>
 					</div>
 				</div>

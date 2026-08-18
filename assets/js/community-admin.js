@@ -40,6 +40,10 @@
       if (res.success) {
         $fb.addClass('success').text(res.data.message).show();
         $form[0].reset();
+        // Mostrar credenciales para que el admin las copie y se las entregue al vendedor
+        $('#ca-cred-username').val(res.data.username);
+        $('#ca-cred-password').val(res.data.password);
+        $('#ca-create-credentials').show();
         // Agregar la tienda nueva a la lista sin recargar
         addStoreToList(res.data);
       } else {
@@ -57,6 +61,30 @@
   // Guardar texto original del botón
   $('#ca-create-form .ca-btn').each(function () {
     $(this).data('original-text', $(this).text());
+  });
+
+  // ─── Copiar contraseña generada ──────────────────────────────
+  $('#ca-cred-copy').on('click', function () {
+    const $btn = $(this);
+    const $pwd = $('#ca-cred-password');
+    $pwd[0].select();
+    $pwd[0].setSelectionRange(0, 99999);
+
+    const copyText = function () {
+      const original = $btn.text();
+      $btn.text(i18n.copied || 'Copiado');
+      setTimeout(function () { $btn.text(original); }, 1500);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText($pwd.val()).then(copyText, function () {
+        document.execCommand('copy');
+        copyText();
+      });
+    } else {
+      document.execCommand('copy');
+      copyText();
+    }
   });
 
   // ─── Buscar vendedores para vincular ────────────────────────

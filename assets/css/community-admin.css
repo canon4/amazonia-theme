@@ -602,6 +602,58 @@
   color: #dc2626;
 }
 
+/* ─── Credenciales generadas ──────────────────────────────────── */
+.ca-credentials-box {
+  margin-top: 0.75rem;
+  padding: 1rem;
+  border: 1px solid rgba(74,222,128,.3);
+  background: rgba(74,222,128,.06);
+  border-radius: 0.625rem;
+}
+
+.ca-credentials-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #15803d;
+  margin: 0 0 0.625rem;
+}
+
+.ca-credentials-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.ca-credentials-row:last-child { margin-bottom: 0; }
+
+.ca-credentials-row label {
+  flex-shrink: 0;
+  width: 5.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.ca-credentials-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-family: monospace;
+  font-size: 0.875rem;
+  background: #fff;
+}
+
+.ca-btn-secondary {
+  width: auto;
+  flex-shrink: 0;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  box-shadow: none;
+}
+
 /* ─── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .ca-hero { flex-direction: column; text-align: center; }
