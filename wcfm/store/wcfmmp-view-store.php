@@ -222,12 +222,24 @@ get_header( 'shop' );
 						<span class="material-symbols-outlined" aria-hidden="true">groups</span>
 					<?php endif; ?>
 					<?php
-					if ( ! empty( $community['num_familias'] ) ) {
+					// "Familias / artesanos" es texto libre (ver template-community-admin.php):
+					// admite un número puro ("42") o una frase ya redactada ("más de 50
+					// artesanos", "Toda la comunidad"...). Solo se formatea como número con
+					// number_format_i18n() cuando ES puramente numérico; si no, se muestra
+					// el texto tal cual en vez de descartarlo.
+					if ( ! empty( $community['num_familias'] ) && is_numeric( $community['num_familias'] ) ) {
 						printf(
 							/* translators: 1: nombre de la comunidad, 2: nº de familias */
 							esc_html__( 'Parte de la %1$s · %2$s familias', 'amazonia-theme' ),
 							esc_html( $community['nombre'] ),
 							esc_html( number_format_i18n( $community['num_familias'] ) )
+						);
+					} elseif ( ! empty( $community['num_familias'] ) ) {
+						printf(
+							/* translators: 1: nombre de la comunidad, 2: descripción libre de familias/artesanos */
+							esc_html__( 'Parte de la %1$s · %2$s', 'amazonia-theme' ),
+							esc_html( $community['nombre'] ),
+							esc_html( $community['num_familias'] )
 						);
 					} else {
 						printf(

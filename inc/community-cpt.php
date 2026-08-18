@@ -164,7 +164,7 @@ function amazonia_render_comunidad_details_box( $post ) {
 		</div>
 		<div>
 			<label><?php esc_html_e( 'Familias / artesanos', 'amazonia-theme' ); ?></label>
-			<input type="text" name="comunidad_num_familias" value="<?php echo esc_attr( $meta['num_familias'] ); ?>" placeholder="42 familias" />
+			<input type="text" name="comunidad_num_familias" value="<?php echo esc_attr( $meta['num_familias'] ); ?>" placeholder="42, o &quot;más de 50 artesanos&quot;" />
 		</div>
 	</div>
 

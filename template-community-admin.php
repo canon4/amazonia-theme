@@ -317,7 +317,7 @@ body { margin: 0; padding: 0; }
 							<div class="ca-field">
 								<label for="ca-num-familias"><?php esc_html_e( 'Familias / artesanos', 'amazonia-theme' ); ?></label>
 								<input type="text" name="num_familias" id="ca-num-familias"
-									value="<?php echo esc_attr( $community['num_familias'] ); ?>" placeholder="42 familias" />
+									value="<?php echo esc_attr( $community['num_familias'] ); ?>" placeholder="42, o &quot;más de 50 artesanos&quot;" />
 							</div>
 						</div>
 
