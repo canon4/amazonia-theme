@@ -342,9 +342,14 @@ add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_profile_styles' );
  */
 function amazonia_enqueue_store_map_script() {
 	if ( function_exists( 'wcfmmp_is_store_page' ) && wcfmmp_is_store_page() ) {
-		$leaflet_base = WP_PLUGIN_URL . '/wc-frontend-manager/includes/libs/leaflet/';
-		wp_enqueue_style( 'wcfm-leaflet-map-style-css', $leaflet_base . 'leaflet.css', array(), '1.9.4' );
-		wp_enqueue_script( 'wcfm-leaflet-map-js', $leaflet_base . 'leaflet.js', array( 'jquery' ), '1.9.4', true );
+		$leaflet_base    = WP_PLUGIN_URL . '/wc-frontend-manager/includes/libs/leaflet/';
+		// Leaflet viene empaquetado dentro del plugin WCFM, no es un asset del tema
+		// (no aplica amazonia_asset_ver, que versiona por mtime relativo al tema).
+		// Se usa la versión del propio plugin como cache-bust: cambia si WCFM
+		// actualiza su copia vendorizada de Leaflet.
+		$leaflet_version = defined( 'WCFM_VERSION' ) ? WCFM_VERSION : false;
+		wp_enqueue_style( 'wcfm-leaflet-map-style-css', $leaflet_base . 'leaflet.css', array(), $leaflet_version );
+		wp_enqueue_script( 'wcfm-leaflet-map-js', $leaflet_base . 'leaflet.js', array( 'jquery' ), $leaflet_version, true );
 		amazonia_script( 'amazonia-store-map', 'assets/js/store-map.js', array( 'wcfm-leaflet-map-js' ) );
 	}
 }
