@@ -322,22 +322,7 @@ body { margin: 0; padding: 0; }
 						</div>
 
 						<!-- Valores -->
-						<?php
-						$valor_icons = [
-							'eco'                => 'Sostenibilidad',
-							'handshake'          => 'Comercio Justo',
-							'diversity_3'        => 'Comunidad',
-							'forest'             => 'Naturaleza',
-							'agriculture'        => 'Producción',
-							'workspace_premium'  => 'Calidad',
-							'spa'                => 'Bienestar',
-							'volunteer_activism' => 'Solidaridad',
-							'groups'             => 'Unidad',
-							'favorite'           => 'Pasión',
-							'recycling'          => 'Reciclaje',
-							'water_drop'         => 'Agua',
-						];
-						?>
+						<?php $valor_icons = amazonia_get_comunidad_valor_icons(); ?>
 						<script type="application/json" id="ca-valor-icons-data">
 						<?php echo wp_json_encode( $valor_icons ); ?>
 						</script>
