@@ -2,7 +2,7 @@
 (function ($) {
   'use strict';
 
-  const { ajaxUrl, nonce, i18n } = window.amazoniaCommunityAdmin || {};
+  const { ajaxUrl, nonce, i18n, communityId } = window.amazoniaCommunityAdmin || {};
 
   // ─── Upload helper ───────────────────────────────────────────────────────────
   function uploadFile(file, onSuccess, onError) {
@@ -19,9 +19,13 @@
   }
 
   // ─── Crear nueva tienda ──────────────────────────────────────
-  $('#ca-create-form').on('submit', function (e) {
-    e.preventDefault();
-    const $form = $(this);
+  // El contenedor es un <form> en el front y un <div> dentro de la meta box
+  // de wp-admin (un <form> no puede anidarse en el <form id="post"> nativo
+  // del editor), por eso el envío se maneja como función nombrada, enlazada
+  // tanto al 'submit' del form (front) como al click del botón (admin).
+  function submitCreateVendor(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const $form = $('#ca-create-form');
     const $btn  = $form.find('.ca-btn');
     const $fb   = $('#ca-create-feedback');
 
@@ -29,17 +33,18 @@
     $fb.hide().removeClass('success error');
 
     $.post(ajaxUrl, {
-      action:     'amazonia_create_vendor',
-      nonce:      nonce,
-      store_name: $form.find('[name="store_name"]').val(),
-      email:      $form.find('[name="email"]').val(),
-      first_name: $form.find('[name="first_name"]').val(),
-      last_name:  $form.find('[name="last_name"]').val(),
+      action:       'amazonia_create_vendor',
+      nonce:        nonce,
+      community_id: communityId || 0,
+      store_name:   $form.find('[name="store_name"]').val(),
+      email:        $form.find('[name="email"]').val(),
+      first_name:   $form.find('[name="first_name"]').val(),
+      last_name:    $form.find('[name="last_name"]').val(),
     })
     .done(function (res) {
       if (res.success) {
         $fb.addClass('success').text(res.data.message).show();
-        $form[0].reset();
+        $form.find('input[type="text"], input[type="email"]').val('');
         // Mostrar credenciales para que el admin las copie y se las entregue al vendedor
         $('#ca-cred-username').val(res.data.username);
         $('#ca-cred-password').val(res.data.password);
@@ -56,7 +61,10 @@
     .always(function () {
       $btn.prop('disabled', false).text($btn.data('original-text'));
     });
-  });
+  }
+
+  $('#ca-create-form').on('submit', submitCreateVendor);
+  $(document).on('click', '#ca-create-vendor-btn', submitCreateVendor);
 
   // Guardar texto original del botón
   $('#ca-create-form .ca-btn').each(function () {
@@ -140,9 +148,10 @@
     $fb.hide().removeClass('success error');
 
     $.post(ajaxUrl, {
-      action:  'amazonia_link_vendor',
-      nonce:   nonce,
-      user_id: user_id,
+      action:       'amazonia_link_vendor',
+      nonce:        nonce,
+      community_id: communityId || 0,
+      user_id:      user_id,
     })
     .done(function (res) {
       if (res.success) {
@@ -154,6 +163,35 @@
         $fb.addClass('error').text(res.data.message).show();
         $btn.prop('disabled', false).text('Vincular');
       }
+    });
+  });
+
+  // ─── Quitar tienda de la comunidad (solo disponible en wp-admin) ────
+  $(document).on('click', '.ca-store-unlink-btn', function () {
+    if (!confirm((i18n && i18n.confirm_unlink) || '¿Quitar esta tienda de la comunidad?')) return;
+    const $btn     = $(this);
+    const $item    = $btn.closest('.ca-store-item');
+    const user_id  = $btn.data('id');
+
+    $btn.prop('disabled', true);
+
+    $.post(ajaxUrl, {
+      action:       'amazonia_unlink_vendor',
+      nonce:        nonce,
+      community_id: communityId || 0,
+      user_id:      user_id,
+    })
+    .done(function (res) {
+      if (res.success) {
+        $item.fadeOut(200, function () { $(this).remove(); });
+      } else {
+        alert(res.data && res.data.message ? res.data.message : 'No se pudo quitar la tienda.');
+        $btn.prop('disabled', false);
+      }
+    })
+    .fail(function () {
+      alert('Error de conexión. Intenta de nuevo.');
+      $btn.prop('disabled', false);
     });
   });
 
@@ -445,6 +483,15 @@
     });
     $('#ca-valores-json').val(JSON.stringify(valores));
   }
+
+  // En wp-admin los campos de "información de la comunidad" (incluidos los
+  // valores) van sueltos dentro de las meta boxes, sin el <form id="ca-edit-form">
+  // que los envuelve en el front — se guardan con el botón nativo "Actualizar".
+  // Por eso los valores se sincronizan justo antes de que el editor nativo
+  // (#post) envíe el formulario, en vez de en el submit de #ca-edit-form.
+  $('#post').on('submit', function () {
+    if ($('#ca-valores-list').length) serializeValores();
+  });
 
   // ─── Guardar información de la comunidad ─────────────────────
   $('#ca-edit-form').on('submit', function (e) {

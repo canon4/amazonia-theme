@@ -38,6 +38,7 @@ info
 inventory_2
 label
 link
+link_off
 local_shipping
 location_on
 lock

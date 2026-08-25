@@ -15,15 +15,30 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 // ─── Registrar acciones AJAX ─────────────────────────────────────────────────
 add_action( 'wp_ajax_amazonia_create_vendor',        'amazonia_ajax_create_vendor' );
 add_action( 'wp_ajax_amazonia_link_vendor',          'amazonia_ajax_link_vendor' );
+add_action( 'wp_ajax_amazonia_unlink_vendor',        'amazonia_ajax_unlink_vendor' );
 add_action( 'wp_ajax_amazonia_search_vendors',       'amazonia_ajax_search_vendors' );
 add_action( 'wp_ajax_amazonia_save_community_info',  'amazonia_ajax_save_community_info' );
 add_action( 'wp_ajax_amazonia_upload_image',         'amazonia_ajax_upload_image' );
 
-// ─── Localizar datos JS en el panel ─────────────────────────────────────────
+// ─── Localizar datos JS en el panel (front) ─────────────────────────────────
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_admin_panel' );
 function amazonia_enqueue_community_admin_panel() {
 	if ( ! is_page_template( 'template-community-admin.php' ) ) return;
+	amazonia_enqueue_community_admin_assets( 0 );
+}
 
+/**
+ * Encola CSS/JS del panel de comunidad y localiza los datos que necesita.
+ *
+ * Compartido entre el panel del front (template-community-admin.php) y las
+ * meta boxes de gestión de tiendas en wp-admin (inc/community-cpt.php), para
+ * no duplicar el JS de subir imágenes / galería / valores / vendors.
+ *
+ * @param int $community_id ID del post 'comunidad' que se está gestionando.
+ *                           0 en el front, donde se resuelve por el usuario
+ *                           logueado (managed_community_id) en cada AJAX.
+ */
+function amazonia_enqueue_community_admin_assets( $community_id = 0 ) {
 	amazonia_style( 'amazonia-community-admin', 'assets/css/community-admin.css' );
 
 	amazonia_script( 'amazonia-community-admin-js', 'assets/js/community-admin.js', [ 'jquery' ] );
@@ -32,13 +47,15 @@ function amazonia_enqueue_community_admin_panel() {
 		'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 		'nonce'        => wp_create_nonce( 'amazonia_community_admin_nonce' ),
 		'uploadAction' => 'amazonia_upload_image',
+		'communityId'  => (int) $community_id,
 		'i18n'         => [
-			'creating'     => __( 'Creando tienda...', 'amazonia-theme' ),
-			'linking'      => __( 'Vinculando...', 'amazonia-theme' ),
-			'searching'    => __( 'Buscando...', 'amazonia-theme' ),
-			'saving'       => __( 'Guardando...', 'amazonia-theme' ),
-			'confirm_link' => __( '¿Vincular este usuario a tu comunidad?', 'amazonia-theme' ),
-			'copied'       => __( 'Copiado', 'amazonia-theme' ),
+			'creating'       => __( 'Creando tienda...', 'amazonia-theme' ),
+			'linking'        => __( 'Vinculando...', 'amazonia-theme' ),
+			'searching'      => __( 'Buscando...', 'amazonia-theme' ),
+			'saving'         => __( 'Guardando...', 'amazonia-theme' ),
+			'confirm_link'   => __( '¿Vincular este usuario a tu comunidad?', 'amazonia-theme' ),
+			'confirm_unlink' => __( '¿Quitar esta tienda de la comunidad?', 'amazonia-theme' ),
+			'copied'         => __( 'Copiado', 'amazonia-theme' ),
 		],
 	] );
 }
@@ -48,7 +65,7 @@ function amazonia_ajax_upload_image() {
 	if ( ! check_ajax_referer( 'amazonia_community_admin_nonce', 'nonce', false ) ) {
 		wp_send_json_error( [ 'message' => __( 'Nonce inválido.', 'amazonia-theme' ) ] );
 	}
-	if ( ! amazonia_is_community_admin() ) {
+	if ( ! amazonia_is_community_admin() && ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( [ 'message' => __( 'Sin permisos.', 'amazonia-theme' ) ] );
 	}
 
@@ -87,9 +104,51 @@ function amazonia_verify_panel_access() {
 	return $community_id;
 }
 
+/**
+ * Helper de permisos para las acciones de gestión de tiendas (crear/vincular/
+ * desvincular), usable tanto desde el panel del front (amazonia_community_admin,
+ * gestiona SU comunidad) como desde wp-admin (administrator, gestiona cualquier
+ * comunidad indicada explícitamente por 'community_id' en el POST).
+ *
+ * @return int ID de la comunidad autorizada, o termina la request con error JSON.
+ */
+function amazonia_verify_community_management_access() {
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( [ 'message' => __( 'Acceso denegado.', 'amazonia-theme' ) ] );
+	}
+	if ( ! check_ajax_referer( 'amazonia_community_admin_nonce', 'nonce', false ) ) {
+		wp_send_json_error( [ 'message' => __( 'Token inválido.', 'amazonia-theme' ) ] );
+	}
+
+	$requested_id = absint( $_POST['community_id'] ?? 0 );
+
+	if ( current_user_can( 'manage_options' ) ) {
+		if ( ! $requested_id ) {
+			wp_send_json_error( [ 'message' => __( 'Comunidad no especificada.', 'amazonia-theme' ) ] );
+		}
+		$post = get_post( $requested_id );
+		if ( ! $post || $post->post_type !== 'comunidad' ) {
+			wp_send_json_error( [ 'message' => __( 'Comunidad no encontrada.', 'amazonia-theme' ) ] );
+		}
+		return $requested_id;
+	}
+
+	if ( ! amazonia_is_community_admin() ) {
+		wp_send_json_error( [ 'message' => __( 'No tienes permisos para esta acción.', 'amazonia-theme' ) ] );
+	}
+	$community_id = amazonia_get_managed_community_id();
+	if ( ! $community_id ) {
+		wp_send_json_error( [ 'message' => __( 'No tienes una comunidad asignada.', 'amazonia-theme' ) ] );
+	}
+	if ( $requested_id && $requested_id !== $community_id ) {
+		wp_send_json_error( [ 'message' => __( 'No tienes permisos para esta comunidad.', 'amazonia-theme' ) ] );
+	}
+	return $community_id;
+}
+
 // ─── AJAX: Crear nuevo vendedor/tienda ───────────────────────────────────────
 function amazonia_ajax_create_vendor() {
-	$community_id = amazonia_verify_panel_access();
+	$community_id = amazonia_verify_community_management_access();
 
 	$store_name = sanitize_text_field( $_POST['store_name'] ?? '' );
 	$email      = sanitize_email( $_POST['email'] ?? '' );
@@ -146,6 +205,9 @@ function amazonia_ajax_create_vendor() {
 	// Ocultar barra de admin al vendedor
 	update_user_meta( $user_id, 'show_admin_bar_front', false );
 
+	// Habilitar envío por defecto (ver inc/vendor-shipping-defaults.php)
+	do_action( 'amazonia_vendor_created', $user_id );
+
 	// La contraseña se muestra al admin de la comunidad para que la copie
 	// y se la entregue al vendedor manualmente (no se envía por email).
 	wp_send_json_success( [
@@ -160,7 +222,7 @@ function amazonia_ajax_create_vendor() {
 
 // ─── AJAX: Vincular vendedor existente a la comunidad ────────────────────────
 function amazonia_ajax_link_vendor() {
-	$community_id = amazonia_verify_panel_access();
+	$community_id = amazonia_verify_community_management_access();
 
 	$user_id = absint( $_POST['user_id'] ?? 0 );
 	if ( ! $user_id ) {
@@ -190,6 +252,28 @@ function amazonia_ajax_link_vendor() {
 			__( 'La tienda "%s" fue vinculada a tu comunidad.', 'amazonia-theme' ),
 			wcfm_get_vendor_store_name( $user_id )
 		),
+		'user_id' => $user_id,
+	] );
+}
+
+// ─── AJAX: Quitar vendedor de la comunidad (solo disponible en wp-admin) ─────
+function amazonia_ajax_unlink_vendor() {
+	$community_id = amazonia_verify_community_management_access();
+
+	$user_id = absint( $_POST['user_id'] ?? 0 );
+	if ( ! $user_id ) {
+		wp_send_json_error( [ 'message' => __( 'Usuario no válido.', 'amazonia-theme' ) ] );
+	}
+
+	$existing = (int) get_user_meta( $user_id, 'community_id', true );
+	if ( $existing !== $community_id ) {
+		wp_send_json_error( [ 'message' => __( 'Esta tienda no pertenece a esta comunidad.', 'amazonia-theme' ) ] );
+	}
+
+	delete_user_meta( $user_id, 'community_id' );
+
+	wp_send_json_success( [
+		'message' => __( 'La tienda fue quitada de la comunidad.', 'amazonia-theme' ),
 		'user_id' => $user_id,
 	] );
 }
@@ -224,21 +308,11 @@ function amazonia_ajax_save_community_info() {
 
 	// Galería: array de attachment IDs enviado como JSON string
 	$galeria_raw = isset( $_POST['galeria_ids'] ) ? wp_unslash( $_POST['galeria_ids'] ) : '[]';
-	$galeria_ids = json_decode( $galeria_raw, true );
-	$galeria_ids = is_array( $galeria_ids ) ? array_values( array_map( 'absint', $galeria_ids ) ) : [];
+	$galeria_ids = amazonia_sanitize_comunidad_galeria( $galeria_raw );
 
 	// Valores: array de {icono, texto} enviado como JSON string
 	$valores_raw = isset( $_POST['valores'] ) ? wp_unslash( $_POST['valores'] ) : '[]';
-	$valores = json_decode( $valores_raw, true );
-	if ( ! is_array( $valores ) ) $valores = [];
-	$valores = array_values( array_filter(
-		array_slice( $valores, 0, 4 ),
-		fn( $v ) => ! empty( $v['texto'] )
-	) );
-	$valores = array_map( fn( $v ) => [
-		'icono' => sanitize_text_field( $v['icono'] ?? 'eco' ),
-		'texto' => sanitize_text_field( $v['texto'] ?? '' ),
-	], $valores );
+	$valores     = amazonia_sanitize_comunidad_valores( $valores_raw );
 
 	if ( $nombre ) {
 		$result = wp_update_post( [
@@ -278,7 +352,15 @@ function amazonia_ajax_save_community_info() {
 
 // ─── AJAX: Buscar vendedores para vincular ───────────────────────────────────
 function amazonia_ajax_search_vendors() {
-	amazonia_verify_panel_access();
+	if ( ! is_user_logged_in() ) {
+		wp_send_json_error( [ 'message' => __( 'Acceso denegado.', 'amazonia-theme' ) ] );
+	}
+	if ( ! check_ajax_referer( 'amazonia_community_admin_nonce', 'nonce', false ) ) {
+		wp_send_json_error( [ 'message' => __( 'Token inválido.', 'amazonia-theme' ) ] );
+	}
+	if ( ! amazonia_is_community_admin() && ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error( [ 'message' => __( 'No tienes permisos para esta acción.', 'amazonia-theme' ) ] );
+	}
 
 	$term = sanitize_text_field( $_POST['term'] ?? '' );
 	if ( strlen( $term ) < 2 ) {

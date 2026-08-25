@@ -50,6 +50,72 @@ function amazonia_register_comunidad_cpt() {
 	] );
 }
 
+// ─── 1b. Helpers compartidos (front + admin) ─────────────────────────────────
+
+/**
+ * Íconos disponibles para los "Valores de la comunidad".
+ * Fuente única usada tanto por template-community-admin.php (front) como
+ * por la meta box de Valores en wp-admin.
+ */
+function amazonia_get_comunidad_valor_icons() {
+	return [
+		'eco'                => 'Sostenibilidad',
+		'handshake'          => 'Comercio Justo',
+		'diversity_3'        => 'Comunidad',
+		'forest'             => 'Naturaleza',
+		'agriculture'        => 'Producción',
+		'workspace_premium'  => 'Calidad',
+		'spa'                => 'Bienestar',
+		'volunteer_activism' => 'Solidaridad',
+		'groups'             => 'Unidad',
+		'favorite'           => 'Pasión',
+		'recycling'          => 'Reciclaje',
+		'water_drop'         => 'Agua',
+	];
+}
+
+/**
+ * Sanitiza el JSON de "valores" ({icono,texto}[]) enviado desde el front o
+ * desde wp-admin. Máximo 4, descarta filas sin texto, fuerza un ícono válido.
+ *
+ * @param string $raw JSON crudo (ya con wp_unslash aplicado por el llamador).
+ * @return array<int,array{icono:string,texto:string}>
+ */
+function amazonia_sanitize_comunidad_valores( $raw ) {
+	$valores = json_decode( (string) $raw, true );
+	if ( ! is_array( $valores ) ) {
+		$valores = [];
+	}
+	$valores = array_values( array_filter(
+		array_slice( $valores, 0, 4 ),
+		fn( $v ) => is_array( $v ) && ! empty( $v['texto'] )
+	) );
+
+	$icons = amazonia_get_comunidad_valor_icons();
+
+	return array_map( fn( $v ) => [
+		'icono' => array_key_exists( $v['icono'] ?? '', $icons ) ? $v['icono'] : 'eco',
+		'texto' => sanitize_text_field( $v['texto'] ?? '' ),
+	], $valores );
+}
+
+/**
+ * Sanitiza el JSON de la galería (array de attachment IDs) enviado desde el
+ * front o desde wp-admin. Descarta IDs que no correspondan a un adjunto real.
+ *
+ * @param string $raw JSON crudo (ya con wp_unslash aplicado por el llamador).
+ * @return int[]
+ */
+function amazonia_sanitize_comunidad_galeria( $raw ) {
+	$ids = json_decode( (string) $raw, true );
+	if ( ! is_array( $ids ) ) {
+		$ids = [];
+	}
+	$ids = array_map( 'absint', $ids );
+
+	return array_values( array_filter( $ids, fn( $id ) => $id && get_post_type( $id ) === 'attachment' ) );
+}
+
 // ─── 2. Meta boxes en el editor de Comunidad ─────────────────────────────────
 add_action( 'add_meta_boxes', 'amazonia_comunidad_meta_boxes' );
 function amazonia_comunidad_meta_boxes() {
@@ -60,6 +126,38 @@ function amazonia_comunidad_meta_boxes() {
 		'comunidad',
 		'normal',
 		'high'
+	);
+	add_meta_box(
+		'amazonia_comunidad_stores',
+		__( 'Tiendas de la Comunidad', 'amazonia-theme' ),
+		'amazonia_render_comunidad_stores_box',
+		'comunidad',
+		'normal',
+		'default'
+	);
+	add_meta_box(
+		'amazonia_comunidad_gallery',
+		__( 'Galería de fotos', 'amazonia-theme' ),
+		'amazonia_render_comunidad_gallery_box',
+		'comunidad',
+		'normal',
+		'default'
+	);
+	add_meta_box(
+		'amazonia_comunidad_storytelling',
+		__( 'Imágenes de Storytelling', 'amazonia-theme' ),
+		'amazonia_render_comunidad_storytelling_box',
+		'comunidad',
+		'normal',
+		'default'
+	);
+	add_meta_box(
+		'amazonia_comunidad_valores',
+		__( 'Valores de la Comunidad', 'amazonia-theme' ),
+		'amazonia_render_comunidad_valores_box',
+		'comunidad',
+		'normal',
+		'default'
 	);
 	add_meta_box(
 		'amazonia_comunidad_admins',
@@ -132,30 +230,62 @@ function amazonia_render_comunidad_details_box( $post ) {
 	</div>
 
 	<div class="comunidad-meta-full">
-		<label><?php esc_html_e( 'URL del Logo', 'amazonia-theme' ); ?></label>
-		<input type="url" name="comunidad_logo_url" id="comunidad_logo_url" value="<?php echo esc_attr( $meta['logo_url'] ); ?>" placeholder="https://..." />
-		<?php if ( $meta['logo_url'] ) : ?>
-			<img src="<?php echo esc_url( $meta['logo_url'] ); ?>" class="comunidad-logo-preview" alt="Logo" loading="lazy" width="80" height="80" />
-		<?php endif; ?>
-		<p class="description" style="margin-top:4px;">
+		<label><?php esc_html_e( 'Logo de la comunidad', 'amazonia-theme' ); ?></label>
+		<input type="hidden" name="comunidad_logo_url" id="ca-logo-url" value="<?php echo esc_attr( $meta['logo_url'] ); ?>" />
+		<div class="ca-logo-uploader">
+			<div id="ca-logo-preview" class="ca-logo-preview <?php echo $meta['logo_url'] ? 'has-image' : ''; ?>">
+				<?php if ( $meta['logo_url'] ) : ?>
+					<img id="ca-logo-img" src="<?php echo esc_url( $meta['logo_url'] ); ?>" alt="Logo" />
+				<?php else : ?>
+					<span class="material-symbols-outlined ca-logo-placeholder-icon">add_photo_alternate</span>
+				<?php endif; ?>
+			</div>
+			<div class="ca-logo-actions">
+				<button type="button" id="ca-logo-upload-btn" class="ca-btn-outline">
+					<span class="material-symbols-outlined">upload</span>
+					<?php echo $meta['logo_url'] ? esc_html__( 'Cambiar imagen', 'amazonia-theme' ) : esc_html__( 'Subir imagen', 'amazonia-theme' ); ?>
+				</button>
+				<button type="button" id="ca-logo-remove-btn" class="ca-btn-danger" style="<?php echo $meta['logo_url'] ? '' : 'display:none;'; ?>">
+					<span class="material-symbols-outlined">delete</span>
+					<?php esc_html_e( 'Eliminar', 'amazonia-theme' ); ?>
+				</button>
+			</div>
+		</div>
+		<p class="description" style="margin-top:8px;">
 			<?php esc_html_e( 'También puedes usar la imagen destacada del post como logo.', 'amazonia-theme' ); ?>
 		</p>
 	</div>
 
-	<hr style="margin:20px 0;border-color:#e2e8f0;" />
-	<p style="font-size:12px;color:#64748b;margin-bottom:12px;">
-		<?php esc_html_e( 'Campos de storytelling — la galería y los valores se editan desde el panel de administración de la comunidad.', 'amazonia-theme' ); ?>
-	</p>
-
 	<div class="comunidad-meta-full">
-		<label><?php esc_html_e( 'URL Imagen de portada (banner)', 'amazonia-theme' ); ?></label>
-		<input type="url" name="comunidad_banner_url" value="<?php echo esc_attr( $meta['banner_url'] ); ?>" placeholder="https://..." />
+		<label><?php esc_html_e( 'Imagen de portada (banner)', 'amazonia-theme' ); ?></label>
+		<input type="hidden" name="comunidad_banner_url" id="ca-banner-url" value="<?php echo esc_attr( $meta['banner_url'] ); ?>" />
+		<div class="ca-logo-uploader">
+			<div id="ca-banner-preview" class="ca-banner-preview <?php echo $meta['banner_url'] ? 'has-image' : ''; ?>"
+				<?php if ( $meta['banner_url'] ) : ?>style="background-image:url('<?php echo esc_url( $meta['banner_url'] ); ?>')"<?php endif; ?>>
+				<?php if ( ! $meta['banner_url'] ) : ?>
+					<span class="material-symbols-outlined ca-logo-placeholder-icon">panorama</span>
+				<?php endif; ?>
+			</div>
+			<div class="ca-logo-actions">
+				<button type="button" id="ca-banner-upload-btn" class="ca-btn-outline">
+					<span class="material-symbols-outlined">upload</span>
+					<?php echo $meta['banner_url'] ? esc_html__( 'Cambiar portada', 'amazonia-theme' ) : esc_html__( 'Subir portada', 'amazonia-theme' ); ?>
+				</button>
+				<button type="button" id="ca-banner-remove-btn" class="ca-btn-danger" style="<?php echo $meta['banner_url'] ? '' : 'display:none;'; ?>">
+					<span class="material-symbols-outlined">delete</span>
+					<?php esc_html_e( 'Eliminar', 'amazonia-theme' ); ?>
+				</button>
+			</div>
+		</div>
 	</div>
 
 	<div class="comunidad-meta-full">
 		<label><?php esc_html_e( 'URL Video de presentación (YouTube / Vimeo)', 'amazonia-theme' ); ?></label>
 		<input type="url" name="comunidad_video_url" value="<?php echo esc_attr( $meta['video_url'] ); ?>" placeholder="https://www.youtube.com/watch?v=..." />
 	</div>
+
+	<input type="file" id="ca-logo-file"   accept="image/*" style="display:none;" />
+	<input type="file" id="ca-banner-file" accept="image/*" style="display:none;" />
 
 	<div class="comunidad-meta-grid">
 		<div>
@@ -183,6 +313,232 @@ function amazonia_render_comunidad_details_box( $post ) {
 		<label><?php esc_html_e( 'Certificaciones', 'amazonia-theme' ); ?></label>
 		<input type="text" name="comunidad_certificaciones" value="<?php echo esc_attr( $meta['certificaciones'] ); ?>" placeholder="Comercio Justo · Orgánico" />
 	</div>
+	<?php
+}
+
+// ─── 3b. Renderizar meta box: Galería de fotos ───────────────────────────────
+function amazonia_render_comunidad_gallery_box( $post ) {
+	$galeria_raw = get_post_meta( $post->ID, '_comunidad_galeria', true );
+	$galeria_ids = $galeria_raw ? json_decode( $galeria_raw, true ) : [];
+	if ( ! is_array( $galeria_ids ) ) $galeria_ids = [];
+	?>
+	<p class="description" style="margin:0 0 12px;">
+		<?php esc_html_e( 'Proceso productivo, paisaje, artesanos — construye confianza visual.', 'amazonia-theme' ); ?>
+	</p>
+	<input type="hidden" name="comunidad_galeria_ids" id="ca-galeria-ids" value="<?php echo esc_attr( wp_json_encode( $galeria_ids ) ); ?>" />
+	<div class="ca-gallery-grid" id="ca-gallery-grid">
+		<?php foreach ( $galeria_ids as $att_id ) :
+			$thumb = wp_get_attachment_image_url( $att_id, 'thumbnail' );
+			if ( ! $thumb ) continue;
+		?>
+			<div class="ca-gallery-item" data-id="<?php echo esc_attr( $att_id ); ?>">
+				<img src="<?php echo esc_url( $thumb ); ?>" alt="" width="80" height="80" loading="lazy" />
+				<button type="button" class="ca-gallery-remove" title="<?php esc_attr_e( 'Eliminar', 'amazonia-theme' ); ?>">
+					<span class="material-symbols-outlined">close</span>
+				</button>
+			</div>
+		<?php endforeach; ?>
+	</div>
+	<button type="button" id="ca-gallery-add-btn" class="ca-btn-outline" style="margin-top:.75rem;">
+		<span class="material-symbols-outlined">add_photo_alternate</span>
+		<?php esc_html_e( 'Añadir imágenes', 'amazonia-theme' ); ?>
+	</button>
+	<input type="file" id="ca-gallery-file" accept="image/*" multiple style="display:none;" />
+	<?php
+}
+
+// ─── 3c. Renderizar meta box: Imágenes de Storytelling ───────────────────────
+function amazonia_render_comunidad_storytelling_box( $post ) {
+	$story_fields = [
+		1 => [ 'label' => 'Card 1 — La Comunidad',       'key' => 'storytelling_img_1' ],
+		2 => [ 'label' => 'Card 2 — Tradición & Cultura', 'key' => 'storytelling_img_2' ],
+		3 => [ 'label' => 'Card 3 — Valores',             'key' => 'storytelling_img_3' ],
+	];
+	?>
+	<p class="description" style="margin:0 0 16px;">
+		<?php esc_html_e( 'Estas imágenes aparecen en las cards de descripción de cada producto de la comunidad.', 'amazonia-theme' ); ?>
+	</p>
+	<div style="display:flex;flex-direction:column;gap:1rem;">
+		<?php foreach ( $story_fields as $n => $sf ) :
+			$val = get_post_meta( $post->ID, '_comunidad_' . $sf['key'], true );
+		?>
+		<div style="display:flex;gap:12px;align-items:center;">
+			<?php if ( $val ) : ?>
+				<img id="ca-story-<?php echo $n; ?>-preview"
+				     src="<?php echo esc_url( $val ); ?>"
+				     style="width:100px;height:68px;object-fit:cover;border-radius:6px;border:1px solid #d1d5db;flex-shrink:0;" />
+			<?php else : ?>
+				<div id="ca-story-<?php echo $n; ?>-preview"
+				     style="width:100px;height:68px;border-radius:6px;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+					<span class="material-symbols-outlined" style="color:#94a3b8;font-size:28px;">panorama</span>
+				</div>
+			<?php endif; ?>
+			<div>
+				<p style="font-size:.8rem;font-weight:600;color:#374151;margin:0 0 6px;">
+					<?php echo esc_html( $sf['label'] ); ?>
+				</p>
+				<div style="display:flex;gap:8px;flex-wrap:wrap;">
+					<button type="button" class="ca-btn-outline ca-story-upload-btn" data-n="<?php echo $n; ?>" style="font-size:.8rem;padding:6px 12px;">
+						<span class="material-symbols-outlined" style="font-size:16px;">upload</span>
+						<?php echo $val ? esc_html__( 'Cambiar', 'amazonia-theme' ) : esc_html__( 'Subir', 'amazonia-theme' ); ?>
+					</button>
+					<button type="button" class="ca-btn-danger ca-story-remove-btn" data-n="<?php echo $n; ?>" style="font-size:.8rem;padding:6px 12px;<?php echo $val ? '' : 'display:none;'; ?>">
+						<span class="material-symbols-outlined" style="font-size:16px;">delete</span>
+						<?php esc_html_e( 'Eliminar', 'amazonia-theme' ); ?>
+					</button>
+				</div>
+			</div>
+			<input type="hidden" name="comunidad_<?php echo esc_attr( $sf['key'] ); ?>"
+			       id="ca-story-<?php echo $n; ?>-url"
+			       value="<?php echo esc_attr( $val ); ?>" />
+			<input type="file" id="ca-story-<?php echo $n; ?>-file" accept="image/*" style="display:none;" />
+		</div>
+		<?php endforeach; ?>
+	</div>
+	<?php
+}
+
+// ─── 3d. Renderizar meta box: Valores de la comunidad ────────────────────────
+function amazonia_render_comunidad_valores_box( $post ) {
+	$valores_raw = get_post_meta( $post->ID, '_comunidad_valores', true );
+	$valores     = $valores_raw ? json_decode( $valores_raw, true ) : [];
+	if ( ! is_array( $valores ) ) $valores = [];
+	$valor_icons = amazonia_get_comunidad_valor_icons();
+	?>
+	<script type="application/json" id="ca-valor-icons-data">
+	<?php echo wp_json_encode( $valor_icons ); ?>
+	</script>
+
+	<p class="description" style="margin:0 0 12px;">
+		<?php esc_html_e( 'Máximo 4 valores.', 'amazonia-theme' ); ?>
+	</p>
+	<input type="hidden" name="comunidad_valores_json" id="ca-valores-json" value="<?php echo esc_attr( wp_json_encode( $valores ) ); ?>" />
+	<div id="ca-valores-list" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem;">
+		<?php foreach ( $valores as $valor ) : ?>
+			<div class="ca-valor-row">
+				<span class="material-symbols-outlined ca-valor-icon-preview"><?php echo esc_html( $valor['icono'] ?? 'eco' ); ?></span>
+				<select class="ca-icon-select">
+					<?php foreach ( $valor_icons as $icon => $label ) : ?>
+						<option value="<?php echo esc_attr( $icon ); ?>" <?php selected( $valor['icono'] ?? '', $icon ); ?>>
+							<?php echo esc_html( $icon . ' — ' . $label ); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+				<input type="text" class="ca-valor-texto"
+					value="<?php echo esc_attr( $valor['texto'] ?? '' ); ?>"
+					placeholder="<?php esc_attr_e( 'Ej: Sostenibilidad', 'amazonia-theme' ); ?>" />
+				<button type="button" class="ca-valor-remove" title="<?php esc_attr_e( 'Eliminar valor', 'amazonia-theme' ); ?>">
+					<span class="material-symbols-outlined">close</span>
+				</button>
+			</div>
+		<?php endforeach; ?>
+	</div>
+	<button type="button" id="ca-valor-add-btn" class="ca-btn-outline" <?php echo count( $valores ) >= 4 ? 'disabled' : ''; ?>>
+		<span class="material-symbols-outlined">add</span>
+		<?php esc_html_e( 'Añadir valor', 'amazonia-theme' ); ?>
+	</button>
+	<?php
+}
+
+// ─── 3e. Renderizar meta box: Tiendas de la comunidad ────────────────────────
+function amazonia_render_comunidad_stores_box( $post ) {
+	$vendors = amazonia_get_community_vendors( $post->ID );
+	?>
+	<ul class="ca-store-list" id="ca-store-list">
+		<?php if ( empty( $vendors ) ) : ?>
+			<li class="ca-empty">
+				<span class="material-symbols-outlined">store</span>
+				<?php esc_html_e( 'Aún no hay tiendas vinculadas.', 'amazonia-theme' ); ?>
+			</li>
+		<?php else : ?>
+			<?php foreach ( $vendors as $vendor ) :
+				$store_name = wcfm_get_vendor_store_name( $vendor->ID );
+				$logo       = function_exists( 'wcfm_get_vendor_store_logo_by_vendor' ) ? wcfm_get_vendor_store_logo_by_vendor( $vendor->ID ) : '';
+				$store_url  = function_exists( 'wcfmmp_get_store_url' ) ? wcfmmp_get_store_url( $vendor->ID ) : get_author_posts_url( $vendor->ID );
+			?>
+				<li class="ca-store-item">
+					<?php if ( $logo ) : ?>
+						<img src="<?php echo esc_url( $logo ); ?>" class="ca-store-avatar" alt="<?php echo esc_attr( $store_name ); ?>" loading="lazy" width="40" height="40" />
+					<?php else : ?>
+						<div class="ca-store-avatar-placeholder">
+							<span class="material-symbols-outlined">storefront</span>
+						</div>
+					<?php endif; ?>
+					<div class="ca-store-info">
+						<div class="ca-store-name"><?php echo esc_html( $store_name ?: $vendor->display_name ); ?></div>
+						<div class="ca-store-email"><?php echo esc_html( $vendor->user_email ); ?></div>
+					</div>
+					<?php if ( $store_url ) : ?>
+						<a href="<?php echo esc_url( $store_url ); ?>" target="_blank" class="ca-store-link">
+							<?php esc_html_e( 'Ver tienda', 'amazonia-theme' ); ?> ↗
+						</a>
+					<?php endif; ?>
+					<button type="button" class="ca-btn-danger ca-store-unlink-btn" data-id="<?php echo esc_attr( $vendor->ID ); ?>" style="margin-left:8px;padding:.375rem .625rem;">
+						<span class="material-symbols-outlined" style="font-size:16px;">link_off</span>
+					</button>
+				</li>
+			<?php endforeach; ?>
+		<?php endif; ?>
+	</ul>
+
+	<hr style="margin:20px 0;border-color:#e2e8f0;" />
+
+	<h4 style="margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#374151;">
+		<?php esc_html_e( 'Crear nueva tienda', 'amazonia-theme' ); ?>
+	</h4>
+	<div id="ca-create-form" class="ca-form">
+		<div class="ca-field">
+			<label for="ca-store-name"><?php esc_html_e( 'Nombre de la tienda', 'amazonia-theme' ); ?> *</label>
+			<input type="text" name="store_name" id="ca-store-name" placeholder="<?php esc_attr_e( 'Ej: Artesanías Shipibo', 'amazonia-theme' ); ?>" />
+		</div>
+		<div class="ca-field">
+			<label for="ca-email"><?php esc_html_e( 'Email del vendedor', 'amazonia-theme' ); ?> *</label>
+			<input type="email" name="email" id="ca-email" placeholder="vendedor@ejemplo.com" />
+		</div>
+		<div class="ca-field-row">
+			<div class="ca-field">
+				<label for="ca-first-name"><?php esc_html_e( 'Nombre', 'amazonia-theme' ); ?></label>
+				<input type="text" name="first_name" id="ca-first-name" placeholder="<?php esc_attr_e( 'Juan', 'amazonia-theme' ); ?>" />
+			</div>
+			<div class="ca-field">
+				<label for="ca-last-name"><?php esc_html_e( 'Apellido', 'amazonia-theme' ); ?></label>
+				<input type="text" name="last_name" id="ca-last-name" placeholder="<?php esc_attr_e( 'Pérez', 'amazonia-theme' ); ?>" />
+			</div>
+		</div>
+		<p style="font-size:.8rem;color:#94a3b8;margin:-.25rem 0 0;">
+			<?php esc_html_e( 'Se generará una contraseña automática que podrás copiar y entregar al vendedor.', 'amazonia-theme' ); ?>
+		</p>
+		<button type="button" id="ca-create-vendor-btn" class="ca-btn" data-original-text="<?php esc_attr_e( 'Crear tienda', 'amazonia-theme' ); ?>">
+			<?php esc_html_e( 'Crear tienda', 'amazonia-theme' ); ?>
+		</button>
+		<div id="ca-create-feedback" class="ca-feedback"></div>
+		<div id="ca-create-credentials" class="ca-credentials-box" style="display:none;">
+			<p class="ca-credentials-title"><?php esc_html_e( 'Credenciales de acceso — cópialas y envíaselas al vendedor:', 'amazonia-theme' ); ?></p>
+			<div class="ca-credentials-row">
+				<label><?php esc_html_e( 'Usuario', 'amazonia-theme' ); ?></label>
+				<input type="text" id="ca-cred-username" readonly />
+			</div>
+			<div class="ca-credentials-row">
+				<label><?php esc_html_e( 'Contraseña', 'amazonia-theme' ); ?></label>
+				<input type="text" id="ca-cred-password" readonly />
+				<button type="button" id="ca-cred-copy" class="ca-btn ca-btn-secondary">
+					<?php esc_html_e( 'Copiar', 'amazonia-theme' ); ?>
+				</button>
+			</div>
+		</div>
+	</div>
+
+	<hr style="margin:20px 0;border-color:#e2e8f0;" />
+
+	<h4 style="margin:0 0 12px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:#374151;">
+		<?php esc_html_e( 'Vincular tienda existente', 'amazonia-theme' ); ?>
+	</h4>
+	<div class="ca-field">
+		<label for="ca-search-input"><?php esc_html_e( 'Buscar por nombre o email', 'amazonia-theme' ); ?></label>
+		<input type="text" id="ca-search-input" placeholder="<?php esc_attr_e( 'Escribe al menos 2 caracteres...', 'amazonia-theme' ); ?>" />
+	</div>
+	<div id="ca-search-results" class="ca-search-results"></div>
+	<div id="ca-link-feedback" class="ca-feedback"></div>
 	<?php
 }
 
@@ -256,6 +612,35 @@ function amazonia_save_comunidad_meta( $post_id ) {
 			update_post_meta( $post_id, $meta_key, esc_url_raw( $_POST[ $post_key ] ) );
 		}
 	}
+
+	foreach ( [ 1, 2, 3 ] as $n ) {
+		$post_key = "comunidad_storytelling_img_{$n}";
+		if ( isset( $_POST[ $post_key ] ) ) {
+			update_post_meta( $post_id, "_comunidad_storytelling_img_{$n}", esc_url_raw( $_POST[ $post_key ] ) );
+		}
+	}
+
+	if ( isset( $_POST['comunidad_galeria_ids'] ) ) {
+		$galeria_ids = amazonia_sanitize_comunidad_galeria( wp_unslash( $_POST['comunidad_galeria_ids'] ) );
+		update_post_meta( $post_id, '_comunidad_galeria', wp_json_encode( $galeria_ids ) );
+	}
+
+	if ( isset( $_POST['comunidad_valores_json'] ) ) {
+		$valores = amazonia_sanitize_comunidad_valores( wp_unslash( $_POST['comunidad_valores_json'] ) );
+		update_post_meta( $post_id, '_comunidad_valores', wp_json_encode( $valores ) );
+	}
+}
+
+// ─── 5b. Encolar CSS/JS del panel de comunidad en la pantalla de edición ─────
+add_action( 'admin_enqueue_scripts', 'amazonia_enqueue_comunidad_admin_assets' );
+function amazonia_enqueue_comunidad_admin_assets( $hook ) {
+	if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ], true ) ) return;
+
+	$screen = get_current_screen();
+	if ( ! $screen || $screen->post_type !== 'comunidad' ) return;
+
+	global $post;
+	amazonia_enqueue_community_admin_assets( $post ? $post->ID : 0 );
 }
 
 // ─── 6. Campo en perfil de usuario: Selector de comunidad ────────────────────
