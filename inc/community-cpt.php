@@ -639,6 +639,12 @@ function amazonia_enqueue_comunidad_admin_assets( $hook ) {
 	$screen = get_current_screen();
 	if ( ! $screen || $screen->post_type !== 'comunidad' ) return;
 
+	// El CSS de Material Symbols (.material-symbols-outlined) normalmente solo
+	// se encola en el front (wp_enqueue_scripts, ver amazonia_theme_scripts en
+	// functions.php). Las meta boxes de esta pantalla reutilizan esos mismos
+	// iconos, así que hay que encolarlo también aquí o se ven como cajas vacías.
+	amazonia_style( 'material-symbols', 'assets/css/material-symbols.css' );
+
 	global $post;
 	amazonia_enqueue_community_admin_assets( $post ? $post->ID : 0 );
 }
