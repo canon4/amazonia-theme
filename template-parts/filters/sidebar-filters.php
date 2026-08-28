@@ -21,6 +21,14 @@ if ( get_search_query() ) {
         </div>
         <div class="space-y-6">
 
+            <?php
+            $product_categories = get_terms( array(
+                'taxonomy'   => 'product_cat',
+                'hide_empty' => true,
+            ) );
+            $has_product_categories = ! empty( $product_categories ) && ! is_wp_error( $product_categories );
+            ?>
+            <?php if ( $has_product_categories ) : ?>
             <!-- Category Filter -->
             <div class="border-b border-primary/10 pb-4">
                 <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
@@ -28,30 +36,22 @@ if ( get_search_query() ) {
                 </h4>
                 <div class="space-y-2">
                     <?php
-                    $product_categories = get_terms( array(
-                        'taxonomy'   => 'product_cat',
-                        'hide_empty' => true,
-                    ) );
-
-                    if ( ! empty( $product_categories ) && ! is_wp_error( $product_categories ) ) :
-                        foreach ( $product_categories as $category ) :
-                            $term_link = get_term_link( $category );
-                            $is_active = is_product_category( $category->slug );
-                            ?>
-                            <a href="<?php echo esc_url( $term_link ); ?>" class="flex items-center gap-2 cursor-pointer group">
-                                <input <?php echo $is_active ? 'checked' : ''; ?> class="rounded text-primary focus:ring-primary h-4 w-4 bg-primary/5 border-primary/20" type="checkbox" onclick="window.location.href=this.parentElement.href;return false;" />
-                                <span class="text-sm group-hover:text-primary transition-colors <?php echo $is_active ? 'text-primary font-medium' : ''; ?>">
-                                    <?php echo esc_html( $category->name ); ?>
-                                </span>
-                            </a>
-                            <?php
-                        endforeach;
-                    else :
-                        echo '<p class="text-sm text-slate-500">No hay categorías disponibles.</p>';
-                    endif;
+                    foreach ( $product_categories as $category ) :
+                        $term_link = get_term_link( $category );
+                        $is_active = is_product_category( $category->slug );
+                        ?>
+                        <a href="<?php echo esc_url( $term_link ); ?>" class="flex items-center gap-2 cursor-pointer group">
+                            <input <?php echo $is_active ? 'checked' : ''; ?> class="rounded text-primary focus:ring-primary h-4 w-4 bg-primary/5 border-primary/20" type="checkbox" onclick="window.location.href=this.parentElement.href;return false;" />
+                            <span class="text-sm group-hover:text-primary transition-colors <?php echo $is_active ? 'text-primary font-medium' : ''; ?>">
+                                <?php echo esc_html( $category->name ); ?>
+                            </span>
+                        </a>
+                        <?php
+                    endforeach;
                     ?>
                 </div>
             </div>
+            <?php endif; ?>
 
             <!-- Price Filter -->
             <div class="border-b border-primary/10 pb-4">
@@ -99,6 +99,14 @@ if ( get_search_query() ) {
                 </form>
             </div>
 
+            <?php
+            $comunidad_terms = get_terms( array(
+                'taxonomy'   => 'pa_comunidad',
+                'hide_empty' => true,
+            ) );
+            $has_comunidad_terms = ! empty( $comunidad_terms ) && ! is_wp_error( $comunidad_terms );
+            ?>
+            <?php if ( $has_comunidad_terms ) : ?>
             <!-- Community Filter -->
             <div class="border-b border-primary/10 pb-4">
                 <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
@@ -106,31 +114,31 @@ if ( get_search_query() ) {
                 </h4>
                 <div class="space-y-2">
                     <?php
-                    $comunidad_terms = get_terms( array(
-                        'taxonomy'   => 'pa_comunidad',
-                        'hide_empty' => true,
-                    ) );
-
-                    if ( ! empty( $comunidad_terms ) && ! is_wp_error( $comunidad_terms ) ) :
-                        foreach ( $comunidad_terms as $term ) :
-                            $term_link = get_term_link( $term );
-                            $is_active = is_tax( 'pa_comunidad', $term->slug );
-                            ?>
-                            <a href="<?php echo esc_url( $term_link ); ?>" class="flex items-center gap-2 cursor-pointer group">
-                                <input <?php echo $is_active ? 'checked' : ''; ?> class="rounded text-primary focus:ring-primary h-4 w-4 bg-primary/5 border-primary/20" type="checkbox" onclick="window.location.href=this.parentElement.href;return false;" />
-                                <span class="text-sm group-hover:text-primary transition-colors <?php echo $is_active ? 'text-primary font-medium' : ''; ?>">
-                                    <?php echo esc_html( $term->name ); ?>
-                                </span>
-                            </a>
-                            <?php
-                        endforeach;
-                    else :
-                        echo '<p class="text-sm text-slate-500">No hay comunidades configuradas.</p>';
-                    endif;
+                    foreach ( $comunidad_terms as $term ) :
+                        $term_link = get_term_link( $term );
+                        $is_active = is_tax( 'pa_comunidad', $term->slug );
+                        ?>
+                        <a href="<?php echo esc_url( $term_link ); ?>" class="flex items-center gap-2 cursor-pointer group">
+                            <input <?php echo $is_active ? 'checked' : ''; ?> class="rounded text-primary focus:ring-primary h-4 w-4 bg-primary/5 border-primary/20" type="checkbox" onclick="window.location.href=this.parentElement.href;return false;" />
+                            <span class="text-sm group-hover:text-primary transition-colors <?php echo $is_active ? 'text-primary font-medium' : ''; ?>">
+                                <?php echo esc_html( $term->name ); ?>
+                            </span>
+                        </a>
+                        <?php
+                    endforeach;
                     ?>
                 </div>
             </div>
+            <?php endif; ?>
 
+            <?php
+            $atributos_terms = get_terms( array(
+                'taxonomy'   => 'pa_atributos',
+                'hide_empty' => true,
+            ) );
+            $has_atributos_terms = ! empty( $atributos_terms ) && ! is_wp_error( $atributos_terms );
+            ?>
+            <?php if ( $has_atributos_terms ) : ?>
             <!-- Atributos Filter -->
             <div class="pb-4">
                 <h4 class="font-semibold text-sm mb-3 flex items-center gap-2">
@@ -138,39 +146,31 @@ if ( get_search_query() ) {
                 </h4>
                 <div class="space-y-2">
                     <?php
-                    $atributos_terms = get_terms( array(
-                        'taxonomy'   => 'pa_atributos',
-                        'hide_empty' => true,
-                    ) );
-
-                    if ( ! empty( $atributos_terms ) && ! is_wp_error( $atributos_terms ) ) :
-                        foreach ( $atributos_terms as $term ) :
-                            $term_link = get_term_link( $term );
-                            $is_active = is_tax( 'pa_atributos', $term->slug );
-                            $icon      = 'verified';
-                            if ( in_array( strtolower( $term->name ), array( 'orgánico', 'organico' ), true ) ) {
-                                $icon = 'energy_savings_leaf';
-                            } elseif ( 'artesanal' === strtolower( $term->name ) ) {
-                                $icon = 'front_hand';
-                            }
-                            ?>
-                            <a href="<?php echo esc_url( $term_link ); ?>" class="flex items-center gap-2 cursor-pointer group">
-                                <input <?php echo $is_active ? 'checked' : ''; ?> class="rounded text-primary focus:ring-primary h-4 w-4 bg-primary/5 border-primary/20" type="checkbox" onclick="window.location.href=this.parentElement.href;return false;" />
-                                <div class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-[16px] text-primary"><?php echo esc_attr( $icon ); ?></span>
-                                    <span class="text-sm group-hover:text-primary transition-colors <?php echo $is_active ? 'text-primary font-medium' : ''; ?>">
-                                        <?php echo esc_html( $term->name ); ?>
-                                    </span>
-                                </div>
-                            </a>
-                            <?php
-                        endforeach;
-                    else :
-                        echo '<p class="text-sm text-slate-500">No hay atributos configurados.</p>';
-                    endif;
+                    foreach ( $atributos_terms as $term ) :
+                        $term_link = get_term_link( $term );
+                        $is_active = is_tax( 'pa_atributos', $term->slug );
+                        $icon      = 'verified';
+                        if ( in_array( strtolower( $term->name ), array( 'orgánico', 'organico' ), true ) ) {
+                            $icon = 'energy_savings_leaf';
+                        } elseif ( 'artesanal' === strtolower( $term->name ) ) {
+                            $icon = 'front_hand';
+                        }
+                        ?>
+                        <a href="<?php echo esc_url( $term_link ); ?>" class="flex items-center gap-2 cursor-pointer group">
+                            <input <?php echo $is_active ? 'checked' : ''; ?> class="rounded text-primary focus:ring-primary h-4 w-4 bg-primary/5 border-primary/20" type="checkbox" onclick="window.location.href=this.parentElement.href;return false;" />
+                            <div class="flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[16px] text-primary"><?php echo esc_attr( $icon ); ?></span>
+                                <span class="text-sm group-hover:text-primary transition-colors <?php echo $is_active ? 'text-primary font-medium' : ''; ?>">
+                                    <?php echo esc_html( $term->name ); ?>
+                                </span>
+                            </div>
+                        </a>
+                        <?php
+                    endforeach;
                     ?>
                 </div>
             </div>
+            <?php endif; ?>
 
         </div>
     </div>
