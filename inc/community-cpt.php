@@ -412,7 +412,7 @@ function amazonia_render_comunidad_valores_box( $post ) {
 	<p class="description" style="margin:0 0 12px;">
 		<?php esc_html_e( 'Máximo 4 valores.', 'amazonia-theme' ); ?>
 	</p>
-	<input type="hidden" name="comunidad_valores_json" id="ca-valores-json" value="<?php echo esc_attr( wp_json_encode( $valores ) ); ?>" />
+	<input type="hidden" name="comunidad_valores_json" id="ca-valores-json" value="<?php echo esc_attr( wp_json_encode( $valores, JSON_UNESCAPED_UNICODE ) ); ?>" />
 	<div id="ca-valores-list" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem;">
 		<?php foreach ( $valores as $valor ) : ?>
 			<div class="ca-valor-row">
@@ -622,12 +622,12 @@ function amazonia_save_comunidad_meta( $post_id ) {
 
 	if ( isset( $_POST['comunidad_galeria_ids'] ) ) {
 		$galeria_ids = amazonia_sanitize_comunidad_galeria( wp_unslash( $_POST['comunidad_galeria_ids'] ) );
-		update_post_meta( $post_id, '_comunidad_galeria', wp_json_encode( $galeria_ids ) );
+		update_post_meta( $post_id, '_comunidad_galeria', wp_json_encode( $galeria_ids, JSON_UNESCAPED_UNICODE ) );
 	}
 
 	if ( isset( $_POST['comunidad_valores_json'] ) ) {
 		$valores = amazonia_sanitize_comunidad_valores( wp_unslash( $_POST['comunidad_valores_json'] ) );
-		update_post_meta( $post_id, '_comunidad_valores', wp_json_encode( $valores ) );
+		update_post_meta( $post_id, '_comunidad_valores', wp_json_encode( $valores, JSON_UNESCAPED_UNICODE ) );
 	}
 }
 

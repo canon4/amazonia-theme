@@ -330,7 +330,7 @@ body { margin: 0; padding: 0; }
 						<div class="ca-field">
 							<label><?php esc_html_e( 'Valores de la comunidad', 'amazonia-theme' ); ?> <span style="color:#94a3b8;font-weight:400;"><?php esc_html_e( '(máx. 4)', 'amazonia-theme' ); ?></span></label>
 							<input type="hidden" name="valores" id="ca-valores-json"
-								value="<?php echo esc_attr( wp_json_encode( $community['valores'] ) ); ?>" />
+								value="<?php echo esc_attr( wp_json_encode( $community['valores'], JSON_UNESCAPED_UNICODE ) ); ?>" />
 							<div id="ca-valores-list" style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:.75rem;">
 								<?php foreach ( $community['valores'] as $valor ) : ?>
 									<div class="ca-valor-row">
