@@ -332,11 +332,11 @@ function amazonia_ajax_save_community_info() {
 	update_post_meta( $community_id, '_comunidad_categoria', $categoria );
 	update_post_meta( $community_id, '_comunidad_logo_url', $logo_url );
 	update_post_meta( $community_id, '_comunidad_banner_url', $banner_url );
-	update_post_meta( $community_id, '_comunidad_galeria', wp_json_encode( $galeria_ids ) );
+	update_post_meta( $community_id, '_comunidad_galeria', wp_json_encode( $galeria_ids, JSON_UNESCAPED_UNICODE ) );
 	update_post_meta( $community_id, '_comunidad_video_url', $video_url );
 	update_post_meta( $community_id, '_comunidad_fundacion', $fundacion );
 	update_post_meta( $community_id, '_comunidad_num_familias', $num_familias );
-	update_post_meta( $community_id, '_comunidad_valores', wp_json_encode( $valores ) );
+	update_post_meta( $community_id, '_comunidad_valores', wp_json_encode( $valores, JSON_UNESCAPED_UNICODE ) );
 	update_post_meta( $community_id, '_comunidad_instagram', $instagram );
 	update_post_meta( $community_id, '_comunidad_facebook', $facebook );
 	update_post_meta( $community_id, '_comunidad_certificaciones',    $certificaciones );
