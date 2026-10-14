@@ -522,7 +522,7 @@ function amazonia_render_comunidad_stores_box( $post ) {
 				<label><?php esc_html_e( 'Contraseña', 'amazonia-theme' ); ?></label>
 				<input type="text" id="ca-cred-password" readonly />
 				<button type="button" id="ca-cred-copy" class="ca-btn ca-btn-secondary">
-					<?php esc_html_e( 'Copiar', 'amazonia-theme' ); ?>
+					<?php esc_html_e( 'Copiar contraseña', 'amazonia-theme' ); ?>
 				</button>
 			</div>
 		</div>
