@@ -52,34 +52,33 @@ html {
 	background-color: #f6f8f6;
 }
 
-/* Aviso de privacidad del registro: texto pequeño + convertido a botón */
-.woocommerce-privacy-policy-text {
-	font-size: 0.75rem;
-	line-height: 1.4;
-	color: #64748b;
-}
+/* Aviso de privacidad: ocultar el párrafo por defecto de WC y usar nuestro checkbox */
 .woocommerce-privacy-policy-text p {
 	display: none;
 }
-.woocommerce-privacy-policy-text .amazonia-privacy-btn {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	gap: 0.5rem;
-	width: 100%;
-	padding: 0.65rem 1.25rem;
-	border: 1px solid var(--color-primary, #16a34a);
-	border-radius: 9999px;
-	color: var(--color-primary, #16a34a);
-	font-size: 0.8125rem;
-	font-weight: 700;
-	text-decoration: none;
-	text-align: center;
-	transition: all 0.3s ease;
+
+/* === WCFM injected elements: tame layout === */
+/* El banner "Become a Vendor" que WCFM inyecta via hooks */
+.register .wcfm_register_vendor_box,
+.register .wcfmvm_become_vendor,
+.woocommerce-form-register .wcfm_vendor_registration_box {
+	margin-top: 1rem;
+	padding: 1rem;
+	border: 1px solid rgba(47,92,62,0.15);
+	border-radius: 0.75rem;
+	background: rgba(47,92,62,0.03);
 }
-.woocommerce-privacy-policy-text .amazonia-privacy-btn:hover {
-	background-color: var(--color-primary, #16a34a);
-	color: #fff;
+/* "Conviértete en un vendedor" text injected after the form */
+#register-form ~ .wcfm_vendor_registration_box,
+.woocommerce-form-register ~ .wcfmvm_become_vendor,
+.u-column2 ~ div:not(.u-column1):not(.u-column2) {
+	margin-top: 1.5rem;
+	text-align: center;
+	font-size: 0.875rem;
+}
+/* Asegurar que el form de registro no desborde */
+#register-form {
+	overflow: visible;
 }
 </style>
 
