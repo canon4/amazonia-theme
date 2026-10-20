@@ -26,7 +26,7 @@
   function submitCreateVendor(e) {
     if (e && e.preventDefault) e.preventDefault();
     const $form = $('#ca-create-form');
-    const $btn  = $form.find('.ca-btn');
+    const $btn  = $form.find('button[type="submit"].ca-btn');
     const $fb   = $('#ca-create-feedback');
 
     $btn.prop('disabled', true).text(i18n.creating);
@@ -67,7 +67,7 @@
   $(document).on('click', '#ca-create-vendor-btn', submitCreateVendor);
 
   // Guardar texto original del botón
-  $('#ca-create-form .ca-btn').each(function () {
+  $('#ca-create-form button[type="submit"].ca-btn').each(function () {
     $(this).data('original-text', $(this).text());
   });
 
