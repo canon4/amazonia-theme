@@ -359,3 +359,49 @@
 .amz-close__back { color: #7ee2a0; font-size: 14px; font-weight: 500; text-decoration: none; }
 .amz-close__back:hover { color: #eaf3ea; }
 .amz-socials { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   LLAMADO A LA COMPRA · Pantalla A (comunidad)
+   ═══════════════════════════════════════════════════════════════════ */
+.amz-hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.amz-trust { display: flex; align-items: center; gap: 8px; margin: 14px 0 0; font-size: 13px; color: #9fc3a4; }
+.amz-trust .material-symbols-outlined { font-size: 17px; color: #7ee2a0; }
+.amz-link { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 14px;
+  color: var(--amz-primary); text-decoration: none; }
+.amz-link:hover { color: var(--amz-primary-strong); }
+
+.amz-products--featured { grid-template-columns: repeat(4, 1fr); }
+.amz-products--featured .amz-product { position: relative; }
+.amz-product__media { display: block; }
+.amz-product h3 a { color: inherit; text-decoration: none; }
+.amz-product h3 a:hover { color: var(--amz-primary-strong); }
+.amz-product__store { font-size: 11.5px; font-weight: 600; color: var(--amz-text-muted);
+  text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+.amz-product__fav { position: absolute; top: 10px; right: 10px; z-index: 2; width: 34px; height: 34px;
+  border: none; border-radius: 9999px; background: rgba(255,255,255,.92); color: #64748b; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: color .15s; }
+.amz-product__fav:hover { color: #ef4444; }
+.amz-product__fav .material-symbols-outlined { font-size: 19px; }
+.amz-product__add { display: block; margin-top: 12px; text-align: center; text-decoration: none;
+  background: var(--amz-primary); color: #04210d; font-weight: 700; font-size: 14px;
+  padding: 11px 14px; border-radius: 9999px; transition: background .15s, transform .15s; }
+.amz-product__add:hover { background: var(--amz-primary-strong); color: #fff; }
+.amz-product__add--ghost { background: transparent; color: var(--amz-primary-strong);
+  border: 1px solid var(--amz-primary); }
+.amz-product__add.loading { opacity: .6; pointer-events: none; }
+.amz-product__add.added { background: var(--amz-forest); color: #eaf3ea; }
+.amz-product__add + .added_to_cart { display: block; margin-top: 8px; text-align: center;
+  font-size: 13px; font-weight: 600; color: var(--amz-primary-strong); text-decoration: none; }
+.amz-product__add:focus-visible, .amz-product__fav:focus-visible { outline: 3px solid #7ee2a0; outline-offset: 2px; }
+
+.amz-sticky-cta { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 50;
+  box-shadow: 0 14px 34px -10px rgba(0,0,0,.45); }
+.amz-sticky-cta[hidden] { display: none; }
+@media (min-width: 768px) { .amz-sticky-cta { display: none; } }
+
+@media (max-width: 1024px) { .amz-products--featured { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 767px) {
+  .amz-products--featured { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .amz-hero__cta .amz-btn { flex: 1 1 100%; justify-content: center; }
+  .amz-product__body { padding: 12px; }
+}

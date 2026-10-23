@@ -93,7 +93,7 @@ function amazonia_communities_shortcode( $atts ) {
                     ) ); ?>
                 </span>
                 <a href="<?php echo esc_url( $url ); ?>" class="inline-flex items-center gap-1 font-bold text-sm text-primary hover:text-green-700 group-hover:gap-2 transition-all">
-                    <?php esc_html_e( 'Ver Comunidad', 'amazonia-theme' ); ?>
+                    <?php esc_html_e( 'Ver productos y artesanos', 'amazonia-theme' ); ?>
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>
             </div>

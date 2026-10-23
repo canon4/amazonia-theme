@@ -730,6 +730,54 @@ function amazonia_get_community_vendors( $community_id ) {
 }
 
 /**
+ * Productos destacados de una comunidad: los más vendidos de todas sus tiendas.
+ *
+ * @param int $community_id
+ * @param int $limit
+ * @return int[] IDs de producto
+ */
+function amazonia_get_community_products( $community_id, $limit = 8 ) {
+	$community_id = absint( $community_id );
+	$limit        = max( 1, absint( $limit ) );
+	$cache_key    = 'amazonia_comm_products_' . $community_id . '_' . $limit;
+
+	$cached = get_transient( $cache_key );
+	if ( false !== $cached ) {
+		return $cached;
+	}
+
+	$vendor_ids = wp_list_pluck( amazonia_get_community_vendors( $community_id ), 'ID' );
+	if ( ! $vendor_ids ) {
+		return [];
+	}
+
+	$query = new WP_Query( [
+		'post_type'           => 'product',
+		'post_status'         => 'publish',
+		'author__in'          => $vendor_ids,
+		'posts_per_page'      => $limit,
+		'fields'              => 'ids',
+		'no_found_rows'       => true,
+		'ignore_sticky_posts' => true,
+		'meta_query'          => [
+			'relation' => 'AND',
+			[ 'key' => '_stock_status', 'value' => 'outofstock', 'compare' => '!=' ],
+			[
+				'relation' => 'OR',
+				'sales'    => [ 'key' => 'total_sales', 'type' => 'NUMERIC', 'compare' => 'EXISTS' ],
+				[ 'key' => 'total_sales', 'compare' => 'NOT EXISTS' ],
+			],
+		],
+		'orderby'             => [ 'sales' => 'DESC', 'date' => 'DESC' ],
+	] );
+
+	$ids = array_map( 'intval', $query->posts );
+	set_transient( $cache_key, $ids, 15 * MINUTE_IN_SECONDS );
+
+	return $ids;
+}
+
+/**
  * Datos completos de una comunidad para mostrar en frontend.
  *
  * @param int $community_id

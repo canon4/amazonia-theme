@@ -331,6 +331,9 @@ function amazonia_enqueue_community_profile_styles() {
 	if ( is_singular( 'comunidad' ) || $is_store ) {
 		amazonia_style( 'amazonia-community-profile', 'assets/css/community-profile.css', array( 'amazonia-main-style' ) );
 		amazonia_script( 'amazonia-lightbox', 'assets/js/amz-lightbox.js' );
+		if ( is_singular( 'comunidad' ) ) {
+			wp_enqueue_script( 'wc-add-to-cart' );
+		}
 	}
 }
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_community_profile_styles' );
