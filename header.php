@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="https://gmpg.org/xfn/11">
 
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <?php wp_head(); ?>
 </head>
 <body <?php body_class('bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100'); ?>>
