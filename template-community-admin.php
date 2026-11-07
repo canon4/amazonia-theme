@@ -379,6 +379,57 @@ body { margin: 0; padding: 0; }
 									placeholder="https://facebook.com/..." />
 							</div>
 						</div>
+						<div class="ca-field-row">
+							<div class="ca-field">
+								<label for="ca-tiktok">
+									<span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">music_note</span>
+									<?php esc_html_e( 'TikTok', 'amazonia-theme' ); ?>
+								</label>
+								<input type="url" name="tiktok" id="ca-tiktok"
+									value="<?php echo esc_attr( $community['tiktok'] ); ?>"
+									placeholder="https://tiktok.com/@..." />
+							</div>
+							<div class="ca-field">
+								<label for="ca-youtube">
+									<span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">smart_display</span>
+									<?php esc_html_e( 'Canal de YouTube', 'amazonia-theme' ); ?>
+								</label>
+								<input type="url" name="youtube" id="ca-youtube"
+									value="<?php echo esc_attr( $community['youtube'] ); ?>"
+									placeholder="https://youtube.com/@..." />
+							</div>
+						</div>
+						<div class="ca-field-row">
+							<div class="ca-field">
+								<label for="ca-x">
+									<span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">alternate_email</span>
+									<?php esc_html_e( 'X / Twitter', 'amazonia-theme' ); ?>
+								</label>
+								<input type="url" name="x" id="ca-x"
+									value="<?php echo esc_attr( $community['x'] ); ?>"
+									placeholder="https://x.com/..." />
+							</div>
+							<div class="ca-field">
+								<label for="ca-whatsapp">
+									<span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">chat</span>
+									<?php esc_html_e( 'WhatsApp (número)', 'amazonia-theme' ); ?>
+								</label>
+								<input type="tel" name="whatsapp" id="ca-whatsapp"
+									value="<?php echo esc_attr( $community['whatsapp'] ); ?>"
+									placeholder="+57 300 123 4567" />
+							</div>
+						</div>
+
+						<!-- Página web -->
+						<div class="ca-field">
+							<label for="ca-web">
+								<span class="material-symbols-outlined" style="font-size:15px;vertical-align:middle;">language</span>
+								<?php esc_html_e( 'Página web', 'amazonia-theme' ); ?>
+							</label>
+							<input type="url" name="web" id="ca-web"
+								value="<?php echo esc_attr( $community['web'] ); ?>"
+								placeholder="https://..." />
+						</div>
 
 						<!-- Certificaciones -->
 						<div class="ca-field">
