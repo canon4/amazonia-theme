@@ -187,6 +187,11 @@ function amazonia_render_comunidad_details_box( $post ) {
 		'num_familias'   => get_post_meta( $post->ID, '_comunidad_num_familias', true ),
 		'instagram'      => get_post_meta( $post->ID, '_comunidad_instagram', true ),
 		'facebook'       => get_post_meta( $post->ID, '_comunidad_facebook', true ),
+		'web'            => get_post_meta( $post->ID, '_comunidad_web', true ),
+		'tiktok'         => get_post_meta( $post->ID, '_comunidad_tiktok', true ),
+		'youtube'        => get_post_meta( $post->ID, '_comunidad_youtube', true ),
+		'x'              => get_post_meta( $post->ID, '_comunidad_x', true ),
+		'whatsapp'       => get_post_meta( $post->ID, '_comunidad_whatsapp', true ),
 		'certificaciones'=> get_post_meta( $post->ID, '_comunidad_certificaciones', true ),
 	];
 	?>
@@ -307,6 +312,33 @@ function amazonia_render_comunidad_details_box( $post ) {
 			<label><?php esc_html_e( 'Facebook URL', 'amazonia-theme' ); ?></label>
 			<input type="url" name="comunidad_facebook" value="<?php echo esc_attr( $meta['facebook'] ); ?>" placeholder="https://facebook.com/..." />
 		</div>
+	</div>
+
+	<div class="comunidad-meta-grid">
+		<div>
+			<label><?php esc_html_e( 'TikTok URL', 'amazonia-theme' ); ?></label>
+			<input type="url" name="comunidad_tiktok" value="<?php echo esc_attr( $meta['tiktok'] ); ?>" placeholder="https://tiktok.com/@..." />
+		</div>
+		<div>
+			<label><?php esc_html_e( 'Canal de YouTube URL', 'amazonia-theme' ); ?></label>
+			<input type="url" name="comunidad_youtube" value="<?php echo esc_attr( $meta['youtube'] ); ?>" placeholder="https://youtube.com/@..." />
+		</div>
+	</div>
+
+	<div class="comunidad-meta-grid">
+		<div>
+			<label><?php esc_html_e( 'X / Twitter URL', 'amazonia-theme' ); ?></label>
+			<input type="url" name="comunidad_x" value="<?php echo esc_attr( $meta['x'] ); ?>" placeholder="https://x.com/..." />
+		</div>
+		<div>
+			<label><?php esc_html_e( 'WhatsApp (número)', 'amazonia-theme' ); ?></label>
+			<input type="tel" name="comunidad_whatsapp" value="<?php echo esc_attr( $meta['whatsapp'] ); ?>" placeholder="+57 300 123 4567" />
+		</div>
+	</div>
+
+	<div class="comunidad-meta-full">
+		<label><?php esc_html_e( 'Página web (si la comunidad tiene una)', 'amazonia-theme' ); ?></label>
+		<input type="url" name="comunidad_web" value="<?php echo esc_attr( $meta['web'] ); ?>" placeholder="https://..." />
 	</div>
 
 	<div class="comunidad-meta-full">
@@ -593,6 +625,7 @@ function amazonia_save_comunidad_meta( $post_id ) {
 		'comunidad_fundacion'    => '_comunidad_fundacion',
 		'comunidad_num_familias' => '_comunidad_num_familias',
 		'comunidad_certificaciones' => '_comunidad_certificaciones',
+		'comunidad_whatsapp'     => '_comunidad_whatsapp',
 	];
 	$url_fields = [
 		'comunidad_logo_url'   => '_comunidad_logo_url',
@@ -600,6 +633,10 @@ function amazonia_save_comunidad_meta( $post_id ) {
 		'comunidad_video_url'  => '_comunidad_video_url',
 		'comunidad_instagram'  => '_comunidad_instagram',
 		'comunidad_facebook'   => '_comunidad_facebook',
+		'comunidad_web'        => '_comunidad_web',
+		'comunidad_tiktok'     => '_comunidad_tiktok',
+		'comunidad_youtube'    => '_comunidad_youtube',
+		'comunidad_x'          => '_comunidad_x',
 	];
 
 	foreach ( $text_fields as $post_key => $meta_key ) {
@@ -819,8 +856,13 @@ function amazonia_get_community_data( $community_id ) {
 		'valores'        => $valores,
 		'instagram'      => get_post_meta( $community_id, '_comunidad_instagram', true ),
 		'facebook'       => get_post_meta( $community_id, '_comunidad_facebook', true ),
+		'web'            => get_post_meta( $community_id, '_comunidad_web', true ),
+		'tiktok'         => get_post_meta( $community_id, '_comunidad_tiktok', true ),
+		'youtube'        => get_post_meta( $community_id, '_comunidad_youtube', true ),
+		'x'              => get_post_meta( $community_id, '_comunidad_x', true ),
+		'whatsapp'       => get_post_meta( $community_id, '_comunidad_whatsapp', true ),
 		'certificaciones'=> get_post_meta( $community_id, '_comunidad_certificaciones', true ),
-		'url'                => get_permalink( $community_id ),
+		'url'              => get_permalink( $community_id ),
 		'vendors'            => amazonia_get_community_vendors( $community_id ),
 		'storytelling_img_1' => get_post_meta( $community_id, '_comunidad_storytelling_img_1', true ),
 		'storytelling_img_2' => get_post_meta( $community_id, '_comunidad_storytelling_img_2', true ),

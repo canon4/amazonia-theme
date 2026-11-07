@@ -301,6 +301,11 @@ function amazonia_ajax_save_community_info() {
 	$num_familias    = sanitize_text_field( $_POST['num_familias'] ?? '' );
 	$instagram       = esc_url_raw( $_POST['instagram'] ?? '' );
 	$facebook        = esc_url_raw( $_POST['facebook'] ?? '' );
+	$web             = esc_url_raw( $_POST['web'] ?? '' );
+	$tiktok          = esc_url_raw( $_POST['tiktok'] ?? '' );
+	$youtube         = esc_url_raw( $_POST['youtube'] ?? '' );
+	$x               = esc_url_raw( $_POST['x'] ?? '' );
+	$whatsapp        = sanitize_text_field( $_POST['whatsapp'] ?? '' );
 	$certificaciones    = sanitize_text_field( $_POST['certificaciones'] ?? '' );
 	$storytelling_img_1 = esc_url_raw( $_POST['storytelling_img_1'] ?? '' );
 	$storytelling_img_2 = esc_url_raw( $_POST['storytelling_img_2'] ?? '' );
@@ -339,6 +344,11 @@ function amazonia_ajax_save_community_info() {
 	update_post_meta( $community_id, '_comunidad_valores', wp_json_encode( $valores, JSON_UNESCAPED_UNICODE ) );
 	update_post_meta( $community_id, '_comunidad_instagram', $instagram );
 	update_post_meta( $community_id, '_comunidad_facebook', $facebook );
+	update_post_meta( $community_id, '_comunidad_web', $web );
+	update_post_meta( $community_id, '_comunidad_tiktok', $tiktok );
+	update_post_meta( $community_id, '_comunidad_youtube', $youtube );
+	update_post_meta( $community_id, '_comunidad_x', $x );
+	update_post_meta( $community_id, '_comunidad_whatsapp', $whatsapp );
 	update_post_meta( $community_id, '_comunidad_certificaciones',    $certificaciones );
 	update_post_meta( $community_id, '_comunidad_storytelling_img_1', $storytelling_img_1 );
 	update_post_meta( $community_id, '_comunidad_storytelling_img_2', $storytelling_img_2 );

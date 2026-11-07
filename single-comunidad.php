@@ -476,18 +476,33 @@ $location = implode( ' · ', array_filter( [ $data['municipio'], $data['departam
 						<?php esc_html_e( 'Ver catálogo de tiendas', 'amazonia-theme' ); ?>
 					</a>
 				<?php endif; ?>
-				<?php if ( ! empty( $data['instagram'] ) ) : ?>
-					<a class="amz-btn amz-btn--ghost" href="<?php echo esc_url( $data['instagram'] ); ?>" target="_blank" rel="noopener noreferrer">
-						<span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">photo_camera</span>
-						Instagram
+				<?php
+				$wa_number = ( ! empty( $data['whatsapp'] ) && function_exists( 'amazonia_normalize_whatsapp_number' ) )
+					? amazonia_normalize_whatsapp_number( $data['whatsapp'] )
+					: '';
+				$social_links = [
+					[ 'url' => $data['web'] ?? '',       'label' => __( 'Sitio web', 'amazonia-theme' ), 'icon' => 'language' ],
+					[ 'url' => $data['instagram'] ?? '', 'label' => 'Instagram',   'icon' => 'photo_camera' ],
+					[ 'url' => $data['facebook'] ?? '',  'label' => 'Facebook',    'icon' => 'thumb_up' ],
+					[ 'url' => $data['tiktok'] ?? '',    'label' => 'TikTok',      'icon' => 'music_note' ],
+					[ 'url' => $data['youtube'] ?? '',   'label' => 'YouTube',     'icon' => 'smart_display' ],
+					[ 'url' => $data['x'] ?? '',         'label' => 'X',           'icon' => 'alternate_email' ],
+					[ 'url' => $wa_number ? 'https://wa.me/' . $wa_number : '', 'label' => 'WhatsApp', 'icon' => 'whatsapp' ],
+				];
+				foreach ( $social_links as $link ) :
+					if ( empty( $link['url'] ) ) {
+						continue;
+					}
+					?>
+					<a class="amz-btn amz-btn--ghost" href="<?php echo esc_url( $link['url'] ); ?>" target="_blank" rel="noopener noreferrer">
+						<?php if ( 'whatsapp' === $link['icon'] ) : ?>
+							<?php echo amazonia_whatsapp_icon_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG estático. ?>
+						<?php else : ?>
+							<span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true"><?php echo esc_html( $link['icon'] ); ?></span>
+						<?php endif; ?>
+						<?php echo esc_html( $link['label'] ); ?>
 					</a>
-				<?php endif; ?>
-				<?php if ( ! empty( $data['facebook'] ) ) : ?>
-					<a class="amz-btn amz-btn--ghost" href="<?php echo esc_url( $data['facebook'] ); ?>" target="_blank" rel="noopener noreferrer">
-						<span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">thumb_up</span>
-						Facebook
-					</a>
-				<?php endif; ?>
+				<?php endforeach; ?>
 			</div>
 		</div>
 	</footer>
