@@ -4,6 +4,7 @@ add_business
 add_photo_alternate
 admin_panel_settings
 agriculture
+alternate_email
 arrow_back
 arrow_forward
 assignment_turned_in
@@ -37,6 +38,7 @@ hourglass_empty
 info
 inventory_2
 label
+language
 link
 link_off
 local_shipping
@@ -48,6 +50,7 @@ logout
 mail
 manage_accounts
 menu
+music_note
 nature_people
 panorama
 payments
@@ -71,6 +74,7 @@ shield
 shield_lock
 shopping_bag
 shopping_cart
+smart_display
 spa
 star
 store

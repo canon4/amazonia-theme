@@ -487,7 +487,7 @@ $location = implode( ' · ', array_filter( [ $data['municipio'], $data['departam
 					[ 'url' => $data['tiktok'] ?? '',    'label' => 'TikTok',      'icon' => 'music_note' ],
 					[ 'url' => $data['youtube'] ?? '',   'label' => 'YouTube',     'icon' => 'smart_display' ],
 					[ 'url' => $data['x'] ?? '',         'label' => 'X',           'icon' => 'alternate_email' ],
-					[ 'url' => $wa_number ? 'https://wa.me/' . $wa_number : '', 'label' => 'WhatsApp', 'icon' => 'whatsapp' ],
+					[ 'url' => $wa_number ? 'https://wa.me/' . $wa_number : '', 'label' => 'WhatsApp', 'svg' => true ],
 				];
 				foreach ( $social_links as $link ) :
 					if ( empty( $link['url'] ) ) {
@@ -495,7 +495,7 @@ $location = implode( ' · ', array_filter( [ $data['municipio'], $data['departam
 					}
 					?>
 					<a class="amz-btn amz-btn--ghost" href="<?php echo esc_url( $link['url'] ); ?>" target="_blank" rel="noopener noreferrer">
-						<?php if ( 'whatsapp' === $link['icon'] ) : ?>
+						<?php if ( ! empty( $link['svg'] ) ) : ?>
 							<?php echo amazonia_whatsapp_icon_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG estático. ?>
 						<?php else : ?>
 							<span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true"><?php echo esc_html( $link['icon'] ); ?></span>
