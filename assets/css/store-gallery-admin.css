@@ -1,36 +1,48 @@
 /**
- * Galería de la tienda — botón flotante + modal, panel del vendedor.
- * Ver inc/store-gallery.php.
+ * Galería de la tienda — campo del formulario (Ajustes → Tienda → Store
+ * Brand Setup) + modal, panel del vendedor. Ver inc/store-gallery.php.
  */
 
-/* ─── Botón flotante ────────────────────────────────────────────────
- * position: sticky (no fixed): se mantiene visible mientras se hace
- * scroll, pero al llegar al final real de la página se "suelta" y queda
- * en el flujo normal, en vez de quedar pegado tapando el pie de página
- * u otras cajas flotantes (p. ej. el aviso de Envia) para siempre.
- * ────────────────────────────────────────────────────────────────── */
-.amazonia-gallery-fab {
-	position: sticky;
-	bottom: 24px;
-	margin: 0 24px 0 auto;
-	z-index: 99997;
-	width: 56px;
-	height: 56px;
-	border-radius: 50%;
+/* ─── Campo dentro del formulario ──────────────────────────────────── */
+.amazonia-gallery-field {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 10px;
+}
+.amazonia-gallery-field__thumbs {
+	display: flex;
+	gap: 6px;
+	flex-wrap: wrap;
+}
+.amazonia-gallery-field__thumbs img {
+	width: 44px;
+	height: 44px;
+	object-fit: cover;
+	border-radius: 6px;
+	border: 1px solid #e2e2e2;
+}
+.amazonia-gallery-trigger {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	border-radius: 20px;
 	border: none;
 	background: #2F5C3E;
 	color: #fff;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	font-size: 26px;
+	font-size: 13px;
+	font-weight: 600;
 	cursor: pointer;
-	box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+	box-shadow: 0 2px 8px rgba(47, 92, 62, .35);
 	transition: background .15s ease, transform .15s ease;
 }
-.amazonia-gallery-fab:hover {
+.amazonia-gallery-trigger .material-symbols-outlined {
+	font-size: 18px;
+}
+.amazonia-gallery-trigger:hover {
 	background: #1f3d29;
-	transform: scale(1.05);
+	transform: translateY(-1px);
 }
 
 /* ─── Modal ─────────────────────────────────────────────────────── */
