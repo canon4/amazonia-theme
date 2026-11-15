@@ -52,7 +52,7 @@ function amazonia_communities_shortcode( $atts ) {
         $location    = implode( ', ', array_filter( [ $data['municipio'], $data['departamento'], $data['pais'] ] ) );
         $url         = get_permalink( $community_id );
         ?>
-        <div class="group flex flex-col bg-white rounded-2xl border border-slate-100 p-6 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
+        <div class="relative group flex flex-col bg-white rounded-2xl border border-slate-100 p-6 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
             <!-- Encabezado: logo + nombre -->
             <div class="flex items-center gap-4">
                 <div class="w-16 h-16 shrink-0 rounded-2xl border border-green-100 overflow-hidden flex items-center justify-center bg-green-50">
@@ -92,7 +92,7 @@ function amazonia_communities_shortcode( $atts ) {
                         $num_stores
                     ) ); ?>
                 </span>
-                <a href="<?php echo esc_url( $url ); ?>" class="inline-flex items-center gap-1 font-bold text-sm text-primary hover:text-green-700 group-hover:gap-2 transition-all">
+                <a href="<?php echo esc_url( $url ); ?>" class="after:absolute after:inset-0 after:content-[''] inline-flex items-center gap-1 font-bold text-sm text-primary hover:text-green-700 group-hover:gap-2 transition-all">
                     <?php esc_html_e( 'Ver productos y artesanos', 'amazonia-theme' ); ?>
                     <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                 </a>

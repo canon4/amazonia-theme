@@ -375,7 +375,7 @@ if ( post_password_required() ) {
             <div class="flex flex-col gap-10">
 
                 <!-- Card 1: La Comunidad — texto izquierda, imagen derecha -->
-                <div data-amz-fade class="group flex flex-col md:flex-row items-stretch overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm opacity-0 translate-y-8 transition-all duration-500 ease-out delay-150 hover:-translate-y-1 hover:shadow-[0_24px_48px_-18px_rgba(0,107,44,0.18)]">
+                <div data-amz-fade class="relative group flex flex-col md:flex-row items-stretch overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm opacity-0 translate-y-8 transition-all duration-500 ease-out delay-150 hover:-translate-y-1 hover:shadow-[0_24px_48px_-18px_rgba(0,107,44,0.18)]">
                     <div class="w-full md:w-3/4 p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
                         <?php if ( $community_data['categoria'] ) : ?>
                         <span class="mb-3 inline-flex w-fit items-center rounded-full bg-[rgba(127,252,151,0.3)] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[#005320] font-display">
@@ -388,7 +388,7 @@ if ( post_password_required() ) {
                             <?php echo esc_html( wp_trim_words( $community_data['historia'], 40, '…' ) ); ?>
                         </p>
                         <?php endif; ?>
-                        <a class="flex w-fit items-center gap-2 text-sm font-semibold text-[#006b2c] font-display transition-transform duration-300 hover:translate-x-2" href="<?php echo esc_url( $community_data['url'] ); ?>">
+                        <a class="after:absolute after:inset-0 after:content-[''] flex w-fit items-center gap-2 text-sm font-semibold text-[#006b2c] font-display transition-transform duration-300 hover:translate-x-2" href="<?php echo esc_url( $community_data['url'] ); ?>">
                             Conocer la comunidad
                             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
                         </a>
