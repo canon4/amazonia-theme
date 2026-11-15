@@ -274,7 +274,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                         $url         = get_permalink( $c_id );
                         ?>
                         <!-- Community Card -->
-                        <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
+                        <div class="relative bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group">
                             <div>
                                 <div class="flex items-center gap-4 mb-5">
                                     <div class="w-16 h-16 rounded-full border-2 border-primary/20 overflow-hidden bg-slate-50 flex items-center justify-center shrink-0">
@@ -304,7 +304,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                                     <span class="material-symbols-outlined text-[14px]">storefront</span>
                                     <?php echo esc_html( sprintf( _n( '%d tienda', '%d tiendas', $num_stores, 'amazonia-theme' ), $num_stores ) ); ?>
                                 </span>
-                                <a href="<?php echo esc_url( $url ); ?>" class="text-primary hover:text-[#15803d] font-bold text-sm flex items-center gap-0.5 group/link">
+                                <a href="<?php echo esc_url( $url ); ?>" class="after:absolute after:inset-0 after:content-[''] text-primary hover:text-[#15803d] font-bold text-sm flex items-center gap-0.5 group/link">
                                     <?php esc_html_e( 'Ver Comunidad', 'amazonia-theme' ); ?>
                                     <span class="material-symbols-outlined text-sm transform group-hover/link:translate-x-1 transition-transform">arrow_forward</span>
                                 </a>

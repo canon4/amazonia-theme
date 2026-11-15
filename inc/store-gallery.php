@@ -2,19 +2,22 @@
 /**
  * Galería de fotos del vendedor ("quiénes son"): taller, equipo, proceso.
  *
- * WCFM solo trae logo + banner (una imagen cada uno), sin galería, y su
- * dashboard renderiza el contenido de "Ajustes" de forma que un hook normal
- * de WordPress (do_action dentro de la plantilla del formulario) no es fiable
- * para inyectar campos propios ahí. Por eso esta función NO toca el
- * formulario de WCFM en absoluto: es un botón flotante independiente con su
- * propio modal y su propio guardado por AJAX, que vive por fuera del <form>
- * de WCFM.
+ * WCFM solo trae logo + banner (una imagen cada uno), sin galería. El botón
+ * que la abre vive como un campo más de la sección "Store Brand Setup" del
+ * formulario de Ajustes → Tienda (filtro 'wcfm_marketplace_settings_fields_brand',
+ * tipo 'html' — el mismo mecanismo ya usado para el botón de sincronización de
+ * Envia en la sección de envío). El guardado, en cambio, sigue siendo AJAX
+ * propio e independiente del guardado de WCFM: así no hay que depender de que
+ * el campo 'html' viaje con el resto del formulario.
  *
- *  1. amazonia_render_store_gallery_fab(), enganchado a 'wp_footer' (se
- *     imprime siempre, sin depender de cómo WCFM arme su HTML).
- *  2. Guardado vía wp_ajax_amazonia_save_store_gallery, independiente del
+ *  1. amazonia_add_store_gallery_field(), enganchado al filtro de campos de
+ *     "Store Brand Setup" — inyecta el botón + miniaturas dentro del form.
+ *  2. amazonia_render_store_gallery_modal(), enganchado a 'wp_footer' — el
+ *     modal en sí sigue fuera del <form> (es un overlay, no depende de la
+ *     sección en la que esté el botón que lo abre).
+ *  3. Guardado vía wp_ajax_amazonia_save_store_gallery, independiente del
  *     guardado de WCFM.
- *  3. amazonia_get_store_gallery() se usa en el perfil público de la tienda
+ *  4. amazonia_get_store_gallery() se usa en el perfil público de la tienda
  *     (wcfm/store/wcfmmp-view-store.php).
  *
  * @package Amazonia_Theme
@@ -118,11 +121,68 @@ function amazonia_enqueue_store_gallery_admin_assets() {
 add_action( 'wp_enqueue_scripts', 'amazonia_enqueue_store_gallery_admin_assets' );
 
 /**
- * Botón flotante + modal de la galería. Se imprime en wp_footer, por fuera
- * de cualquier formulario o markup de WCFM, así que no depende de cómo el
- * plugin renderice (o no) su propio HTML.
+ * Campo "html" con el botón + miniaturas de la galería, inyectado en la
+ * sección "Store Brand Setup" del formulario de Ajustes → Tienda, justo
+ * después de Logo/Banner (mismo lugar donde WCFM ya muestra las imágenes
+ * de la tienda).
+ *
+ * @param array $fields Campos existentes de la sección de marca de la tienda.
+ * @return array
  */
-function amazonia_render_store_gallery_fab() {
+function amazonia_add_store_gallery_field( $fields ) {
+	if ( ! amazonia_current_user_is_vendor() ) {
+		return $fields;
+	}
+
+	$fields['amazonia_store_gallery'] = array(
+		'type'  => 'html',
+		'id'    => 'amazonia_gallery_field',
+		'class' => 'wcfm_ele',
+		'label' => __( 'Galería de la tienda', 'amazonia-theme' ),
+		'hints' => __( 'Muestra tu taller, tu equipo o el proceso de tus productos.', 'amazonia-theme' ),
+		'value' => amazonia_store_gallery_field_html(),
+	);
+
+	return $fields;
+}
+add_filter( 'wcfm_marketplace_settings_fields_brand', 'amazonia_add_store_gallery_field', 20 );
+
+/**
+ * Markup del botón + miniaturas que abre el modal de la galería.
+ *
+ * @return string
+ */
+function amazonia_store_gallery_field_html() {
+	$gallery_ids = amazonia_get_store_gallery( get_current_user_id() );
+
+	ob_start();
+	?>
+	<div class="amazonia-gallery-field">
+		<?php if ( $gallery_ids ) : ?>
+			<div class="amazonia-gallery-field__thumbs">
+				<?php foreach ( $gallery_ids as $attachment_id ) : ?>
+					<?php echo wp_get_attachment_image( $attachment_id, 'thumbnail' ); ?>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+		<button type="button" id="amazonia_gallery_fab" class="amazonia-gallery-trigger">
+			<span class="material-symbols-outlined" aria-hidden="true">photo_library</span>
+			<?php
+			echo $gallery_ids
+				? esc_html__( 'Gestionar galería', 'amazonia-theme' )
+				: esc_html__( 'Agregar galería', 'amazonia-theme' );
+			?>
+		</button>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * Modal de la galería. Sigue imprimiéndose en wp_footer: es un overlay, no
+ * depende de en qué sección del formulario esté el botón que lo abre.
+ */
+function amazonia_render_store_gallery_modal() {
 	if ( ! amazonia_is_wcfm_settings_page() || ! amazonia_current_user_is_vendor() ) {
 		return;
 	}
@@ -130,11 +190,6 @@ function amazonia_render_store_gallery_fab() {
 	$gallery_ids = amazonia_get_store_gallery( get_current_user_id() );
 	$max         = amazonia_store_gallery_max();
 	?>
-	<button type="button" id="amazonia_gallery_fab" class="amazonia-gallery-fab"
-	        aria-label="<?php esc_attr_e( 'Galería de la tienda', 'amazonia-theme' ); ?>">
-		<span class="material-symbols-outlined" aria-hidden="true">photo_library</span>
-	</button>
-
 	<div id="amazonia_gallery_modal" class="amazonia-gallery-modal" hidden>
 		<div class="amazonia-gallery-modal__panel" role="dialog" aria-modal="true"
 		     aria-labelledby="amazonia_gallery_modal_title">
@@ -174,7 +229,7 @@ function amazonia_render_store_gallery_fab() {
 	</div>
 	<?php
 }
-add_action( 'wp_footer', 'amazonia_render_store_gallery_fab' );
+add_action( 'wp_footer', 'amazonia_render_store_gallery_modal' );
 
 /**
  * Guarda la galería vía AJAX. Independiente por completo del formulario y
