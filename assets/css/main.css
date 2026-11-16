@@ -789,3 +789,11 @@ html body p.store-enquiry,
 html body .wcfm_ele_wrapper,
 html body a.wcfm_catalog_enquiry,
 html body .wcfm-enquiry-btn-wrapper { display: none !important; }
+
+/* Leaflet (.leaflet-container) trae position:relative de fábrica pero SIN z-index,
+   así que no abre su propio stacking context: sus panes internos (z-index hasta 700
+   para popups/tooltips) terminan compitiendo por z-index contra elementos fijos de
+   todo el sitio (menú móvil z-[60], modales, etc.) y los tapan. Se aplica en main.css
+   (se carga en todas las páginas) para cubrir cualquier mapa del tema, sin importar
+   el wrapper que lo contenga (tienda, checkout, sidebar de filtros, geolocalización). */
+html body .leaflet-container { position: relative; z-index: 0; }
