@@ -303,7 +303,7 @@
 .amz-card h3 { font-family: 'Work Sans', sans-serif; font-weight: 700; margin: 0 0 6px;
   font-size: 17px; color: var(--amz-text); }
 .amz-card p { margin: 0; color: var(--amz-text-muted); font-size: 14px; line-height: 1.6; font-weight: 300; }
-.amz-map { height: 200px; background: linear-gradient(135deg, #2d5a34, #1a3d20); position: relative; }
+.amz-map { height: 200px; background: linear-gradient(135deg, #2d5a34, #1a3d20); position: relative; z-index: 0; }
 .amz-map::before { content: ""; position: absolute; inset: 0;
   background: radial-gradient(circle at 40% 40%, rgba(34,197,94,.25), transparent 55%); }
 .amz-map .material-symbols-outlined { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
