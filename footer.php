@@ -32,27 +32,30 @@
 
                         <!-- Tagline -->
                         <p class="text-[#bbf7d0] text-sm leading-relaxed max-w-[300px] mb-7 font-normal">
-                            Conectamos la sabiduría ancestral de comunidades afrocolombianas e indígenas de la Amazonía con el mercado digital global.
+                            <?php echo esc_html( amazonia_content( 'footer_tagline' ) ); ?>
                         </p>
 
                         <!-- Cultural badge -->
                         <div class="inline-flex items-center gap-2 bg-[rgba(74,222,128,0.1)] border border-[rgba(74,222,128,0.25)] rounded-full px-4 py-1.5 mb-7 backdrop-blur-md">
                             <span class="material-symbols-outlined text-[0.9rem] text-[#4ade80] [font-variation-settings:'FILL'_1]">location_on</span>
-                            <span class="text-[0.7rem] text-[#86efac] font-semibold tracking-widest uppercase">Caquetá, Colombia</span>
+                            <span class="text-[0.7rem] text-[#86efac] font-semibold tracking-widest uppercase"><?php echo esc_html( amazonia_content( 'footer_location' ) ); ?></span>
                         </div>
 
-                        <!-- Social links -->
-                        <div class="flex gap-3">
-                            <a href="#" title="Web" class="w-[38px] h-[38px] bg-[rgba(22,163,74,0.85)] rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(22,163,74,0.3)] hover:bg-[#4ade80] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(74,222,128,0.5)] no-underline">
-                                <span class="material-symbols-outlined text-white text-base">public</span>
+                        <!-- Social links (WP Admin → Amazonia → Contenido del sitio → Redes y contacto) -->
+                        <?php $footer_socials = amazonia_get_footer_socials(); ?>
+                        <?php if ( $footer_socials ) : ?>
+                        <div class="flex flex-wrap gap-3">
+                            <?php foreach ( $footer_socials as $social ) : ?>
+                            <a href="<?php echo esc_url( $social['url'] ); ?>" title="<?php echo esc_attr( $social['label'] ); ?>" aria-label="<?php echo esc_attr( $social['label'] ); ?>"<?php echo 0 === strpos( $social['url'], 'mailto:' ) ? '' : ' target="_blank" rel="noopener noreferrer"'; ?> class="w-[38px] h-[38px] bg-[rgba(22,163,74,0.85)] rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(22,163,74,0.3)] hover:bg-[#4ade80] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(74,222,128,0.5)] no-underline">
+                                <?php if ( ! empty( $social['svg'] ) ) : ?>
+                                    <span class="text-white flex"><?php echo amazonia_whatsapp_icon_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG estático. ?></span>
+                                <?php else : ?>
+                                    <span class="material-symbols-outlined text-white text-base" aria-hidden="true"><?php echo esc_html( $social['icon'] ); ?></span>
+                                <?php endif; ?>
                             </a>
-                            <a href="#" title="Email" class="w-[38px] h-[38px] bg-[rgba(22,163,74,0.85)] rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(22,163,74,0.3)] hover:bg-[#4ade80] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(74,222,128,0.5)] no-underline">
-                                <span class="material-symbols-outlined text-white text-base">mail</span>
-                            </a>
-                            <a href="#" title="Instagram" class="w-[38px] h-[38px] bg-[rgba(22,163,74,0.85)] rounded-full flex items-center justify-center transition-all duration-300 shadow-[0_4px_15px_rgba(22,163,74,0.3)] hover:bg-[#4ade80] hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(74,222,128,0.5)] no-underline">
-                                <span class="material-symbols-outlined text-white text-base">photo_camera</span>
-                            </a>
+                            <?php endforeach; ?>
                         </div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Quick Links -->
@@ -100,12 +103,12 @@
                 <div class="border-t border-[rgba(74,222,128,0.15)] pt-7 flex items-center justify-between flex-wrap gap-4">
 
                     <p class="m-0 text-[0.75rem] text-[#6ee7b7]">
-                        &copy; <?php echo date('Y'); ?> <strong class="text-[#a7f3d0]"><?php bloginfo('name'); ?></strong> &mdash; Preservando el corazón del mundo.
+                        &copy; <?php echo date('Y'); ?> <strong class="text-[#a7f3d0]"><?php bloginfo('name'); ?></strong> &mdash; <?php echo esc_html( amazonia_content( 'footer_copy' ) ); ?>
                     </p>
 
                     <div class="flex items-center gap-2">
                         <div class="w-1.5 h-1.5 bg-[#4ade80] rounded-full shadow-[0_0_6px_rgba(74,222,128,0.8)] animate-[footerPulse_2s_infinite]"></div>
-                        <span class="text-[0.7rem] text-[#86efac] tracking-wider">Hecho con ❤️ para la Amazonía</span>
+                        <span class="text-[0.7rem] text-[#86efac] tracking-wider"><?php echo esc_html( amazonia_content( 'footer_made_with' ) ); ?></span>
                     </div>
 
                 </div>

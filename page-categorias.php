@@ -45,7 +45,7 @@ $shop_url         = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_per
 	<!-- Hero -->
 	<section class="relative overflow-hidden bg-slate-900">
 		<!-- Imagen de fondo -->
-		<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-hero-selva.jpg' ); ?>"
+		<img <?php echo amazonia_content_img_attrs( 'img_categorias_hero', 'assets/img/amazonia-hero-selva.jpg' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro del helper. ?>
 			 alt=""
 			 aria-hidden="true"
 			 fetchpriority="high"

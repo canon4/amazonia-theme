@@ -1,0 +1,88 @@
+/**
+ * Contenido del sitio — pantalla de administración (WP Admin → Amazonia).
+ * Ver inc/site-content.php.
+ */
+.asc-wrap .asc-tabs { margin-top: 16px; }
+
+.asc-group {
+	background: #fff;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	padding: 4px 20px 16px;
+	margin: 16px 0;
+	max-width: 900px;
+}
+.asc-group h3 { margin: 16px 0 4px; font-size: 15px; }
+
+.asc-field { margin: 16px 0; }
+.asc-field > label { display: block; font-weight: 600; margin-bottom: 4px; }
+.asc-field .regular-text { width: 100%; max-width: 560px; }
+.asc-field .description { margin: 0 0 8px; }
+
+/* ── Imagen única ─────────────────────────────────────────────── */
+.asc-image__preview {
+	position: relative;
+	width: 260px;
+	height: 150px;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	overflow: hidden;
+	background: #f6f7f7;
+}
+.asc-image__preview.is-empty::after {
+	content: "Sin imagen";
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #8c8f94;
+	font-size: 13px;
+}
+.asc-image__preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.asc-image__preview.is-default img { opacity: .55; }
+.asc-image__badge {
+	display: none;
+	position: absolute;
+	left: 8px;
+	bottom: 8px;
+	background: rgba(0, 0, 0, .65);
+	color: #fff;
+	font-size: 11px;
+	padding: 2px 8px;
+	border-radius: 999px;
+}
+.asc-image__preview.is-default .asc-image__badge { display: inline-block; }
+.asc-image__actions { margin: 8px 0 0; display: flex; align-items: center; gap: 12px; }
+
+/* ── Carrusel ─────────────────────────────────────────────────── */
+.asc-notice-default {
+	background: #f0f6fc;
+	border-left: 4px solid #2271b1;
+	padding: 8px 12px;
+	margin: 0 0 10px;
+	max-width: 640px;
+}
+.asc-slides { margin: 8px 0 12px; padding: 0; max-width: 720px; }
+.asc-slide {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	padding: 8px 12px 8px 8px;
+	margin: 0 0 8px;
+}
+.asc-slide.ui-sortable-helper { box-shadow: 0 6px 18px rgba(0, 0, 0, .15); }
+.asc-slide__handle { cursor: grab; color: #8c8f94; }
+.asc-slide img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+.asc-slide__fields { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.asc-slide__fields label { font-size: 12px; color: #50575e; }
+.asc-slide__fields input[type="text"],
+.asc-slide__fields input[type="url"] { width: 100%; }
+.asc-slide__remove { flex-shrink: 0; }
+
+@media (max-width: 782px) {
+	.asc-slide__fields { grid-template-columns: 1fr; }
+}

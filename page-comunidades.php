@@ -19,8 +19,7 @@ $comunidad_total  = $comunidad_counts ? (int) $comunidad_counts->publish : 0;
     <section class="relative overflow-hidden bg-forest-green">
         <!-- Banner de fondo (gestionado desde assets.js: images.comunidades.portada; fallback local).
              A plena vista, sin overlay de color. -->
-        <img data-asset="images.comunidades.portada"
-             src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-hero-selva.jpg' ); ?>"
+        <img <?php echo amazonia_content_img_attrs( 'img_comunidades_banner', 'assets/img/amazonia-hero-selva.jpg', 'images.comunidades.portada' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro del helper. ?>
              alt="" aria-hidden="true" loading="eager"
              class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none" />
 

@@ -44,15 +44,15 @@ if ( class_exists( 'WooCommerce' ) ) {
 
                 <span class="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/20 border border-primary/30 backdrop-blur-md text-[#4ade80] text-xs font-bold rounded-full mb-6 uppercase tracking-widest shadow-sm self-start">
                     <span class="material-symbols-outlined text-[14px]">eco</span>
-                    <?php esc_html_e( 'Saberes Ancestrales & Comercio Justo', 'amazonia-theme' ); ?>
+                    <?php echo esc_html( amazonia_content( 'home_hero_badge' ) ); ?>
                 </span>
 
                 <h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6 tracking-tight">
-                    <?php esc_html_e( 'El Latido de la Selva en Cada Creación', 'amazonia-theme' ); ?>
+                    <?php echo esc_html( amazonia_content( 'home_hero_title' ) ); ?>
                 </h1>
 
                 <p class="text-green-100/95 text-lg mb-10 leading-relaxed font-light max-w-lg">
-                    <?php esc_html_e( 'Cada producto cuenta una historia sagrada. Conecta directamente con comunidades indígenas y afro-amazónicas, y apoya la preservación de su territorio y cultura.', 'amazonia-theme' ); ?>
+                    <?php echo esc_html( amazonia_content( 'home_hero_text' ) ); ?>
                 </p>
 
                 <div class="flex flex-col sm:flex-row gap-4">
@@ -70,9 +70,32 @@ if ( class_exists( 'WooCommerce' ) ) {
                 </div>
             </div>
 
-            <!-- RIGHT: Image Carousel (slides populated by JS from window.AMAZONIA_ASSETS) -->
+            <!-- RIGHT: Image Carousel.
+                 Slides elegidas en WP Admin → Amazonia → Contenido del sitio (render en servidor).
+                 Si no hay ninguna, el JS las arma desde window.AMAZONIA_ASSETS (carrusel original). -->
             <div class="relative w-full lg:w-1/2 overflow-hidden order-first lg:order-last h-56 sm:h-72 lg:h-auto">
-                <div id="hero-track" style="position:absolute;inset:0;display:flex;transition:transform 0.7s ease-in-out;"></div>
+                <div id="hero-track" style="position:absolute;inset:0;display:flex;transition:transform 0.7s ease-in-out;">
+                    <?php foreach ( amazonia_get_home_carousel() as $slide_i => $slide ) : ?>
+                        <div style="position:relative;min-width:100%;flex-shrink:0;">
+                            <?php if ( $slide['link'] ) : ?><a href="<?php echo esc_url( $slide['link'] ); ?>" style="display:block;width:100%;height:100%;"><?php endif; ?>
+                            <?php
+                            echo wp_get_attachment_image(
+                                $slide['id'],
+                                'large',
+                                false,
+                                array(
+                                    'alt'           => $slide['alt'] ? $slide['alt'] : __( 'Galería Amazonia', 'amazonia-theme' ),
+                                    'style'         => 'width:100%;height:100%;object-fit:cover;display:block;',
+                                    'loading'       => 0 === $slide_i ? 'eager' : 'lazy',
+                                    'fetchpriority' => 0 === $slide_i ? 'high' : 'auto',
+                                )
+                            );
+                            ?>
+                            <?php if ( $slide['link'] ) : ?></a><?php endif; ?>
+                            <div style="position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(10,46,10,0.8) 0%,transparent 60%);"></div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
 
                 <!-- Left blend gradient (desktop only) -->
                 <div class="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-[#0a2e0a] to-transparent z-10 pointer-events-none hidden lg:block"></div>
@@ -99,36 +122,53 @@ if ( class_exists( 'WooCommerce' ) ) {
                 var dotsWrap = document.getElementById('hero-dots');
                 if (!track) return;
 
-                var urls = (window.AMAZONIA_ASSETS
-                    && window.AMAZONIA_ASSETS.images
-                    && Array.isArray(window.AMAZONIA_ASSETS.images.carousel))
-                    ? window.AMAZONIA_ASSETS.images.carousel : [];
+                // Slides del gestor (ya renderizadas en el servidor) o, si no hay,
+                // el carrusel original de assets.js.
+                var hasServerSlides = track.children.length > 0;
 
-                if (!urls.length) return;
+                if (!hasServerSlides) {
+                    var urls = (window.AMAZONIA_ASSETS
+                        && window.AMAZONIA_ASSETS.images
+                        && Array.isArray(window.AMAZONIA_ASSETS.images.carousel))
+                        ? window.AMAZONIA_ASSETS.images.carousel : [];
 
-                urls.forEach(function (url, i) {
-                    var div = document.createElement('div');
-                    div.style.cssText = 'position:relative;min-width:100%;flex-shrink:0;';
-                    var img = document.createElement('img');
-                    img.src = url;
-                    img.alt = 'Galería Amazonia';
-                    img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
-                    if (i === 0) img.setAttribute('fetchpriority', 'high');
-                    var overlay = document.createElement('div');
-                    overlay.style.cssText = 'position:absolute;inset:0;background:linear-gradient(to top,rgba(10,46,10,0.8) 0%,transparent 60%);';
-                    div.appendChild(img);
-                    div.appendChild(overlay);
-                    track.appendChild(div);
+                    if (!urls.length) return;
 
-                    if (dotsWrap) {
+                    urls.forEach(function (url, i) {
+                        var div = document.createElement('div');
+                        div.style.cssText = 'position:relative;min-width:100%;flex-shrink:0;';
+                        var img = document.createElement('img');
+                        img.src = url;
+                        img.alt = 'Galería Amazonia';
+                        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+                        if (i === 0) img.setAttribute('fetchpriority', 'high');
+                        var overlay = document.createElement('div');
+                        overlay.style.cssText = 'position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(10,46,10,0.8) 0%,transparent 60%);';
+                        div.appendChild(img);
+                        div.appendChild(overlay);
+                        track.appendChild(div);
+                    });
+                }
+
+                if (dotsWrap) {
+                    for (var d = 0; d < track.children.length; d++) {
                         var btn = document.createElement('button');
                         btn.className = 'hero-dot h-2 rounded-full transition-all duration-300 cursor-pointer border-0 p-0 '
-                            + (i === 0 ? 'w-5 bg-white' : 'w-2 bg-white/40');
-                        btn.dataset.index = String(i);
-                        btn.setAttribute('aria-label', 'Imagen ' + (i + 1));
+                            + (d === 0 ? 'w-5 bg-white' : 'w-2 bg-white/40');
+                        btn.dataset.index = String(d);
+                        btn.setAttribute('aria-label', 'Imagen ' + (d + 1));
                         dotsWrap.appendChild(btn);
                     }
-                });
+                }
+
+                // Con una sola imagen no hacen falta flechas ni puntos.
+                if (track.children.length < 2) {
+                    ['hero-prev', 'hero-next', 'hero-dots'].forEach(function (id) {
+                        var el = document.getElementById(id);
+                        if (el) el.style.display = 'none';
+                    });
+                    return;
+                }
 
                 var dots  = document.querySelectorAll('.hero-dot');
                 var total = dots.length;
@@ -429,8 +469,7 @@ if ( class_exists( 'WooCommerce' ) ) {
                 <div class="rounded-2xl overflow-hidden aspect-video shadow-lg relative group">
                     <img class="w-full h-full object-cover filter brightness-[0.9] group-hover:scale-105 transition-transform duration-700"
                          alt="Manos artesanas trenzando fibras vegetales sostenibles"
-                         data-asset="images.comunidades.artesanas"
-                         src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-artesanas.jpg' ); ?>"
+                         <?php echo amazonia_content_img_attrs( 'img_home_impacto', 'assets/img/amazonia-artesanas.jpg', 'images.comunidades.artesanas' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro del helper. ?>
                          loading="lazy" width="1200" height="675" />
                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/40 to-transparent"></div>
                 </div>
