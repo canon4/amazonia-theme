@@ -89,7 +89,7 @@ html {
 	<!-- Left Side: Image / Branding (Hidden on small screens) -->
 	<div class="hidden lg:flex lg:w-5/12 xl:w-1/2 relative flex-col justify-between overflow-hidden bg-slate-900" style="height:100vh;">
 		<div class="absolute inset-0 z-0">
-			<img src="<?php echo esc_url( get_template_directory_uri() . '/assets/img/amazonia-login-bg.jpg' ); ?>"
+			<img <?php echo amazonia_content_img_attrs( 'img_login_bg', 'assets/img/amazonia-login-bg.jpg' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escapado dentro del helper. ?>
 				 alt="Selva Amazónica" class="w-full h-full object-cover opacity-80"
 				 fetchpriority="high" width="1920" height="1080" />
 			<div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/40 to-transparent"></div>

@@ -17,6 +17,7 @@ require_once get_template_directory() . '/inc/community-admin-panel.php';
 require_once get_template_directory() . '/inc/vendor-shipping-defaults.php';
 require_once get_template_directory() . '/inc/vendor-whatsapp.php';
 require_once get_template_directory() . '/inc/store-gallery.php';
+require_once get_template_directory() . '/inc/site-content.php';
 
 /**
  * Theme Setup
